@@ -1,0 +1,125 @@
+/* LoginForm.css */
+
+body {
+    background-image: linear-gradient(to right, #ffdd1e, #f16b0b);
+    font-family: Arial, sans-serif;
+  }
+  
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Use the full screen height */
+    background-image: linear-gradient(to right, #ffdd1e, #f16b0b);
+  }
+
+  .company-logo {
+    max-width: 200px; 
+    margin: 0 auto 20px; 
+    display: block; 
+  }
+  
+  .form-box {
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    margin: auto;
+  }
+  
+  .login-form input {
+    width: calc(100% - 20px); 
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .forgot-password {
+    margin-top: 5px;
+  }
+  
+  .forgot-link { /* Styling for the "Forgot password?" link */
+    font-size: 0.8rem;
+    color: grey;
+    text-decoration: none;
+  }
+  
+  .login-button {
+    width: 90%;
+    padding: 10px;
+    margin: 20px auto 10px;
+    font-size: 1.2rem;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: #1A73F5; 
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-button:hover {
+    background-color: #145ab5; 
+  }
+  
+  
+  .auth-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #000;
+    margin: 20px 0;
+    font-size: 1rem;
+  }
+  
+  .auth-separator .line {
+    flex-grow: 1;
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 0 10px;
+  }
+  
+  .social-logins {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin: 0 auto 20px;
+  }
+  
+  .social-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .social-login img {
+    margin-right: 8px; 
+    width: 20px; 
+    height: auto;
+  }
+  
+  .google {
+    background-color: #db4437; 
+  }
+  
+  .facebook {
+    background-color: #3b5998; 
+  }
+  
+  
+  .signup-prompt {
+    margin-top: 20px;
+  }
+  
