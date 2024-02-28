@@ -123,3 +123,9 @@ body {
     margin-top: 20px;
   }
   
+  .error-message {
+    color: #d32f2f; /* Error color */
+    margin: 10px 0; /* Spacing */
+    font-size: 0.9rem; /* Font size */
+  }
+  
