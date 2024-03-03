@@ -6,6 +6,7 @@ import logo from './LoginPage/FitInc.png';
 import Dashboard from './DashboardPage/Dashboard';
 import PasswordResetForm from './LoginPage/PasswordResetForm';
 import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
+import SignupForm from './LoginPage/SignupForm';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/forgot-password" element={<PasswordResetForm />} />
           <Route path="/reset-password" element={<NewPasswordResetForm />} />
+          <Route path="/signup" element={<SignupForm />} />
         </Routes>
       </div>
     </BrowserRouter>
