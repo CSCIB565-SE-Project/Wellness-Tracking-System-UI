@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginForm from './LoginPage/LoginForm';
 import logo from './LoginPage/FitInc.png'; 
 import Dashboard from './DashboardPage/Dashboard';
+import PasswordResetForm from './LoginPage/PasswordResetForm';
+import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginForm logo={logo} />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forgot-password" element={<PasswordResetForm />} />
+          <Route path="/reset-password" element={<NewPasswordResetForm />} />
         </Routes>
       </div>
     </BrowserRouter>
