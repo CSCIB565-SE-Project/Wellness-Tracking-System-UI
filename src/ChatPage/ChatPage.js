@@ -13,20 +13,36 @@ import './Chat.css';
 const cookies = new Cookies();
 
 const apiKey = 'v5zqy2qw283c';
+// Change this to getting from the userdata
 const authToken = cookies.get("token");
 
 const client = StreamChat.getInstance(apiKey);
 
-if(authToken) {
+const userData = JSON.parse(localStorage.getItem('user'));
+
+if (userData && userData.token) {
     client.connectUser({
-        id: cookies.get('userId'),
-        name: cookies.get('username'),
-        fullName: cookies.get('fullName'),
-        image: cookies.get('avatarURL'),
-        hashedPassword: cookies.get('hashedPassword'),
-        phoneNumber: cookies.get('phoneNumber'),
-    }, authToken)
+        id: userData.id,
+        name: userData.username,
+        firstname: userData.fname,
+        lastname: userData.lname,
+        role: userData.role
+    }, userData.token);
+} else {
+    // Redirect user to login or handle unauthenticated state
+    // Refer to comment below returning the user to Auth, just send them to the login
 }
+
+// if(authToken) {
+//     client.connectUser({
+//         id: cookies.get('userId'),
+//         name: cookies.get('username'),
+//         fullName: cookies.get('fullName'),
+//         image: cookies.get('avatarURL'),
+//         hashedPassword: cookies.get('hashedPassword'),
+//         phoneNumber: cookies.get('phoneNumber'),
+//     }, authToken)
+// }
 
 
 const ChatPage = () => {
@@ -34,7 +50,7 @@ const ChatPage = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    if(!authToken) return <Auth />
+    if(!authToken) return <Auth />//Change this to redirecting to login 
 
     return (
         <div className="app__wrapper">

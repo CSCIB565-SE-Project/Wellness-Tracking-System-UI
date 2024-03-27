@@ -5,20 +5,20 @@ import './LoginForm.css';
 import googleLogo from './google.webp'; 
 import facebookLogo from './facebook.png';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom'; // Import Link component
+import { Link } from 'react-router-dom'; 
 
 const LoginForm = ({ logo }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // State to hold login error message
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const [error, setError] = useState(''); 
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(''); // Reset error message on new submission
   
-    try {
-      const response = await fetch('http://localhost:9191/login', { // response from backend
+    try {//add a way to store all the data. 
+      const response = await fetch('https://login-service.azurewebsites.net/login', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,14 +26,20 @@ const LoginForm = ({ logo }) => {
         body: JSON.stringify({ email, password }),
       });
   
-      const data = await response.json(); // Assuming the response is always JSON
-      console.log('Response data:', data); // Debugging: Inspect the full response
+      const data = await response.json(); 
   
       if (response.ok && data.status) {
         console.log('Login successful:', data);
-        // Optionally store user data or token if provided
-        // Example: localStorage.setItem('user', JSON.stringify(data.user));
-        redirectToDashboard(); // Adjust this function to use React Router for navigation
+
+        localStorage.setItem('user', JSON.stringify({
+          id: data.id,
+          username: data.username,
+          firstname: data.fname,
+          lastname: data.lname,
+          role: data.role
+          //,token: data.token
+        }));
+        redirectToDashboard(); 
       } else {
         // Use the message from the backend for failed login attempts
         setError(data.message || 'Invalid username or password');
@@ -48,7 +54,7 @@ const LoginForm = ({ logo }) => {
 
   // Redirecting to dashboard
   const redirectToDashboard = () => {
-    navigate('/dashboard'); // Use navigate function for redirection
+    navigate('/dashboard'); 
   };
 
 

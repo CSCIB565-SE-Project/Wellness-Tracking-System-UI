@@ -1,4 +1,4 @@
-//Auth.jsx
+//Auth.jsx ChatPage frontend
 
 import React, { useState } from 'react';
 import Cookies from 'universal-cookie';
