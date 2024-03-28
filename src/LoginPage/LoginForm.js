@@ -1,11 +1,8 @@
-// LoginForm.js
-
 import React, { useState } from 'react';
-import './LoginForm.css'; 
-import googleLogo from './google.webp'; 
+import { Link, useNavigate } from 'react-router-dom';
+import './LoginForm.css';
 import facebookLogo from './facebook.png';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom'; 
+import googleLogo from './google.webp';
 
 const LoginForm = ({ logo }) => {
   const [email, setEmail] = useState('');
@@ -17,7 +14,7 @@ const LoginForm = ({ logo }) => {
     event.preventDefault();
     setError(''); // Reset error message on new submission
   
-    try {//add a way to store all the data. 
+    try {
       const response = await fetch('https://login-service.azurewebsites.net/login', { 
         method: 'POST',
         headers: {
@@ -37,11 +34,9 @@ const LoginForm = ({ logo }) => {
           firstname: data.fname,
           lastname: data.lname,
           role: data.role
-          //,token: data.token
         }));
         redirectToDashboard(); 
       } else {
-        // Use the message from the backend for failed login attempts
         setError(data.message || 'Invalid username or password');
       }
     } catch (error) {
@@ -50,27 +45,37 @@ const LoginForm = ({ logo }) => {
     }
   };
   
-  
-
-  // Redirecting to dashboard
   const redirectToDashboard = () => {
     navigate('/dashboard'); 
   };
 
-
+const handleOAuth2Login = async (provider) => {
+  try {
+    const response = await fetch(`https://login-service.azurewebsites.net/login/oauth2/${provider}`);
+    if (response.ok) {
+      const url = await response.text(); // Assuming the response contains the OAuth URL
+      window.location.href = url; // Redirect the user to the OAuth URL
+    } else {
+      console.error(`Failed to initiate ${provider} OAuth2 login`);
+    }
+  } catch (error) {
+    console.error(`${provider} OAuth2 login error:`, error);
+  }
+};
+  
 
   return (
     <div className="login-container">
-      <div className="form-box"> {}
+      <div className="form-box">
         {logo && <img src={logo} alt="Company Logo" className="company-logo" />}
         <h1>Welcome to FIT INC</h1>
-        {error && <div className="error-message">{error}</div>} {/* Display error message if login fails */}
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <input
               type="email"
               id="email"
-              placeholder="Email" // Placeholder text added here
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -79,7 +84,7 @@ const LoginForm = ({ logo }) => {
             <input
               type="password"
               id="password"
-              placeholder="Password" // Placeholder text added here
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -88,21 +93,20 @@ const LoginForm = ({ logo }) => {
             </div>
           </div>
           <button type="submit" className="login-button">Log In</button>
-            <div className="auth-separator">
+          <div className="auth-separator">
             <hr className="line" />or login with<hr className="line" />
-            </div>
-            <div className="social-logins">
-            <button type="button" className="social-login google">
-                <img src={googleLogo} alt="Google" /> Google
+          </div>
+          <div className="social-logins">
+            <button type="button" className="social-login google" onClick={() => handleOAuth2Login('google')}>
+              <img src={googleLogo} alt="Google" /> Google
             </button>
-            <button type="button" className="social-login facebook">
-                <img src={facebookLogo} alt="Facebook" /> Facebook
+            <button type="button" className="social-login facebook" onClick={() => handleOAuth2Login('facebook')}>
+              <img src={facebookLogo} alt="Facebook" /> Facebook
             </button>
-            </div>
-            <div className="signup-prompt">
+          </div>
+          <div className="signup-prompt">
             Need an account? <Link to="/signup" className="signup-link" style={{ textDecoration: 'underline', color: '#007bff' }}>SIGN UP</Link>
-
-            </div>
+          </div>
         </form>
       </div>
     </div>
