@@ -12,13 +12,14 @@ const LoginForm = ({ logo }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); 
   const navigate = useNavigate(); 
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(''); // Reset error message on new submission
   
-    try {//add a way to store all the data. 
-      const response = await fetch('https://login-service.azurewebsites.net/login', { 
+    try {
+      // https://login-service.azurewebsites.net/login
+      const response = await fetch('http://localhost:8080/login', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,15 +31,22 @@ const LoginForm = ({ logo }) => {
   
       if (response.ok && data.status) {
         console.log('Login successful:', data);
+        const user = data.user;
+        const fullName = `${user.fname} ${user.lname}`;
 
         localStorage.setItem('user', JSON.stringify({
-          id: data.id,
-          username: data.username,
-          firstname: data.fname,
-          lastname: data.lname,
-          role: data.role
-          //,token: data.token
+          userId: user.id,
+          username: user.username,
+          firstname: user.fname,
+          lastname: user.lname,
+          fullName: fullName,
+          role: user.role
+          ,token: data.token
         }));
+      
+        const storedUserData = JSON.parse(localStorage.getItem('user'));
+        console.log("Stored user data:", storedUserData);
+
         redirectToDashboard(); 
       } else {
         // Use the message from the backend for failed login attempts

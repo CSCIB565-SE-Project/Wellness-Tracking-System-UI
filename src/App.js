@@ -15,7 +15,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<LoginForm logo={logo} />} />
+          <Route path="/login" element={<LoginForm logo={logo} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/forgot-password" element={<PasswordResetForm />} />
           <Route path="/reset-password" element={<NewPasswordResetForm />} />
