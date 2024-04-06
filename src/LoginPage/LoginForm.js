@@ -43,7 +43,8 @@ const LoginForm = ({ logo }) => {
         const storedUserData = JSON.parse(localStorage.getItem('user'));
         console.log("Stored user data:", storedUserData);
 
-        redirectToDashboard(); 
+        redirectToDashboard(user); 
+
       } else {
         setError(data.message || 'Invalid username or password');
       }
@@ -53,9 +54,26 @@ const LoginForm = ({ logo }) => {
     }
   };
   
-  const redirectToDashboard = () => {
-    navigate('/dashboard'); 
+
+  
+
+  // Redirecting to dashboard
+  const redirectToDashboard = (user) => {
+    if(user.role == "USER"){
+      navigate('/userdashboard'); 
+    }
+    else if(user.role == "PROFESSIONAL"){
+      navigate('/professionaldashboard');
+    } 
+    else if(user.role == "ADMIN"){
+      navigate('/admindashboard');
+    }
+    else{
+      throw "Invalid Role";
+    } 
   };
+
+
 
 const handleOAuth2Login = async (provider) => {
   try {
@@ -72,13 +90,17 @@ const handleOAuth2Login = async (provider) => {
 };
   
 
+
   return (
     <div className="login-container">
       <div className="form-box">
         {logo && <img src={logo} alt="Company Logo" className="company-logo" />}
         <h1>Welcome to FIT INC</h1>
+
         {error && <div className="error-message">{error}</div>}
+
         <form onSubmit={handleSubmit} className="login-form">
+          
           <div className="form-group">
             <input
               type="email"

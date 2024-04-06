@@ -1,0 +1,122 @@
+/* General Styles */
+.admin-dashboard {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 960px;
+    margin: auto;
+    padding: 20px;
+    color: #333;
+  }
+  
+  h2 {
+    color: #d96b1c;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    color: #de6910;
+    margin-bottom: 10px;
+  }
+  
+  /* Content Approval Section */
+  .content-approval, .metrics, .user-feedback, .admin-announcements, .quick-actions {
+    margin-bottom: 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #f8f9fa;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .content-approval:hover, .metrics:hover, .user-feedback:hover, .admin-announcements:hover, .quick-actions:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .content-item, .feedback-item, .announcement-item {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+  }
+  
+  .content-item:last-child, .feedback-item:last-child, .announcement-item:last-child {
+    border-bottom: none;
+  }
+  
+  .content-item:hover, .feedback-item:hover, .announcement-item:hover {
+    background-color: #e9ecef;
+  }
+  
+  button {
+    background-color: #f77606;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #fc7120;
+  }
+  
+  /* Quick Actions Panel */
+  .quick-actions button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    animation: fadeIn 1s ease-out;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+
+  .chat-fab-container {
+    position: fixed;
+    right: 2rem; /* 32 pixels */
+    bottom: 2rem;
+    z-index: 1000
+    ; /* Ensure it's above other elements */
+  }
+  
+  .chat-fab {
+    background-color: #ff740a; /* Softer blue color */
+    color: #ffffff;
+    border: none;
+    border-radius: 40px; /* Fully rounded corners for a pill shape */
+    padding: 0.75rem 1.5rem; /* Vertical and Horizontal padding */
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2); /* Softer shadow */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* Smooth transitions for interaction */
+    font-weight: 450; /* Medium font weight */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A commonly used, friendly font */
+    text-transform: uppercase; /* Uppercase text for emphasis */
+  }
+  
+  .chat-fab:hover {
+    background-color: #f26f0b; /* A darker shade of blue for hover state */
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3); /* Enhanced shadow on hover */
+    transform: scale(1.05); /* Slight increase in size on hover */
+  }
+  
+  .chat-fab:focus {
+    outline: none; /* Remove focus outline */
+    box-shadow: 0 0 0 4px rgba(236, 129, 7, 0.999); /* Focus ring with softer blue color */
+  }
+  
+  

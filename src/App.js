@@ -1,33 +1,52 @@
-// App.js
+import './App.css';
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginForm from './LoginPage/LoginForm';
-import logo from './LoginPage/FitInc.png'; 
-import Dashboard from './DashboardPage/Dashboard';
-import PasswordResetForm from './LoginPage/PasswordResetForm';
-import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
-import SignupForm from './LoginPage/SignupForm';
-import ChatPage from './ChatPage/ChatPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './LandingPage/Header';
+import Hero from './LandingPage/Hero';
+import Exercises from './LandingPage/Exercises';
+import Pricing from './LandingPage/Pricing';
+import Start from './LandingPage/Start';
+import Testimonial from './LandingPage/Testimonial';
+import LoginPage from './LoginPage/LoginForm.js';
+import SignUpPage from './LoginPage/SignupForm.js' ;
+import logo from './LoginPage/FitInc.png';
+import UserDashboard from './DashboardPage/UserDashboard.jsx';
+import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
+import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
+
+
+
+
+const LandingPage = () => (
+  <>
+    <Header />
+    <Hero />
+    <Exercises />
+    <Pricing />
+    <Start />
+    <Testimonial />
+  </>
+);
+
 
 function App() {
   return (
-    //need to add protection from navigating anywhere for deployment
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route path="/login" element={<LoginForm logo={logo} />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/forgot-password" element={<PasswordResetForm />} />
-          <Route path="/reset-password" element={<NewPasswordResetForm />} />
-          <Route path="/signup" element={<SignupForm />} />
-          <Route path="/chat" element={<ChatPage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Router>
+
+      <Routes>
+       
+         <Route path="/" element={<LandingPage />} />
+         <Route path="/login" element={<LoginPage logo={logo} />} />
+         <Route path="/signup" element={<SignUpPage/>} />
+         <Route path="/userdashboard" element={<UserDashboard />} />
+        <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
+
+
+      </Routes>
+    </Router>
+  
   );
-}
+  }
 
-export default App;
-
-
-
+  export default App;

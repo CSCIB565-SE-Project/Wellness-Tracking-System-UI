@@ -1,0 +1,111 @@
+.pricing__top {
+    text-align: center;
+
+}
+.pricing__top h2{
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    
+}
+
+.pricing__top p{
+    font-size: 1.1rem;
+    color: var(--heading-color);
+    line-height: 28px;
+    margin-bottom: 50px;
+}
+
+.pricing__wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    /* flex-wrap: wrap;
+    gap:2%; */
+
+}
+.pricing__item{
+    box-shadow: rgba(0,0,0,0.15) 0px 5px 15px 0px;
+    border-radius: 2px;
+    width: 32%;
+    background: #fff;
+    
+    
+    /* box-sizing: border-box; */
+}
+
+.pricing__card-top {
+    padding: 13px;
+    border-bottom: 1px solid #d3cef2;
+    text-align: center;
+
+}
+
+.pricing__card-top h2{
+    font-size: 1.rem;
+    margin-bottom: 0.5rem;
+
+}
+
+.pricing__card-top .pricing {
+    font-size: 1.4rem;
+}
+
+.pricing__card-top .pricing span {
+    font-size: 1.1rem;
+    color: #f45c5c;
+}
+
+
+.pricing__item .services{
+    padding: 10px;
+
+}
+
+.pricing__item .services ul li{
+    display: flex;
+    align-items:normal;
+    column-gap: 1.2rem;
+    color:#6e6b6b;
+    line-height: 25px;
+    font-size: 0.7rem;
+}
+ 
+
+.pricing__item .services ul li span i {
+    font-size: 0.35rem;
+}
+
+
+.btn__services .button-container {
+    display: flex;
+    justify-content: center; /* This will center the button horizontally */
+    align-items: center; /* This will center the button vertically if the container has a specified height */
+    padding: 15px;
+}
+
+.pricing__item-01 .pricing__card-top {
+
+    background: var(--primary-color);
+    border-radius: 5px 5px 0px 0px;
+}
+
+.pricing__item-01 .pricing__card-top h2{
+    color: #fff;
+    font-weight: 500;
+}
+
+.pricing__item-01 .pricing__card-top h2  {
+    color: #fff;
+    font-weight: 500;
+}
+
+
+.pricing__item-01 .pricing__card-top h2 span{
+    color: rgba(255,255,255,0.788);
+
+}
+
+.pricing__item-01 .services ul li span i {
+    color: var(--primary-color);
+}
