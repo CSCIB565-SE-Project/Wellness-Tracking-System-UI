@@ -1,11 +1,5 @@
 /* LoginForm.css
 
-body {
-    background-image: linear-gradient(to right, #ffdd1e, #f16b0b);
-    font-family: Arial, sans-serif;
-  }
-  
-
 .login-container {
     display: flex;
     justify-content: center;

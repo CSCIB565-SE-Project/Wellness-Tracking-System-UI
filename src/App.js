@@ -1,207 +1,52 @@
-// // // App.js
-// // import React from 'react';
-// // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';// import LoginForm from './LoginPage/LoginForm';
-// // // import logo from './LoginPage/FitInc.png'; 
-// // // import Dashboard from './DashboardPage/Dashboard';
-// // // import PasswordResetForm from './LoginPage/PasswordResetForm';
-// // // import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
-// // // import SignupForm from './LoginPage/SignupForm';
-
-// // import './App.css';
-// // import Header from "./components/Header/Header";
-// // import Hero from "./components/UI/Hero.jsx";
-// // import Exercises from "./components/UI/Exercises.jsx";
-// // import Start from "./components/UI/Start.jsx";
-// // import Pricing from "./components/UI/Pricing.jsx";
-// // import Testimonial from './components/UI/Testimonial.jsx';
-// // import Footer from './components/UI/Footer.jsx';
-// // import UserDashboard from './components/Dashboard/UserDashboard.jsx';
-// // // import LoginForm from './LoginPage/LoginForm.js';
-// // // import SignupForm from './LoginPage/SignupForm.js';
-
-// // function App() {
-// //   return (
-// //     <>
-// //     <Router>
-// //             <Header />
-// //             <Routes>
-// //               {/* <Route path="/login" element={<LoginForm />} /> */}
-// //               {/* <Route path="/signup" element={<SignupForm />} /> */}
-// //               <Route path="/dashboard" element={<UserDashboard />} />
-
-// //             </Routes>
-// //             <Hero/>
-// //             <Exercises/>
-// //             <Start />
-// //             <Pricing />
-// //             <Testimonial/>
-// //             <Footer/>
-// //     </Router>
-
-// //   </>
-// //   );
-// // }
-
-// // export default App;
-
-
-
-// import React from 'react';
-// // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// import './App.css';
-// import Header from "./components/Header/Header";
-// // import UserDashboard from './components/Dashboard/UserDashboard.jsx';
-// // import ProfessionalDashboard from './components/Dashboard/ProfessionalDashboard.jsx';
-// // import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
-// import Hero from "./components/UI/Hero.jsx";
-// import Exercises from "./components/UI/Exercises.jsx";
-// import Start from "./components/UI/Start.jsx";
-// import Pricing from "./components/UI/Pricing.jsx";
-// import Testimonial from './components/UI/Testimonial.jsx';
-
-// // function App() {
-// //   return (
-// //     <Router>
-// //       <Header/>
-      
-// //       <Routes>
-// //         <Route path="/" element={<Header/>} />
-
-// //         <Route path="/userdashboard" element={<UserDashboard />} />
-// //         <Route path="/professionaldashboard" element={<ProfessionalDashboard/>} />
-// //         <Route path="/admindashboard" element={<AdminDashboard/>} />
-      
-
-
-// //         {/* Uncomment the following routes as needed */}
-// //       {/* /  <Route path="/login" element={<LoginForm />}/> */}
-// //         {/* <Route path="/signup" element={<SignupForm />} /> */}
-// //         {/* ... other routes as needed ... */}
-// //       </Routes>
-            
-    
-// //     </Router>
-// //   );
-// // }
-
-// // export default App;
-// // const LandingPage = () => (
-// //   <>
-// //     <Header/>
-// //     <Hero />
-// //     <Exercises />
-// //     <Start />
-// //     <Pricing />
-// //     <Testimonial />
-// //   </>
-// // );
-
-// // function App() {
-// //   return (
-// //     <Router>
-// //       <Header/>
-      
-// //       <Routes>
-// //         <Route path="/" element={<LandingPage />} />        
-// //         <Route path="/userdashboard" element={<UserDashboard />} />
-// //         <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
-// //         <Route path="/admindashboard" element={<AdminDashboard />} />
-        
-// //         {/* Uncomment the following routes as needed */}
-// //         {/* <Route path="/login" element={<LoginForm />}/> */}
-// //         {/* <Route path="/signup" element={<SignupForm />} /> */}
-// //         {/* ... other routes as needed ... */}
-// //       </Routes>
-            
-// //     </Router>
-// //   );
-// // }
-// function App (){
-//   return (
-//       <>
-//           <Header />
-//           <Hero/>
-//           <Exercises/>
-//           <Start />
-//           <Pricing />
-//           <Testimonial/>
-//       </>
-//   );
-// }
-// export default App;
-
 import './App.css';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-import Header from "./components/Header/Header";
-import Hero from "./components/UI/Hero.jsx";
-import Exercises from "./components/UI/Exercises.jsx";
-import Start from "./components/UI/Start.jsx";
-import Pricing from "./components/UI/Pricing.jsx";
-import Testimonial from './components/UI/Testimonial.jsx';
-import LoginForm from './LoginPage/LoginForm.js';
-import SignupForm from './LoginPage/SignupForm.js';
-
-import UserDashboard from './components/Dashboard/UserDashboard.jsx';
-import ProfessionalDashboard from './components/Dashboard/ProfessionalDashboard.jsx';
-import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
-
-
- function App (){
-     return (
-
-         <Router> 
-
-              <Header/> 
-
-              <Routes>
-              
-        <Route path="/" element={<Header/>} /> 
-        {/* <Route path="/userdashboard" element={<UserDashboard />} />
-        <Route path="/professionaldashboard" element={<ProfessionalDashboard/>} />
-        <Route path="/admindashboard" element={<AdminDashboard/>} /> 
-   
-          */}
-         
-         {/* <Route path="/login" element={<LoginForm />} /> 
-        <Route path="/signup" element={<SignupForm />} />   */}
-<Hero/>
-              <Start/>
-              <Exercises/>
-              <Pricing/>
-              <Testimonial/>
-             
-            </Routes> 
-        </Router> 
-          );
-        }
-        
-export default App;
-
-// function App() {
-//   return (
-//     <Router>
-//       <Header/>
-      
-//       <Routes>
-//         <Route path="/" element={<Header/>} />
-
-//         <Route path="/userdashboard" element={<UserDashboard />} />
-//         <Route path="/professionaldashboard" element={<ProfessionalDashboard/>} />
-//         <Route path="/admindashboard" element={<AdminDashboard/>} />
-      
+import Header from './LandingPage/Header';
+import Hero from './LandingPage/Hero';
+import Exercises from './LandingPage/Exercises';
+import Pricing from './LandingPage/Pricing';
+import Start from './LandingPage/Start';
+import Testimonial from './LandingPage/Testimonial';
+import LoginPage from './LoginPage/LoginForm.js';
+import SignUpPage from './LoginPage/SignupForm.js' ;
+import logo from './LoginPage/FitInc.png';
+import UserDashboard from './DashboardPage/UserDashboard.jsx';
+import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
+import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
 
 
-//         {/* Uncomment the following routes as needed */}
-//       {/* /  <Route path="/login" element={<LoginForm />}/> */}
-//         {/* <Route path="/signup" element={<SignupForm />} /> */}
-//         {/* ... other routes as needed ... */}
-//       </Routes>
-            
-    
-//     </Router>
-//   );
-// }
 
-// export default App;
+
+const LandingPage = () => (
+  <>
+    <Header />
+    <Hero />
+    <Exercises />
+    <Pricing />
+    <Start />
+    <Testimonial />
+  </>
+);
+
+
+function App() {
+  return (
+    <Router>
+
+      <Routes>
+       
+         <Route path="/" element={<LandingPage />} />
+         <Route path="/login" element={<LoginPage logo={logo} />} />
+         <Route path="/signup" element={<SignUpPage/>} />
+         <Route path="/userdashboard" element={<UserDashboard />} />
+        <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
+        <Route path="/admindashboard" element={<AdminDashboard />} />
+
+
+      </Routes>
+    </Router>
+  
+  );
+  }
+
+  export default App;
