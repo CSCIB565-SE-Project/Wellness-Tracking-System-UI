@@ -18,7 +18,7 @@ const LoginForm = ({ logo }) => {
     setError(''); // Reset error message on new submission
   
     try {
-      const response = await fetch('http://localhost:9191/login', { // response from backend
+      const response = await fetch('https://login-service.azurewebsites.net/login', { // response from backend
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ const LoginForm = ({ logo }) => {
         console.log('Login successful:', data);
         // Optionally store user data or token if provided
         // Example: localStorage.setItem('user', JSON.stringify(data.user));
-        redirectToDashboard(); // Adjust this function to use React Router for navigation
+       redirectToDashboard(data.user); // Adjust this function to use React Router for navigation
       } else {
         // Use the message from the backend for failed login attempts
         setError(data.message || 'Invalid username or password');
@@ -47,19 +47,31 @@ const LoginForm = ({ logo }) => {
   
 
   // Redirecting to dashboard
-  const redirectToDashboard = () => {
-    navigate('/dashboard'); // Use navigate function for redirection
+  const redirectToDashboard = (user) => {
+
+    if(user.role=="USER"){
+      navigate('/userdashboard'); 
+    }
+    else if(user.role=="PROFESSIONAL"){
+      navigate('/professionaldashboard');
+    } 
+    else if(user.role="ADMIN"){
+      navigate('/admindashboard');
+    }
+    else{
+      throw "Invalid Role";
+    } 
   };
-
-
 
   return (
     <div className="login-container">
       <div className="form-box"> {}
         {logo && <img src={logo} alt="Company Logo" className="company-logo" />}
         <h1>Welcome to FIT INC</h1>
+
         {error && <div className="error-message">{error}</div>} {/* Display error message if login fails */}
         <form onSubmit={handleSubmit} className="login-form">
+          
           <div className="form-group">
             <input
               type="email"

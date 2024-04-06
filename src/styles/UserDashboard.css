@@ -1,0 +1,330 @@
+/* UserDashboard.css */
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 1rem; /* Spacing between grid items */
+  margin: 1rem; /* Outer spacing */
+}
+
+/* Utilize the Questrial font throughout the UserDashboard for consistency */
+.rbc-calendar,
+.rbc-event-content {
+  font-family: 'Questrial', sans-serif;
+}
+
+/* Header styles */
+.rbc-toolbar {
+  background: var(--bg-gradient);
+  margin-bottom: 20px;
+  padding: 10px 0;
+  border-radius: 8px;
+  color: white;
+}
+
+.rbc-toolbar label {
+  font-weight: bold;
+  color: white;
+}
+
+/* Calendar styles */
+.rbc-calendar {
+    height: auto; /* or any other height you prefer */
+  max-width: 100%;
+  margin: auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dashboard-item {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  /* Add any additional styling here */
+}
+
+/* Custom event styles
+.rbc-event {
+   background-color: var(--primary-color); 
+  color: white;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; 
+  position: relative;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+} */
+
+.rbc-event {
+  padding: 4px;
+  overflow: hidden; /* Hides the overflow by default */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.rbc-event:hover {
+  background-color: #fb8c00; /* Darker orange on hover */
+}
+
+/* Scrollable event description styles */
+.event-agenda-desc {
+  overflow-y: auto; /* Allows vertical scrolling */
+  overflow-x: hidden; /* Hides horizontal scrolling */
+  max-height: 3em; /* Maximum height before scrolling */
+  scrollbar-width: thin; /* Makes scrollbar 'thin' for non-WebKit browsers */
+  scrollbar-color: #e67e22 #ffe0b2; /* Scrollbar color for non-WebKit browsers */
+}
+
+/* Styles for WebKit-based browsers */
+.event-agenda-desc::-webkit-scrollbar {
+height: 5px;
+  width: 5px; /* Sets the width of the scrollbar */
+}
+
+.event-agenda-desc::-webkit-scrollbar-thumb {
+  background: #e67e22; /* Scrollbar thumb color */
+  border-radius: 10px;
+}
+
+.event-agenda-desc::-webkit-scrollbar-track {
+  background: #ffe0b2; /* Scrollbar track color */
+}
+
+/* Event content padding and text alignment */
+.rbc-event-content {
+  padding: 4px 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Date cell styles */
+.rbc-date-cell {
+  padding: 8px;
+  font-weight: bold;
+  color: var(--heading-color);
+}
+
+/* Time slot styles */
+.rbc-timeslot-group {
+  border: 1px solid #ffe0b2;
+}
+
+/* Today's date styling */
+.rbc-today {
+  background-color: #ffe0b2 !important;
+}
+
+/* Style for different states of days */
+.rbc-off-range-bg {
+  background: #fdf2e9;
+}
+
+.rbc-selected-cell {
+  background-color: #ffccbc;
+}
+
+/* Adjusting times and dates for better visibility */
+.rbc-time-header,
+.rbc-day-bg {
+  background-color: #fdf2e9;
+}
+
+.rbc-time-header .rbc-label,
+.rbc-time-content .rbc-time-slot {
+  color: var(--heading-color);
+  font-weight: bold;
+}
+
+/* Month view adjustments */
+.rbc-month-row {
+  border-bottom: 1px solid #ffccbc;
+}
+
+.rbc-month-header {
+  color: var(--heading-color);
+  font-weight: bold;
+}
+
+/* Buttons style */
+.rbc-btn {
+  color: var(--heading-color);
+  background-color: transparent;
+  box-shadow: none;
+  border: 1px solid #ffccbc;
+  border-radius: 4px;
+}
+
+/* Hover effect on buttons */
+.rbc-btn:hover {
+  background-color: #ffccbc;
+  color: white;
+}
+
+/* Adjust the event title display to not show times and allow for potential multi-line titles */
+.rbc-event-label,
+.rbc-event-content {
+  white-space: normal; /* Allows text to wrap */
+  text-overflow: clip; /* Removes the ellipsis effect */
+}
+
+/* Event title styles */
+.event-agenda-title {
+  padding: 4px 10px; /* Padding inside the title area */
+  text-align: center; /* Center the text */
+  font-size: 0.85rem; /* Smaller font size for the title */
+  color: white; /* White text color */
+  overflow: hidden; /* Hide overflow */
+}
+.trainer-list {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.trainer-list h3 {
+  color: var(--heading-color);
+  margin-bottom: 10px;
+}
+
+.trainer-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.trainer-list li {
+  background: var(--bg-gradient);
+  color: white;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+
+.chat-fab-container {
+  position: fixed;
+  right: 2rem; /* 32 pixels */
+  bottom: 2rem;
+  z-index: 1000
+  ; /* Ensure it's above other elements */
+}
+
+.chat-fab {
+  background-color: #ff740a; /* Softer blue color */
+  color: #a4d10e;
+  border: none;
+  border-radius: 50px; /* Fully rounded corners for a pill shape */
+  padding: 0.75rem 1.5rem; /* Vertical and Horizontal padding */
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.2); /* Softer shadow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* Smooth transitions for interaction */
+  font-weight: 500; /* Medium font weight */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A commonly used, friendly font */
+  text-transform: uppercase; /* Uppercase text for emphasis */
+}
+
+.chat-fab:hover {
+  background-color: #ff740a; /* A darker shade of blue for hover state */
+  box-shadow: 0 5px 25px rgba(0,0,0,0.3); /* Enhanced shadow on hover */
+  transform: scale(1.05); /* Slight increase in size on hover */
+}
+
+.chat-fab:focus {
+  outline: none; /* Remove focus outline */
+  box-shadow: 0 0 0 4px rgba(206, 114, 9, 0.999); /* Focus ring with softer blue color */
+}
+
+
+.search-bar-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f8f8;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+}
+
+.search-bar input[type="text"],
+.search-bar select {
+  padding: 10px;
+  margin: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.search-bar button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.search-bar button:hover {
+  background-color: #0056b3;
+}
+
+/* Results and sorting options */
+.search-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.search-results-header .results-count {
+  font-size: 18px;
+  color: #333;
+}
+
+.search-results-header .sort-options {
+  display: flex;
+  align-items: center;
+}
+
+.search-results-header select {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+
+}

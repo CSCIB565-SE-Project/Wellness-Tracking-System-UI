@@ -1,4 +1,4 @@
-import './LoginForm.css';
+import './SignupForm.css';
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -6,14 +6,16 @@ const SignupForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [fname, setFirstName] = useState('');
+    const [lname, setLastName] = useState('');
     const [username, setUsername] = useState('');
-    const [userRole, setUserRole] = useState('user'); // default value
+    const [role, setUserRole] = useState('user'); 
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const token = searchParams.get('token'); // Assuming the URL includes something like ?token=abc
+    const [gender, setGender] = useState('');
+    const [dob, setDob] = useState('');
+    const token = searchParams.get('token'); 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -22,20 +24,21 @@ const SignupForm = () => {
             return;
         }
         try {
-            const payload = {email, password, firstName, lastName, username, userRole};
+            const payload = {email, password, fname, lname, username, role};
             console.log("Sending payload:", payload);
-            const response = await fetch('http://localhost:9191/signup', {
+            const response = await fetch('https://login-service.azurewebsites.net/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
             });
+            console.log(response);
 
-            const data = await response.json();
+            const data = await response;
             if (response.ok) {
                 setMessage('Your account has been created successfully.');
-                setTimeout(() => navigate('/'), 5000); // Redirect to login after 5 seconds
+                setTimeout(() => navigate('/login'), 500); // Redirect to login after 5 seconds
             } else {
                 setMessage(data.message || 'Failed to create account.');
             }
@@ -55,7 +58,7 @@ const SignupForm = () => {
                         <input
                             type="text"
                             placeholder="First Name"
-                            value={firstName}
+                            value={fname}
                             onChange={(e) => setFirstName(e.target.value)}
                             required
                         />
@@ -64,7 +67,7 @@ const SignupForm = () => {
                         <input
                             type="text"
                             placeholder="Last Name"
-                            value={lastName}
+                            value={lname}
                             onChange={(e) => setLastName(e.target.value)}
                             required
                         />
@@ -106,19 +109,50 @@ const SignupForm = () => {
                             required
                         />
                     </div>
+
+                    <div className="form-group">
+            <label htmlFor="gender">Gender</label>
+            <select
+              id="gender"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+
+          <div className="form-group">
+            <label htmlFor="dob">Date of Birth</label>
+            <input
+              type="date"
+              id="dob"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              required
+            />
+          </div>
+
+
+
                     <div className="form-group">
                         <select
-                            value={userRole}
+                            value={role}
                             onChange={(e) => setUserRole(e.target.value)}
                             required
                         >
-                            <option value="user">User</option>
-                            <option value="professional">Professional</option>
-                            <option value="admin">Admin</option>
+                            <option value="USER">User</option>
+                            <option value="PROFESSIONAL">Professional</option>
+                            <option value="ADMIN">Admin</option>
+
                         </select>
                     </div>
                     <button type="submit" className="login-button">Create Account</button>
-                    <button type="button" className="forgot-link" onClick={() => navigate('/')}>Return to Login</button>
+                    <button type="button" className="forgot-link" onClick={() => navigate('/login')}>Return to Login</button>
                 </form>
             </div>
         </div>
