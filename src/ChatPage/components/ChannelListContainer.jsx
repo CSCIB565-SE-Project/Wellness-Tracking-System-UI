@@ -1,3 +1,4 @@
+//ChannelListContainer.jsx
 import React, { useState } from 'react';
 import { ChannelList, useChatContext } from 'stream-chat-react';
 import Cookies from 'universal-cookie';
@@ -28,7 +29,7 @@ const CompanyHeader = () => (
         <p className="channel-list__header__text">Fitness Chat</p>
     </div>
 )
-
+//Clue 'team channel' 
 const customChannelTeamFilter = (channels) => {
     return channels.filter((channel) => channel.type === 'team');
 }

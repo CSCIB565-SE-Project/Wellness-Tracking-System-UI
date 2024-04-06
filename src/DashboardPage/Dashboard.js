@@ -33,7 +33,9 @@ function Dashboard() {
                     username: userData.username,
                     fullName: userData.fullName,
                     role: userData.role,
+                    //role: 'professional' testing
                 }, data.streamToken);
+
                 // Navigate to chat page after successful connection
                 navigate('/chat');
             } else {

@@ -1,3 +1,4 @@
+//ChannelContainer.jsx
 import React from 'react';
 import { Channel, MessageSimple } from 'stream-chat-react';
 
@@ -28,6 +29,7 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
     )
 
     return (
+        
         <div className=" channel__container">
             <Channel
                 EmptyStateIndicator={EmptyState}

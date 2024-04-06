@@ -1,3 +1,8 @@
+//ChatPage.js
+//Remove Add channel button...
+//Fix login button...
+//Add users and all admins to support channel upon chat access...
+//Change Dashboard role
 import React, { useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import { Chat } from 'stream-chat-react';
@@ -15,7 +20,7 @@ const ChatPage = () => {
 
     return (
         <div className="app__wrapper">
-                <Chat client={client} theme="team light">
+                <Chat client={client} >
                     <ChannelListContainer 
                         isCreating={isCreating}
                         setIsCreating={setIsCreating}
