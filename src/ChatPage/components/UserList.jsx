@@ -7,7 +7,7 @@ const ListContainer = ({ children }) => {
     return (
         <div className="user-list__container">
             <div className="user-list__header">
-                <p>User</p>
+                <p>Professionals</p>
                 <p>Invite</p>
             </div>
             {children}
@@ -55,7 +55,10 @@ const UserList = ({ setSelectedUsers }) => {
             
             try {
                 const response = await client.queryUsers(
-                    { id: { $ne: client.userID } },
+                    { 
+                        id: { $ne: client.userID },
+                        role: { $eq: 'professional' }
+                    },
                     { id: 1 },
                     { limit: 8 } 
                 );

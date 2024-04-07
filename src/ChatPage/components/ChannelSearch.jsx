@@ -28,6 +28,7 @@ const ChannelSearch = ({ setToggleContainer }) => {
             });
             const userResponse = client.queryUsers({
                 id: { $ne: client.userID },
+                role: { $eq: 'professional' }, 
                 name: { $autocomplete: text }
             })
 
