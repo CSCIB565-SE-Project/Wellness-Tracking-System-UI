@@ -27,9 +27,12 @@ const localizer = dateFnsLocalizer({
   
 const ProfessionalDashboard = () => {
     // States for video uploads
-    const [videoTitle, setVideoTitle] = useState('');
+    const [workoutPlanTitle, setworkoutPlanTitle] = useState('');
+    const [planDescription, setplanDescription] = useState('');
+    const [planType, setplanType] = useState('');
     const [videoUrl, setVideoUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [workOutPlans, setWorkOutPlans] = useState([]);
     const [videos, setVideos] = useState([]);
     const [articles, setArticles] = useState([]);
     const [appointments, setAppointments] = useState([]);
@@ -37,6 +40,7 @@ const ProfessionalDashboard = () => {
     const [supplements, setSupplements] = useState([]);
     const [liveSessions, setLiveSessions] = useState([]);
     const [subscribedClients, setSubscribedClients] = useState([]);
+    const [error, setError] = useState(''); 
     
 
   useEffect(() => {
@@ -110,24 +114,116 @@ const ProfessionalDashboard = () => {
 
   
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setIsLoading(true);
+  const handleSubmit = async(event) => {
+      event.preventDefault();
+      setIsLoading(true);
+      setError('');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      console.log(userData);
+      const trainerId = userData.userId;
+      const jwtToken = userData.token;
+      const title = workoutPlanTitle;
+      const description = planDescription;
+      const typeOfWorkout = planType;
 
-    setTimeout(() => {
-        const newVideo = {
-            id: videos.length + 1,
-            title: videoTitle,
-            type: "New Session",
-            url: videoUrl,
-        };
-        setVideos([...videos, { id: videos.length + 1, title: videoTitle, url: videoUrl }]);
-        setVideoTitle('');
-        setVideoUrl('');
-        setIsLoading(false);
-    }, 2000);
+      try{
+        const response = await fetch('http://localhost:8000/api/workoutplan/add', { 
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ trainerId, title, description, typeOfWorkout }),
+          });
+          const data = await response.json();
+          if (data) {
+            console.log('Workout Plan Created Successfully!', data);
+            setworkoutPlanTitle('');
+            setplanDescription('');
+            setplanType('');
+            setIsLoading(false);
+            setError('');
+            displaySuccessMessage();
+            fetchWorkoutPlans();
+          } 
+      } catch {
+        console.error('Create error:', error);
+        setError('An error occurred. Please try again later.');
+      }   
+  };
+
+  const deleteWorkoutPlan = async(planId) => {
+      setIsLoading(true);
+      setError('');
+      console.log(planId);
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const jwtToken = userData.token;
+      const userId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/workoutplan/delete/${planId}`, { 
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify({ userId }),
+      });
+      if(!response.ok){
+        throw new Error("Failed to delete workout plans");
+      }
+      else{
+        displayDeleteSuccessMessage();
+        fetchWorkoutPlans();
+      }
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  const openWorkoutPlan = async(planId) => {
+
+  };
+
+  const fetchWorkoutPlans = async() => {
+      setIsLoading(true);
+      setError('');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const jwtToken = userData.token;
+      const trainerId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+      });
+      if(!response.ok){
+        throw new Error("Failed to fetch workout plans");
+      }
+      const data = await response.json();
+      setWorkOutPlans(data);
+      setIsLoading(false);
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkoutPlans();
+  }, []);
+
+  const displaySuccessMessage = () => {
+    alert('Workout Plan Created Successfully!');
 };
 
+const displayDeleteSuccessMessage = () => {
+  alert('Workout Plan Deleted Successfully!');
+};
 
   return (
     <div className="professional-dashboard">
@@ -135,12 +231,30 @@ const ProfessionalDashboard = () => {
             
             {/* Upload Video Section */}
             <form onSubmit={handleSubmit} className="upload-form">
-                <h3>Upload New Video</h3>
-                <input type="text" placeholder="Video Title" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} required />
-                <input type="url" placeholder="Video URL" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} required />
-                <button type="submit">{isLoading ? 'Uploading...' : 'Upload Video'}</button>
+                <h3>Create New Workout Plan</h3>
+                <input type="text" placeholder="Plan Title" value={workoutPlanTitle} onChange={(e) => setworkoutPlanTitle(e.target.value)} required />
+                <input type="text" placeholder="Plan Description" value={planDescription} onChange={(e) => setplanDescription(e.target.value)} required />
+                <input type="text" placeholder="Plan Type" value={planType} onChange={(e) => setplanType(e.target.value)} required />
+                <button type="submit">{isLoading ? 'Creating...' : 'Create Plan'}</button>
             </form>
             
+            <div className="section">
+              <h3>Workout Plans</h3>
+              {workOutPlans.length === 0 ? (
+                  <p>No Workout Plans Created</p>
+              ) : (
+                  workOutPlans.map(workOutPlan => (
+                      <div key={workOutPlan._id} className="content-item">
+                          <h4>{workOutPlan.title}</h4>
+                          <p>Type: {workOutPlan.typeOfWorkout}</p>
+                          <p>Created On: {workOutPlan.createdAt}</p>
+                          <button onClick={() => openWorkoutPlan(workOutPlan._id)}>Open</button>
+                          <button onClick={() => deleteWorkoutPlan(workOutPlan._id)}>Delete</button>
+                      </div>
+                  ))
+              )}
+          </div>
+
             {/* Articles Section */}
             <div className="section">
                 <h3>Articles</h3>
