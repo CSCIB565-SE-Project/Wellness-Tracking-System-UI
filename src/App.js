@@ -13,7 +13,7 @@ import logo from './LoginPage/FitInc.png';
 import UserDashboard from './DashboardPage/UserDashboard.jsx';
 import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
 import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
-
+import VideoUpload from './DashboardPage/VideoUpload';
 
 
 
@@ -41,7 +41,7 @@ function App() {
          <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
-
+        <Route path="/video-upload" element={<VideoUpload />} />
 
       </Routes>
     </Router>
