@@ -76,10 +76,8 @@ const ProfessionalDashboard = () => {
     const [workoutPlanTitle, setworkoutPlanTitle] = useState('');
     const [planDescription, setplanDescription] = useState('');
     const [planType, setplanType] = useState('');
-    const [videoUrl, setVideoUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [workOutPlans, setWorkOutPlans] = useState([]);
-    const [videos, setVideos] = useState([]);
     const [articles, setArticles] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [progressUpdates, setProgressUpdates] = useState([]);
@@ -87,6 +85,7 @@ const ProfessionalDashboard = () => {
     const [liveSessions, setLiveSessions] = useState([]);
     const [subscribedClients, setSubscribedClients] = useState([]);
     const [subscribedClientsCount, setSubscribedClientsCount] = useState([]);
+    const [unapprovedVideos, setUnapprovedVideos] = useState([]);
     const [error, setError] = useState(''); 
     
 
@@ -95,6 +94,7 @@ const ProfessionalDashboard = () => {
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
     fetchSubscribedCount(userData);
+    fetchUnapprovedVideos(userData);
 
     const mockArticles = [
       { id: 1, title: "Benefits of Yoga", content: "Yoga improves flexibility, strength, and mental well-being." },
@@ -141,7 +141,42 @@ const ProfessionalDashboard = () => {
 
   }, []);
 
-  
+  const fetchUnapprovedVideos = async (userData) => {
+      setIsLoading(true);
+      setError('');
+      const jwtToken = userData.token;
+      const trainerId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/videos/unapproved/${trainerId}`, { 
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+      });
+      if(!response.ok){
+        throw new Error("Failed to fecth subscribers");
+      }
+      else{
+        const data = await response.json();
+        if(data.length > 0){
+          setUnapprovedVideos(data);
+        }
+        else{
+          setUnapprovedVideos([]);
+        }
+        setIsLoading(false);
+      }
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  const openVideo = async(videoId, userData) => {
+    
+  }
 
   const handleSubmit = async(event, userData) => {
       event.preventDefault();
@@ -402,17 +437,36 @@ const ProfessionalDashboard = () => {
 
             {/* Live Sessions */}
             {/* Live Sessions */}
-<div className="section">
-  <h3>Live Sessions</h3>
-  {liveSessions.map(session => (
-    <div key={session.id} className="content-item">
-      <h4>{session.title}</h4>
-      {/* Ensure the date is converted to string */}
-      <p>Date: {format(session.date, 'PPP', { locale: enUS })}</p>
-    </div>
-  ))}
-</div>
-            
+            <div className="section">
+              <h3>Live Sessions</h3>
+              {liveSessions.map(session => (
+                <div key={session.id} className="content-item">
+                  <h4>{session.title}</h4>
+                  {/* Ensure the date is converted to string */}
+                  <p>Date: {format(session.date, 'PPP', { locale: enUS })}</p>
+                </div>
+              ))}
+            </div>
+
+
+            <div className="section">
+                <h3>Unapproved Uploaded Content</h3>
+                {unapprovedVideos.length === 0 ? (
+                    <p>No Content Uploaded Yet!</p>
+                ) : (
+                    <ul>
+                        {unapprovedVideos.map((video) => (
+                            <li key={video._idid}>
+                                <p>Title: {video.title}</p>
+                                <p>Type: {video.typeOfWorkout}</p>
+                                <p>Mode: {video.modeOfInstruction}</p>
+                                <button onClick={() => openVideo(video._id)}>Open</button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+
             {/* Progress Updates */}
             <div className="section">
                 <h3>Client Progress Updates</h3>
