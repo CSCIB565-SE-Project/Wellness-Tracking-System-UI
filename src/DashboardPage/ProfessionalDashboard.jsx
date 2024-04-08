@@ -67,6 +67,8 @@ const localizer = dateFnsLocalizer({
     getDay,
     locales,
   });
+
+const userData = JSON.parse(localStorage.getItem('user'));
   
 const ProfessionalDashboard = () => {
     const navigate = useNavigate();
@@ -84,23 +86,15 @@ const ProfessionalDashboard = () => {
     const [supplements, setSupplements] = useState([]);
     const [liveSessions, setLiveSessions] = useState([]);
     const [subscribedClients, setSubscribedClients] = useState([]);
+    const [subscribedClientsCount, setSubscribedClientsCount] = useState([]);
     const [error, setError] = useState(''); 
     
 
   useEffect(() => {
-    // Mock fetch existing videos, articles, appointments, progress reports, and supplements
-    
-    setVideos([
-        { id: 1, title: "30-Minute Cardio Session", url: "https://example.com/cardio-session" },
-        { id: 2, title: "Yoga for Flexibility", url: "https://example.com/yoga-flexibility" },
-    ]);
 
-    const mockVideos = [
-      { id: 1, title: "Yoga for Beginners", type: "Yoga", url: "https://example.com/yoga-beginners" },
-      { id: 2, title: "10 Minute Zumba", type: "Zumba", url: "https://example.com/10-min-zumba" },
-    ];
-
-    setVideos(mockVideos);
+    fetchWorkoutPlans(userData);
+    fetchSubscribedClients(userData);
+    fetchSubscribedCount(userData);
 
     const mockArticles = [
       { id: 1, title: "Benefits of Yoga", content: "Yoga improves flexibility, strength, and mental well-being." },
@@ -145,24 +139,14 @@ const ProfessionalDashboard = () => {
     setSupplements(mockSupplementRecommendations);
 
 
-    const mockSubscribedClients = [
-        { id: 1, name: "Prinston Rebello", subscriptionDate: "2023-01-15" },
-        { id: 2, name: "Jane Doe", subscriptionDate: "2023-02-01" },
-        { id: 3, name: "John Doe", subscriptionDate: "2023-02-15" },
-        // Add more subscribed clients as needed
-      ];
-  
-      setSubscribedClients(mockSubscribedClients);
-
   }, []);
 
   
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async(event, userData) => {
       event.preventDefault();
       setIsLoading(true);
       setError('');
-      const userData = JSON.parse(localStorage.getItem('user'));
       console.log(userData);
       const trainerId = userData.userId;
       const jwtToken = userData.token;
@@ -188,7 +172,7 @@ const ProfessionalDashboard = () => {
             setIsLoading(false);
             setError('');
             displaySuccessMessage();
-            fetchWorkoutPlans();
+            fetchWorkoutPlans(userData);
           } 
       } catch {
         console.error('Create error:', error);
@@ -196,11 +180,10 @@ const ProfessionalDashboard = () => {
       }   
   };
 
-  const deleteWorkoutPlan = async(planId) => {
+  const deleteWorkoutPlan = async(planId, userData) => {
       setIsLoading(true);
       setError('');
       console.log(planId);
-      const userData = JSON.parse(localStorage.getItem('user'));
       const jwtToken = userData.token;
       const userId = userData.userId;
       try{
@@ -217,7 +200,99 @@ const ProfessionalDashboard = () => {
       }
       else{
         displayDeleteSuccessMessage();
-        fetchWorkoutPlans();
+        fetchWorkoutPlans(userData);
+      }
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  const fetchSubscribedCount = async(userData) => {
+    setIsLoading(true);
+    setError('');
+    const jwtToken = userData.token;
+    const trainerId = userData.userId;
+    try{
+      const response = await fetch(`http://localhost:8000/api/trainers/subc/${trainerId}`, { 
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwtToken}`
+      },
+    });
+    if(!response.ok){
+      throw new Error("Failed to fecth subscribers");
+    }
+    else{
+      const data = await response.json();
+      setSubscribedClientsCount(data);
+      setIsLoading(false);
+    }
+  } catch(error) {
+    console.error('Fetch error:', error);
+    setError('An error occurred while fetching. Contact admin.');
+    setIsLoading(false);
+  }
+};
+
+  const getSubscribersList = async(subIds, userData) => {
+      setIsLoading(true);
+      setError('');
+      const clientList = [];
+      const jwtToken = userData.token;
+      for(var subId in subIds){
+          try{
+            const response = await fetch(`http://localhost:8000/api/users/${subId}`, { 
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwtToken}`
+            },
+          });
+          if(!response.ok){
+            throw new Error("Failed to fecth subscribers");
+          }
+          else{
+            const data = await response.json();
+            clientList.push(data);
+          }
+        } catch(error) {
+          console.error('Fetch error:', error);
+          setError('An error occurred while fetching. Contact admin.');
+          setIsLoading(false);
+        }
+      }
+      return clientList;
+  };
+
+  const fetchSubscribedClients = async(userData) => {
+      setIsLoading(true);
+      setError('');
+      const jwtToken = userData.token;
+      const trainerId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, { 
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+      });
+      if(!response.ok){
+        throw new Error("Failed to fecth subscribers");
+      }
+      else{
+        const data = await response.json();
+        var clients = getSubscribersList(data, userData);
+        if(clients.length > 0){
+          setSubscribedClients(clients);
+        }
+        else{
+          setSubscribedClients([]);
+        }
+        setIsLoading(false);
       }
     } catch(error) {
       console.error('Fetch error:', error);
@@ -227,13 +302,12 @@ const ProfessionalDashboard = () => {
   };
 
   const openWorkoutPlan = async(planId) => {
-
+    
   };
 
-  const fetchWorkoutPlans = async() => {
+  const fetchWorkoutPlans = async(userData) => {
       setIsLoading(true);
       setError('');
-      const userData = JSON.parse(localStorage.getItem('user'));
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
@@ -257,17 +331,14 @@ const ProfessionalDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    fetchWorkoutPlans();
-  }, []);
 
   const displaySuccessMessage = () => {
     alert('Workout Plan Created Successfully!');
-};
+  };
 
-const displayDeleteSuccessMessage = () => {
-  alert('Workout Plan Deleted Successfully!');
-};
+  const displayDeleteSuccessMessage = () => {
+    alert('Workout Plan Deleted Successfully!');
+  };
 
   return (
     <div className="professional-dashboard">
@@ -365,15 +436,27 @@ const displayDeleteSuccessMessage = () => {
             </div>
 
             <div className="section">
-            <h3>Subscribed Clients</h3>
-            <ul>
-  {subscribedClients.map(client => (
-    <li key={client.id}>
-      {client.name} (Subscribed on: {format(parseISO(client.subscriptionDate), 'PPP', { locale: enUS })})
-    </li>
-  ))}
-</ul>
-            </div>
+              <div style={{ float: 'left', marginRight: '20px' }}>
+                  <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
+              </div>
+              <div style={{ float: 'left' }}>
+                  <h3>Subscribed Clients</h3>
+                  {subscribedClients.length === 0 ? (
+                      <p>No Subscribers</p>
+                  ) : (
+                      <ul>
+                          {subscribedClients.map(client => (
+                              <li key={client.userId}>
+                                  {client.userFname} {client.userLname}<br/>
+                                  Email: {client.userEmail}<br/>
+                                  Gender: {client.userGender}
+                              </li>
+                          ))}
+                      </ul>
+                  )}
+              </div>
+              <div style={{ clear: 'both' }}></div>
+          </div>
         </div>
     );
 } ;
