@@ -68,8 +68,11 @@ const localizer = dateFnsLocalizer({
     locales,
   });
 
-const userData = JSON.parse(localStorage.getItem('user'));
-  
+const getUserData = () => {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  return userData;
+}
+
 const ProfessionalDashboard = () => {
     const navigate = useNavigate();
     // States for video uploads
@@ -90,7 +93,7 @@ const ProfessionalDashboard = () => {
     
 
   useEffect(() => {
-
+    const userData = getUserData();
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
     fetchSubscribedCount(userData);
@@ -178,11 +181,11 @@ const ProfessionalDashboard = () => {
     
   }
 
-  const handleSubmit = async(event, userData) => {
+  const handleSubmit = async(event) => {
       event.preventDefault();
       setIsLoading(true);
       setError('');
-      console.log(userData);
+      const userData = getUserData();
       const trainerId = userData.userId;
       const jwtToken = userData.token;
       const title = workoutPlanTitle;
