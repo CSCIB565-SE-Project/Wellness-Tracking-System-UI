@@ -340,7 +340,7 @@ const ProfessionalDashboard = () => {
   };
 
   const openWorkoutPlan = async(planId) => {
-    
+    navigate(`/workout-plan/${planId}`);
   };
 
   const fetchWorkoutPlans = async(userData) => {
