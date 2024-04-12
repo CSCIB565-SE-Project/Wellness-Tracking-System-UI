@@ -158,7 +158,7 @@ const ProfessionalDashboard = () => {
         },
       });
       if(!response.ok){
-        throw new Error("Failed to fecth subscribers");
+        throw new Error("Failed to fetch subscribers");
       }
       else{
         const data = await response.json();
@@ -218,9 +218,10 @@ const ProfessionalDashboard = () => {
       }   
   };
 
-  const deleteWorkoutPlan = async(planId, userData) => {
+  const deleteWorkoutPlan = async(planId) => {
       setIsLoading(true);
       setError('');
+      const userData = getUserData();
       console.log(planId);
       const jwtToken = userData.token;
       const userId = userData.userId;
