@@ -119,7 +119,9 @@ const ProfessionalDashboard = () => {
     
       setAppointments(convertedAppointments);
    
-
+    //Professionals are the ones that are streaming
+    //A way to plan live sessions for the future: Name of session, and date + time
+    // Then a way to join that session through OBS when time comes, GetKey???
     const mockLiveSessions = [{ id: 1, title: "Live Yoga Session", date: new Date() }];
     
     setLiveSessions(mockLiveSessions);

@@ -14,7 +14,7 @@ import UserDashboard from './DashboardPage/UserDashboard.jsx';
 import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
 import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
 import ChatPage from './ChatPage/ChatPage.js';
-import WorkoutPlanPage from './WorkoutPlanPage/WorkoutPlanPage.jsx'
+import WorkoutPlanPage from './DashboardPage/WorkoutPlanPage.jsx'
 
 
 
