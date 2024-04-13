@@ -12,6 +12,12 @@ const WorkoutPlanPage = () => {
     const [selectedVideos, setSelectedVideos] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [userRole, setUserRole] = useState('user');
+    const [videoTitle, setVideoTitle] = useState('');
+    const [videoDescription, setVideoDescription] = useState('');
+    const [videoType, setVideoType] = useState('');
+    const [modeOfInstruction, setModeOfInstruction] = useState('');
+    const [videoFile, setVideoFile] = useState(null);
+    const [showAddVideoForm, setShowAddVideoForm] = useState(false);
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -94,19 +100,21 @@ const WorkoutPlanPage = () => {
             setIsLoading(false);
         }
     };
+    //To upload file 
+    const handleFileChange = (event) => {
+        setVideoFile(event.target.files[0]);
+    };
 
     //Function to send video to backend for approval
     const handleFileUpload = async (event) => {
-        const file = event.target.files[0];
-        if (!file) {
+        if (!videoFile) {
+            alert("Please select a video file before submitting.");
             return;
         }
 
         setIsLoading(true);
         const userData = JSON.parse(localStorage.getItem('user'));
         const jwtToken = userData ? userData.token : null;
-        const formData = new FormData();
-        //formData.append("video", file); // Adjust "video" based on API requirement
 
         try {
             const AZ_SA_CONN_STR="BlobEndpoint=https://wellnesstrackingsa.blob.core.windows.net/;QueueEndpoint=https://wellnesstrackingsa.queue.core.windows.net/;FileEndpoint=https://wellnesstrackingsa.file.core.windows.net/;TableEndpoint=https://wellnesstrackingsa.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2024-06-01T03:07:21Z&st=2024-03-26T19:07:21Z&spr=https,http&sig=wrxJCD5%2FjyCpm%2BtZ3dJcl%2Bk%2FumwIkwNtV9SzbCO4%2B7A%3D";
@@ -128,10 +136,10 @@ const WorkoutPlanPage = () => {
                     trainerId: userData.userId,
                     workOutPlanId: planId,
                     title: file.name,
-                    description: "Video Description",
+                    description: videoDescription,
                     videoUrl: blobName,
-                    modeOfInstruction: "Online",
-                    typeOfWorkout: "HIT",
+                    modeOfInstruction: modeOfInstruction,
+                    typeOfWorkout: videoType,
                 }),
             });
 
@@ -147,6 +155,7 @@ const WorkoutPlanPage = () => {
             setError(error.message);
         } finally {
             setIsLoading(false);
+            setShowAddVideoForm(false);
         }
     };
 
@@ -208,8 +217,33 @@ const WorkoutPlanPage = () => {
             <button onClick={navigateToDashboard}>Back to Dashboard</button>
             {userRole === 'professional' && (
                 <>
+                    <button onClick={() => setShowAddVideoForm(!showAddVideoForm)}>
+                        {showAddVideoForm ? 'Cancel' : 'Add Video'}
+                    </button>
+                    {showAddVideoForm && (
+                        <div>
+                            <input type="text" placeholder="Video Title" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
+                            <textarea placeholder="Description" value={videoDescription} onChange={e => setVideoDescription(e.target.value)} />
+                            <select value={videoType} onChange={e => setVideoType(e.target.value)}>
+                                <option value="">Select Workout Type</option>
+                                <option value="yoga">Yoga</option>
+                                <option value="zumba">Zumba</option>
+                                <option value="pilates">Pilates</option>
+                                <option value="cardio">Cardio</option>
+                                <option value="HIIT">HIIT</option>
+                                <option value="strength">Strength Training</option>
+                                <option value="stretching">Stretching</option>
+                            </select>
+                            <select value={modeOfInstruction} onChange={e => setModeOfInstruction(e.target.value)}>
+                                <option value="">Select Mode of Instruction</option>
+                                <option value="Online">Online</option>
+                                <option value="In Person">In Person</option>
+                            </select>
+                            <input type="file" onChange={handleFileChange} accept="video/*" />
+                            <button onClick={handleVideoUpload}>Submit Video</button>
+                        </div>
+                    )}
                     <button onClick={() => fetchVideos(planId)}>Refresh Video Approval</button>
-                    <input type="file" onChange={handleFileUpload} accept="video/*" />
                     <button onClick={() => setEditMode(!editMode)}>
                         {editMode ? 'Finish Editing' : 'Edit Videos'}
                     </button>
@@ -228,14 +262,9 @@ const WorkoutPlanPage = () => {
             {videos.length > 0 ? videos.map(video => (
                 <div key={video._id}>
                     {editMode && (
-                        <input
-                            type="checkbox"
-                            checked={selectedVideos.includes(video._id)}
-                            onChange={() => toggleVideoSelection(video._id)}
-                        />
+                        <input type="checkbox" checked={selectedVideos.includes(video._id)} onChange={() => toggleVideoSelection(video._id)} />
                     )}
                     <p>{video.title}</p>
-                    {/* Additional video details if needed */}
                 </div>
             )) : <p>No videos found for this plan.</p>}
         </div>
