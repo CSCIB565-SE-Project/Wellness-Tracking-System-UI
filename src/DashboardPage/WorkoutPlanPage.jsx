@@ -22,6 +22,7 @@ const WorkoutPlanPage = () => {
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUserRole(userData.role.toLowerCase());
+        console.log("user role is: ", setUserRole);
         if (planId) {
             fetchPlanDetails(planId).catch(error => {
                 console.error('Error fetching plan details:', error);
@@ -44,7 +45,7 @@ const WorkoutPlanPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/api/workoutplan/view/${planId}`, {
+            const response = await fetch(`http://localhost:8000/api/workoutplan/find/${planId}`, {
                 method: 'GET', 
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,7 +107,7 @@ const WorkoutPlanPage = () => {
     };
 
     //Function to send video to backend for approval
-    const handleFileUpload = async (event) => {
+    const handleVideoUpload  = async () => {
         if (!videoFile) {
             alert("Please select a video file before submitting.");
             return;
@@ -121,9 +122,9 @@ const WorkoutPlanPage = () => {
             const connStr = AZ_SA_CONN_STR;
 			const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
 			const containerClient = blobServiceClient.getContainerClient('wellness-tracking-container');
-			const blobName = `${userData.userId}/${planId}/${file.name}`;
+			const blobName = `${userData.userId}/${planId}/${videoFile.name}`;
 			const blobClient = containerClient.getBlockBlobClient(blobName);
-			const response = await blobClient.uploadData(await file.arrayBuffer());
+			const response = await blobClient.uploadData(await videoFile.arrayBuffer());
 			console.log('Video uploaded successfully');
 
             const res = await fetch(`http://localhost:8000/api/videos/add/${planId}`, {
@@ -135,7 +136,7 @@ const WorkoutPlanPage = () => {
                 body: JSON.stringify({
                     trainerId: userData.userId,
                     workOutPlanId: planId,
-                    title: file.name,
+                    title: videoTitle,
                     description: videoDescription,
                     videoUrl: blobName,
                     modeOfInstruction: modeOfInstruction,
@@ -203,7 +204,7 @@ const WorkoutPlanPage = () => {
     };
 
     const navigateToDashboard = () => {
-        if (userRole === 'PROFESSIONAL') {
+        if (userRole === 'professional') {
             navigate('/professionaldashboard');
         } else {
             navigate('/userdashboard');
@@ -222,9 +223,29 @@ const WorkoutPlanPage = () => {
                     </button>
                     {showAddVideoForm && (
                         <div>
-                            <input type="text" placeholder="Video Title" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
-                            <textarea placeholder="Description" value={videoDescription} onChange={e => setVideoDescription(e.target.value)} />
-                            <select value={videoType} onChange={e => setVideoType(e.target.value)}>
+                            <label htmlFor="videoTitle">Video Title:</label>
+                            <input
+                                type="text"
+                                id="videoTitle"
+                                placeholder="Enter video title"
+                                value={videoTitle}
+                                onChange={e => setVideoTitle(e.target.value)}
+                            />
+                            
+                            <label htmlFor="videoDescription">Description:</label>
+                            <textarea
+                                id="videoDescription"
+                                placeholder="Describe the video"
+                                value={videoDescription}
+                                onChange={e => setVideoDescription(e.target.value)}
+                            />
+                            
+                            <label htmlFor="videoType">Workout Type:</label>
+                            <select
+                                id="videoType"
+                                value={videoType}
+                                onChange={e => setVideoType(e.target.value)}
+                            >
                                 <option value="">Select Workout Type</option>
                                 <option value="yoga">Yoga</option>
                                 <option value="zumba">Zumba</option>
@@ -234,12 +255,25 @@ const WorkoutPlanPage = () => {
                                 <option value="strength">Strength Training</option>
                                 <option value="stretching">Stretching</option>
                             </select>
-                            <select value={modeOfInstruction} onChange={e => setModeOfInstruction(e.target.value)}>
+                            
+                            <label htmlFor="modeOfInstruction">Mode of Instruction:</label>
+                            <select
+                                id="modeOfInstruction"
+                                value={modeOfInstruction}
+                                onChange={e => setModeOfInstruction(e.target.value)}
+                            >
                                 <option value="">Select Mode of Instruction</option>
                                 <option value="Online">Online</option>
                                 <option value="In Person">In Person</option>
                             </select>
-                            <input type="file" onChange={handleFileChange} accept="video/*" />
+                            
+                            <label htmlFor="videoFile">Upload Video:</label>
+                            <input
+                                type="file"
+                                id="videoFile"
+                                onChange={handleFileChange}
+                                accept="video/*"
+                            />
                             <button onClick={handleVideoUpload}>Submit Video</button>
                         </div>
                     )}
@@ -269,6 +303,7 @@ const WorkoutPlanPage = () => {
             )) : <p>No videos found for this plan.</p>}
         </div>
     );
+    
 };
 
 export default WorkoutPlanPage;
