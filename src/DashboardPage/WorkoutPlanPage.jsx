@@ -33,10 +33,12 @@ const WorkoutPlanPage = () => {
     }, [planId]);
 
     // Function to get the details of the workout plan to display 
+    // Would not work for users because there is no way to get their trainer id from the backend 
     const fetchPlanDetails = async (planId) => {
         setIsLoading(true); 
         const userData = JSON.parse(localStorage.getItem('user'));
         const jwtToken = userData ? userData.token : null;
+        const trainerId = userData.userId;
 
         if (!jwtToken) {
             setError("You must be logged in to view this.");
@@ -45,7 +47,7 @@ const WorkoutPlanPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/api/workoutplan/find/${planId}`, {
+            const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, {
                 method: 'GET', 
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,11 +56,19 @@ const WorkoutPlanPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch workout plan details');
+                throw new Error('Failed to fetch workout plans');
             }
 
-            const data = await response.json();
-            setPlanDetails(data);//json with title, type description, createdAt
+            const workoutPlans = await response.json();
+            const planDetail = workoutPlans.find(plan => plan._id === planId); // Filter the specific plan by ID
+
+            if (!planDetail) {
+                setError("Workout plan not found");
+                setIsLoading(false);
+                return;
+            }
+
+            setPlanDetails(planDetail); // Set the specific plan details
             setIsLoading(false);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -288,10 +298,16 @@ const WorkoutPlanPage = () => {
                     )}
                 </>
             )}
-            <h2>{planDetails?.title}</h2>
-            <p>Type: {planDetails?.typeOfWorkout}</p>
-            <p>Description: {planDetails?.description}</p>
-            <p>Created On: {planDetails?.createdAt}</p>
+            {planDetails ? (
+            <>
+                <h2>{planDetails.title}</h2>
+                <p>Type: {planDetails.typeOfWorkout}</p>
+                <p>Description: {planDetails.description}</p>
+                <p>Created On: {new Date(planDetails.createdAt).toLocaleDateString()}</p>
+            </>
+        ) : (
+            <p>Waiting for plan details...</p>
+        )}
             <h3>Videos</h3>
             {videos.length > 0 ? videos.map(video => (
                 <div key={video._id}>

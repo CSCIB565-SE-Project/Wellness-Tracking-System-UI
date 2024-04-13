@@ -345,6 +345,7 @@ const ProfessionalDashboard = () => {
 
   const openWorkoutPlan = async(planId) => {
     navigate(`/workout-plan/${planId}`);
+    console.log("The plan id of this workout is: ", planId);
   };
 
   const fetchWorkoutPlans = async(userData) => {
