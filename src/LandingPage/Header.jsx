@@ -82,7 +82,7 @@ const Header =()=> {
                     <ul className="menu">
                      {
                         nav__links.map(item=> (
-                            <li className="nav__item">
+                            <li key={item.path} className="nav__item">
                                 <a onClick= {handleClick} href={item.path}>
                                 {item.display}
                             </a></li>   
@@ -102,7 +102,7 @@ const Header =()=> {
                       <div className="nav__right">
                         <button className="login__btn"onClick={handleLoginClick}>Login</button>
                          <span className="mobile__menu">
-                            <i class="ri-menu-line"></i>
+                            <i className="ri-menu-line"></i>
                          </span>
                      </div>
 

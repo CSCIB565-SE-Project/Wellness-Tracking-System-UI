@@ -347,8 +347,53 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import enUS from 'date-fns/locale/en-US';
 import { useNavigate } from 'react-router-dom';
 import VideoUpload from './VideoUpload.jsx';
+import { StreamChat } from 'stream-chat';
 
-const locales = { 'en-US': enUS };
+//A function to connect to the chat
+
+const connectToStreamChat = async (navigate) => {
+  const apiKey = 'v5zqy2qw283c';
+  const client = StreamChat.getInstance(apiKey);
+  const userData = JSON.parse(localStorage.getItem('user'));
+  const authToken = userData ? userData.token : null;
+
+  try {
+      const response = await fetch('http://localhost:5000/auth/verifyToken', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              token: authToken, // JWT token from Spring Boot
+          }),
+      });
+
+      const data = await response.json();
+
+      if (data.streamToken) {
+          await client.connectUser({
+              id: data.id,
+              username: userData.username,
+              fullName: userData.fullName,
+              role: userData.role,
+              //role: 'professional' testing
+          }, data.streamToken);
+
+          // Navigate to chat page after successful connection
+          navigate('/chat');
+      } else {
+          // Handle error or invalid token response
+          console.error('Failed to get StreamChat token JWT may have expired:', data.message);
+      }
+  } catch (error) {
+      console.error('Error fetching StreamChat token:', error);
+  }
+};
+
+const locales = {
+  'en-US': enUS,
+};
+
 
 const localizer = dateFnsLocalizer({
   format,
@@ -359,17 +404,36 @@ const localizer = dateFnsLocalizer({
 });
 
 const ProfessionalDashboard = () => {
-  const navigate = useNavigate();
+HEAD
+ 
   const headerRef = useRef(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   
+    const navigate = useNavigate();
+    // States for video uploads
+    const [workoutPlanTitle, setworkoutPlanTitle] = useState('');
+    const [planDescription, setplanDescription] = useState('');
+    const [planType, setplanType] = useState('');
+    const [videoUrl, setVideoUrl] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [workOutPlans, setWorkOutPlans] = useState([]);
+    const [videos, setVideos] = useState([]);
+    const [articles, setArticles] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [progressUpdates, setProgressUpdates] = useState([]);
+    const [supplements, setSupplements] = useState([]);
+    const [liveSessions, setLiveSessions] = useState([]);
+    const [subscribedClients, setSubscribedClients] = useState([]);
+    const [error, setError] = useState(''); 
+    
+// >>>>>>> 573ec8b7e9b1cee3a15c653b76823755307e9891
 
-  const [articles, setArticles] = useState([]);
-  const [appointments, setAppointments] = useState([]);
-  const [progressUpdates, setProgressUpdates] = useState([]);
-  const [supplements, setSupplements] = useState([]);
-  const [liveSessions, setLiveSessions] = useState([]);
-  const [subscribedClients, setSubscribedClients] = useState([]);
+  // const [articles, setArticles] = useState([]);
+  // const [appointments, setAppointments] = useState([]);
+  // const [progressUpdates, setProgressUpdates] = useState([]);
+  // const [supplements, setSupplements] = useState([]);
+  // const [liveSessions, setLiveSessions] = useState([]);
+  // const [subscribedClients, setSubscribedClients] = useState([]);
   
  
   const nav__links=[
@@ -459,7 +523,7 @@ const ProfessionalDashboard = () => {
           // Clean up function
           return () => window.removeEventListener('scroll', handleScroll);
     
-}, []);
+
 
       const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
 
@@ -467,6 +531,122 @@ const ProfessionalDashboard = () => {
         navigate(path);
       };
 
+
+  }, []);
+
+  
+
+  const handleSubmit = async(event) => {
+      event.preventDefault();
+      setIsLoading(true);
+      setError('');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      console.log(userData);
+      const trainerId = userData.userId;
+      const jwtToken = userData.token;
+      const title = workoutPlanTitle;
+      const description = planDescription;
+      const typeOfWorkout = planType;
+
+      try{
+        const response = await fetch('http://localhost:8000/api/workoutplan/add', { 
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ trainerId, title, description, typeOfWorkout }),
+          });
+          const data = await response.json();
+          if (data) {
+            console.log('Workout Plan Created Successfully!', data);
+            setworkoutPlanTitle('');
+            setplanDescription('');
+            setplanType('');
+            setIsLoading(false);
+            setError('');
+            displaySuccessMessage();
+            fetchWorkoutPlans();
+          } 
+      } catch {
+        console.error('Create error:', error);
+        setError('An error occurred. Please try again later.');
+      }   
+  };
+
+  const deleteWorkoutPlan = async(planId) => {
+      setIsLoading(true);
+      setError('');
+      console.log(planId);
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const jwtToken = userData.token;
+      const userId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/workoutplan/delete/${planId}`, { 
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+        body: JSON.stringify({ userId }),
+      });
+      if(!response.ok){
+        throw new Error("Failed to delete workout plans");
+      }
+      else{
+        displayDeleteSuccessMessage();
+        fetchWorkoutPlans();
+      }
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  const openWorkoutPlan = async(planId) => {
+
+  };
+
+  const fetchWorkoutPlans = async() => {
+      setIsLoading(true);
+      setError('');
+      const userData = JSON.parse(localStorage.getItem('user'));
+      const jwtToken = userData.token;
+      const trainerId = userData.userId;
+      try{
+        const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+      });
+      if(!response.ok){
+        throw new Error("Failed to fetch workout plans");
+      }
+      const data = await response.json();
+      setWorkOutPlans(data);
+      setIsLoading(false);
+    } catch(error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkoutPlans();
+  }, []);
+
+  const displaySuccessMessage = () => {
+    alert('Workout Plan Created Successfully!');
+};
+
+
+const displayDeleteSuccessMessage = () => {
+  alert('Workout Plan Deleted Successfully!');
+};
 
   return (
     <>

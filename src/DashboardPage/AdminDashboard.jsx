@@ -1,9 +1,53 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { StreamChat } from 'stream-chat';
 
 
 import '../styles/AdminDashboard.css'; // Adjust the path to your CSS file
 
+//A function to connect to the chat
+const connectToStreamChat = async (navigate) => {
+    const apiKey = 'v5zqy2qw283c';
+    const client = StreamChat.getInstance(apiKey);
+    const userData = JSON.parse(localStorage.getItem('user'));
+    const authToken = userData ? userData.token : null;
+  
+    try {
+        const response = await fetch('http://localhost:5000/auth/verifyToken', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: authToken, // JWT token from Spring Boot
+            }),
+        });
+  
+        const data = await response.json();
+  
+        if (data.streamToken) {
+            await client.connectUser({
+                id: data.id,
+                username: userData.username,
+                fullName: userData.fullName,
+                role: userData.role,
+                //role: 'professional' testing
+            }, data.streamToken);
+  
+            // Navigate to chat page after successful connection
+            navigate('/chat');
+        } else {
+            // Handle error or invalid token response
+            console.error('Failed to get StreamChat token JWT may have expired:', data.message);
+        }
+    } catch (error) {
+        console.error('Error fetching StreamChat token:', error);
+    }
+  };
+
 const AdminDashboard = () => {
+    const navigate = useNavigate();
+    
     const [contents, setContents] = useState([
         { id: 1, title: "30-Minute Cardio Session", status: "Pending" },
         { id: 2, title: "Yoga for Flexibility", status: "Pending" },
@@ -91,7 +135,7 @@ const AdminDashboard = () => {
 
 
             <div className="chat-fab-container">
-  <button className="chat-fab" onClick={() => {/* Open chat */}}>
+  <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
     💬 Chat
   </button>
 </div>
