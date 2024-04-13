@@ -11,8 +11,11 @@ const WorkoutPlanPage = () => {
     const navigate = useNavigate();
     const [selectedVideos, setSelectedVideos] = useState([]);
     const [editMode, setEditMode] = useState(false);
+    const [userRole, setUserRole] = useState('user');
 
     useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUserRole(userData.role.toLowerCase());
         if (planId) {
             fetchPlanDetails(planId).catch(error => {
                 console.error('Error fetching plan details:', error);
@@ -190,26 +193,37 @@ const WorkoutPlanPage = () => {
         }
     };
 
+    const navigateToDashboard = () => {
+        if (userRole === 'PROFESSIONAL') {
+            navigate('/professionaldashboard');
+        } else {
+            navigate('/userdashboard');
+        }
+    };
+
     return (
         <div>
             {isLoading && <p>Loading...</p>}
             {error && <p>Error: {error}</p>}
-            <button onClick={() => navigate('/professionaldashboard')}>Back to Dashboard</button>
-            <button onClick={() => fetchVideos(planId)}>Refresh Video Approval</button>
+            <button onClick={navigateToDashboard}>Back to Dashboard</button>
+            {userRole === 'professional' && (
+                <>
+                    <button onClick={() => fetchVideos(planId)}>Refresh Video Approval</button>
+                    <input type="file" onChange={handleFileUpload} accept="video/*" />
+                    <button onClick={() => setEditMode(!editMode)}>
+                        {editMode ? 'Finish Editing' : 'Edit Videos'}
+                    </button>
+                    {editMode && (
+                        <button onClick={deleteSelectedVideos} disabled={selectedVideos.length === 0}>
+                            Delete Selected Videos From Plan
+                        </button>
+                    )}
+                </>
+            )}
             <h2>{planDetails?.title}</h2>
             <p>Type: {planDetails?.typeOfWorkout}</p>
             <p>Description: {planDetails?.description}</p>
             <p>Created On: {planDetails?.createdAt}</p>
-            
-            <input type="file" onChange={handleFileUpload} accept="video/*" />
-            <button onClick={() => setEditMode(!editMode)}>
-                {editMode ? 'Finish Editing' : 'Edit Videos'}
-            </button>
-            {editMode && (
-                <button onClick={deleteSelectedVideos} disabled={selectedVideos.length === 0}>
-                    Delete Selected Videos From Plan
-                </button>
-            )}
             <h3>Videos</h3>
             {videos.length > 0 ? videos.map(video => (
                 <div key={video._id}>
