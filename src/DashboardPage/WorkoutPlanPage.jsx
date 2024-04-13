@@ -34,21 +34,17 @@ const WorkoutPlanPage = () => {
 
     // Function to get the details of the workout plan to display 
     // Would not work for users because there is no way to get their trainer id from the backend 
+    // Seperate function if user??
     const fetchPlanDetails = async (planId) => {
-        setIsLoading(true); 
         const userData = JSON.parse(localStorage.getItem('user'));
-        const jwtToken = userData ? userData.token : null;
+        setIsLoading(true);
+        setError('');
+        const jwtToken = userData.token;
         const trainerId = userData.userId;
-
-        if (!jwtToken) {
-            setError("You must be logged in to view this.");
-            setIsLoading(false);
-            return;
-        }
-
+        
         try {
-            const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, {
-                method: 'GET', 
+            const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwtToken}`
@@ -56,23 +52,24 @@ const WorkoutPlanPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch workout plans');
+                throw new Error("Failed to fetch workout plans");
             }
 
-            const workoutPlans = await response.json();
-            const planDetail = workoutPlans.find(plan => plan._id === planId); // Filter the specific plan by ID
+            const data = await response.json();
+            // Filter for the specific plan based on planId
+            const specificPlan = data.find(plan => plan._id === planId);
+            console.log('Specific Plan:', specificPlan);
 
-            if (!planDetail) {
-                setError("Workout plan not found");
-                setIsLoading(false);
-                return;
+
+            if (!specificPlan) {
+                throw new Error("Workout plan not found");
             }
 
-            setPlanDetails(planDetail); // Set the specific plan details
+            setPlanDetails(specificPlan); // You might want to handle this differently, e.g., setting a different state variable for the single plan
             setIsLoading(false);
         } catch (error) {
             console.error('Fetch error:', error);
-            setError(error.message);
+            setError('An error occurred while fetching. Contact admin.');
             setIsLoading(false);
         }
     };
