@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
+import '../styles/VideoCard.css';
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 const WorkoutPlanPage = () => {
@@ -100,7 +102,8 @@ const WorkoutPlanPage = () => {
             }
     
             const videos = await response.json();
-            setVideos(videos);// Array of video objects with info like title
+            const videosWithThumbnails = await fetchThumbnailsForVideos(videos);
+            setVideos(videosWithThumbnails); 
             setIsLoading(false);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -108,6 +111,37 @@ const WorkoutPlanPage = () => {
             setIsLoading(false);
         }
     };
+
+    const fetchThumbnailsForVideos = async (videos) => {
+        const AZ_SA_CONN_STR="BlobEndpoint=https://wellnesstrackingsa.blob.core.windows.net/;QueueEndpoint=https://wellnesstrackingsa.queue.core.windows.net/;FileEndpoint=https://wellnesstrackingsa.file.core.windows.net/;TableEndpoint=https://wellnesstrackingsa.table.core.windows.net/;SharedAccessSignature=sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2024-06-01T03:07:21Z&st=2024-03-26T19:07:21Z&spr=https,http&sig=wrxJCD5%2FjyCpm%2BtZ3dJcl%2Bk%2FumwIkwNtV9SzbCO4%2B7A%3D";
+        const connStr = AZ_SA_CONN_STR;
+        const blobServiceClient = BlobServiceClient.fromConnectionString(connStr);
+        const containerClient = blobServiceClient.getContainerClient('wellness-tracking-container');
+
+        const videosWithThumbnails = [];
+
+        for (const video of videos) {
+            const thumbnailBlobName = video.imgUrl;
+            const thumbnailBlobClient = containerClient.getBlobClient(thumbnailBlobName);
+    
+            try {
+                const thumbnailUrl = thumbnailBlobClient.url;
+                videosWithThumbnails.push({ ...video, thumbnailUrl });
+            } catch (error) {
+                console.error('Error fetching thumbnail:', error);
+                videosWithThumbnails.push({ ...video, thumbnailUrl: null });
+            }
+        }
+    
+        return videosWithThumbnails;
+    };
+
+    async function base64ToBlob(base64String, mimeType) {
+        const response = await fetch(base64String);
+        const blob = await response.blob();
+        return blob;
+    }
+
     //To upload file 
     const handleFileChange = (event) => {
         setVideoFile(event.target.files[0]);
@@ -133,6 +167,11 @@ const WorkoutPlanPage = () => {
 			const blobClient = containerClient.getBlockBlobClient(blobName);
 			const response = await blobClient.uploadData(await videoFile.arrayBuffer());
 			console.log('Video uploaded successfully');
+            let thumbnailImg = await generateVideoThumbnails(videoFile, 1);
+            const thumbnailBlob = await base64ToBlob(thumbnailImg[0], 'image/jpeg');
+            const thumbnailBlobName = `${userData.userId}/${planId}/${videoFile.name.split('.')[0]}.jpeg`;
+            const thumbnailBlobClient = containerClient.getBlockBlobClient(thumbnailBlobName);
+            await thumbnailBlobClient.uploadData(thumbnailBlob, thumbnailBlob.length);
 
             const res = await fetch(`http://localhost:8000/api/videos/add/${planId}`, {
                 method: 'POST',
@@ -145,6 +184,7 @@ const WorkoutPlanPage = () => {
                     workOutPlanId: planId,
                     title: videoTitle,
                     description: videoDescription,
+                    imgUrl: thumbnailBlobName,
                     videoUrl: blobName,
                     modeOfInstruction: modeOfInstruction,
                     typeOfWorkout: videoType,
@@ -306,14 +346,41 @@ const WorkoutPlanPage = () => {
             <p>Waiting for plan details...</p>
         )}
             <h3>Videos</h3>
-            {videos.length > 0 ? videos.map(video => (
-                <div key={video._id}>
-                    {editMode && (
-                        <input type="checkbox" checked={selectedVideos.includes(video._id)} onChange={() => toggleVideoSelection(video._id)} />
-                    )}
-                    <p>{video.title}</p>
-                </div>
-            )) : <p>No videos found for this plan.</p>}
+                {videos.length > 0 ? (
+                <div className="video-grid">
+                    {videos.map(video => (
+                            <div key={video._id} className="video-card">
+                                <div key={video._id} className="video-card">
+                                    <div className="thumbnail">
+                                        {video.thumbnailUrl ? (
+                                            <img src={video.thumbnailUrl} alt={video.title} />
+                                        ) : (
+                                            <div className="placeholder-thumbnail">
+                                                <span>{video.title}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="video-info">
+                                    <h4>{video.title}</h4>
+                                    {/* Additional video details if needed */}
+                                    <p>Description: {video.description}</p>
+                                </div>
+                                {editMode && (
+                                    <div className="checkbox-container">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedVideos.includes(video._id)}
+                                            onChange={() => toggleVideoSelection(video._id)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No videos found for this plan.</p>
+                )}
         </div>
     );
     
