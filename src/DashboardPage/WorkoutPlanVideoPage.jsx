@@ -121,6 +121,38 @@ const WorkoutPlanVideoPage = () => {
         }
     };
 
+    const updateDislike = async (videoId) => {
+        console.log('Updating dislikes for video:', videoId);
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const jwtToken = userData ? userData.token : null;
+        if (!jwtToken) {
+            setError("You must be logged in to view videos.");
+            setIsLoading(false);
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:8000/api/videos/dislike/${videoId}`, {
+                method: 'GET', 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'id': userData.userId
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update dislikes');
+            }
+    
+            const res = await response.json();
+            getLikes(videoId);  
+        } catch (error) {
+            console.error('Dislike error:', error);
+            setError(error.message);
+        }
+    };
+    
     const getUserData = () => {
         const userData = JSON.parse(localStorage.getItem('user'));
         return userData;
@@ -171,8 +203,10 @@ const WorkoutPlanVideoPage = () => {
                     <video controls src={videoDetails.src} width="100%">
                         Sorry, your browser does not support embedded videos.
                     </video>
-                    <button onClick={updateLike(videoDetails.id)}>Like</button>
+                    <button onClick={() => updateLike(videoDetails.id)}>Like</button>
                     <p>Likes: {likes}</p>
+                    <button onClick={() => updateDislike(videoDetails.id)}>Dislike</button>
+
                     <div>
                         <h2>Comments</h2>
                         <ul>
