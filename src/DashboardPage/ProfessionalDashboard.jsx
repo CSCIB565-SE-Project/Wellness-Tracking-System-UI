@@ -180,8 +180,8 @@ const ProfessionalDashboard = () => {
     }
   };
 
-  const openVideo = async(videoId, userData) => {
-    
+  const openVideo = async(videoId) => {
+    navigate(`/videos/${videoId}`);
   }
 
   const handleSubmit = async(event) => {
