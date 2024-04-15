@@ -144,7 +144,10 @@ const ProfessionalDashboard = () => {
     
       setAppointments(convertedAppointments);
    
-
+    //Professionals are the ones that are streaming
+    //A way to plan live sessions for the future: Name of session, and date + time, then generate a key 
+    // Then a way to join that session through OBS when time comes, GetKey???
+    // Add the key and the ingress to the live session 
     const mockLiveSessions = [{ id: 1, title: "Live Yoga Session", date: new Date() }];
     
     setLiveSessions(mockLiveSessions);
@@ -367,6 +370,7 @@ const ProfessionalDashboard = () => {
 
   const openWorkoutPlan = async(planId) => {
     navigate(`/workout-plan/${planId}`);
+    console.log("The plan id of this workout is: ", planId);
   };
 
   const fetchWorkoutPlans = async(userData) => {
