@@ -15,7 +15,7 @@ import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
 import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
 import ChatPage from './ChatPage/ChatPage.js';
 import WorkoutPlanPage from './DashboardPage/WorkoutPlanPage.jsx'
-
+import WorkoutPlanVideoPage from './DashboardPage/WorkoutPlanVideoPage.jsx';
 
 
 const LandingPage = () => (
@@ -45,6 +45,7 @@ function App() {
         <Route path="/chat" element={<ChatPage />} /> 
         <Route path="/chat" element={<ChatPage />} /> 
         <Route path="/workout-plan/:planId" element={<WorkoutPlanPage />} />
+        <Route path="/videos/:videoId" element={<WorkoutPlanVideoPage />} />
 
       </Routes>
     </Router>

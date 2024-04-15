@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator';
 import '../styles/VideoCard.css';
+import { Link } from 'react-router-dom';
 const { BlobServiceClient } = require("@azure/storage-blob");
 
 const WorkoutPlanPage = () => {
@@ -350,6 +351,7 @@ const WorkoutPlanPage = () => {
                 <div className="video-grid">
                     {videos.map(video => (
                             <div key={video._id} className="video-card">
+                                <Link to={`/videos/${video._id}`}>
                                 <div key={video._id} className="video-card">
                                     <div className="thumbnail">
                                         {video.thumbnailUrl ? (
@@ -361,6 +363,7 @@ const WorkoutPlanPage = () => {
                                         )}
                                     </div>
                                 </div>
+                                </Link>
                                 <div className="video-info">
                                     <h4>{video.title}</h4>
                                     {/* Additional video details if needed */}
