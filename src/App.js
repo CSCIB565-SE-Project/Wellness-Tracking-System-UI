@@ -15,6 +15,7 @@ import ProfessionalDashboard from './DashboardPage/ProfessionalDashboard.jsx';
 import AdminDashboard from './DashboardPage/AdminDashboard.jsx';
 import VideoUpload from './DashboardPage/VideoUpload';
 import ChatPage from './ChatPage/ChatPage.js';
+import WorkoutPlanPage from './WorkoutPlanPage/WorkoutPlanPage.jsx'
 
 
 
@@ -44,7 +45,8 @@ function App() {
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/video-upload" element={<VideoUpload />} />
         <Route path="/chat" element={<ChatPage />} /> 
-
+        <Route path="/chat" element={<ChatPage />} /> 
+        <Route path="/workout-plan/:planId" element={<WorkoutPlanPage />} />
 
       </Routes>
     </Router>

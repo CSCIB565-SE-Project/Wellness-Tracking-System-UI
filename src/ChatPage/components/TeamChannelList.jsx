@@ -27,8 +27,9 @@ const TeamChannelList = ({ setToggleContainer, children, error = false, loading,
         <div className="team-channel-list">
             <div className="team-channel-list__header">
                 <p className="team-channel-list__header__title">
-                    {type === 'team' ? 'Channels' : 'Direct Messages'}
+                    {type === 'team' ? 'Support Channel' : 'Direct Messages'}
                 </p>
+                {type !== 'team' && (
                 <AddChannel 
                     isCreating={isCreating}
                     setIsCreating={setIsCreating}
@@ -37,6 +38,7 @@ const TeamChannelList = ({ setToggleContainer, children, error = false, loading,
                     type={type === 'team' ? 'team' : 'messaging'}
                     setToggleContainer={setToggleContainer}
                 />
+                )}
             </div>
             {children}
         </div>
