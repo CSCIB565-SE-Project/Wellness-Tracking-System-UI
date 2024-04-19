@@ -20,7 +20,7 @@ function Dashboard() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: userData.username,
+                    username: userData.userId,
                     token: authToken, // JWT token from Spring Boot
                 }),
             });

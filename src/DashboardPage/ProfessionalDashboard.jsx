@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/ProfessionalDashboard.css';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
-
 import parseISO from 'date-fns/parseISO';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
+import addHours from 'date-fns/addHours';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { addHours } from 'date-fns';
-
-// Make sure these imports match your project structure
 import enUS from 'date-fns/locale/en-US';
-
 import { useNavigate } from 'react-router-dom';
+import VideoUpload from './VideoUpload.jsx';
 import { StreamChat } from 'stream-chat';
 
 //A function to connect to the chat
+
 const connectToStreamChat = async (navigate) => {
   const apiKey = 'v5zqy2qw283c';
   const client = StreamChat.getInstance(apiKey);
@@ -73,7 +71,12 @@ const getUserData = () => {
   return userData;
 }
 
+
 const ProfessionalDashboard = () => {
+
+ 
+    const headerRef = useRef(null);
+  
     const navigate = useNavigate();
     // States for video uploads
     const [workoutPlanTitle, setworkoutPlanTitle] = useState('');
@@ -90,10 +93,33 @@ const ProfessionalDashboard = () => {
     const [subscribedClientsCount, setSubscribedClientsCount] = useState([]);
     const [unapprovedVideos, setUnapprovedVideos] = useState([]);
     const [error, setError] = useState(''); 
-    
+    const [UserFullName, setUserFullName] = useState('');
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
+
+ 
+  const nav__links=[
+    {
+        path:'/workout-plans',
+        display: 'Workout Plans'
+    },
+    {
+        path:'/appointments',
+        display: 'Appointments'
+    },
+    {
+        path:'/client-metrics',
+        display: 'Client-Metrics'
+    },
+    {
+        path:'/clients',
+        display: 'Clients'
+    }]
+  
+    
   useEffect(() => {
     const userData = getUserData();
+    getUserFullName();
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
     fetchSubscribedCount(userData);
@@ -220,6 +246,15 @@ const ProfessionalDashboard = () => {
         setError('An error occurred. Please try again later.');
       }   
   };
+
+  const getUserFullName = async() => {
+    const userData = getUserData();
+    var fullName = userData.firstname ;
+    setUserFullName(fullName)   ;
+  };
+
+
+
 
   const deleteWorkoutPlan = async(planId) => {
       setIsLoading(true);
@@ -383,24 +418,71 @@ const ProfessionalDashboard = () => {
     alert('Workout Plan Deleted Successfully!');
   };
 
-  return (
-    <div className="professional-dashboard">
-      <div className="chat-fab-container">
+  const handleScroll = () => {
+    if (headerRef.current) {
+        if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+            headerRef.current.classList.add('sticky__header');
+        } else {
+            headerRef.current.classList.remove('sticky__header');
+        }
+    }
+};
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
+};
+
+const onNavigate = (path) => {
+    navigate(path);
+};
+
+return (
+  <>
+      <div className="header" ref={headerRef}>
+          <img src="../assets/img/logo.png" alt="Company Logo" className="company-logo" onClick={() => onNavigate('/')} />
+          <nav className="navigation">
+              <ul>
+                  <li onClick={() => onNavigate('/workout-plans')}>Workout Plans</li>
+                  <li onClick={() => onNavigate('/appointments')}>Appointments</li>
+                  <li onClick={() => onNavigate('/client-metrics')}>Client Metrics</li>
+                  <li onClick={() => onNavigate('/clients')}>Clients</li>
+              </ul>
+          </nav>
+          <div className="profile-section">
+              <div className="profile-icon" onClick={toggleProfileDropdown}></div>
+              <div className="hello-msg">Hello, {UserFullName}</div>
+              {isProfileDropdownOpen && (
+                  <div className="profile-dropdown">
+                      <a href="/change-profile">Change Profile</a>
+                      <button onClick={() => onNavigate('/logout')}>Logout</button>
+                  </div>
+              )}
+          </div>
+      </div>
+      <div className="professional-dashboard">
+        <div className="chat-fab-container">
         <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
           💬 Chat
         </button>
         </div>
-            <h2>Professional Content Management</h2>
-            
-            {/* Upload Video Section */}
-            <form onSubmit={handleSubmit} className="upload-form">
+          <h2>User Content Management</h2>
+          {/* <button onClick={() => navigate('/video-upload')}>Create Workout Plan</button>
+          <div className="section">
+              <h3>Articles</h3>
+              {articles.map(article => (
+                  <div key={article.id} className="content-item">
+                      <h4>{article.title}</h4>
+                      <p>{article.content}</p>
+                  </div>
+              ))}
+          </div> */}
+           <form onSubmit={handleSubmit} className="upload-form">
                 <h3>Create New Workout Plan</h3>
                 <input type="text" placeholder="Plan Title" value={workoutPlanTitle} onChange={(e) => setworkoutPlanTitle(e.target.value)} required />
                 <input type="text" placeholder="Plan Description" value={planDescription} onChange={(e) => setplanDescription(e.target.value)} required />
                 <input type="text" placeholder="Plan Type" value={planType} onChange={(e) => setplanType(e.target.value)} required />
                 <button type="submit">{isLoading ? 'Creating...' : 'Create Plan'}</button>
             </form>
-            
+
             <div className="section">
               <h3>Workout Plans</h3>
               {workOutPlans.length === 0 ? (
@@ -418,46 +500,8 @@ const ProfessionalDashboard = () => {
               )}
           </div>
 
-            {/* Articles Section */}
-            <div className="section">
-                <h3>Articles</h3>
-                {articles.map(article => (
-                    <div key={article.id} className="content-item">
-                        <h4>{article.title}</h4>
-                        <p>{article.content}</p>
-                    </div>
-                ))}
-            </div>
-            
-            {/* Appointments Calendar */}
-            <div className="section">
-                <h3>Appointments</h3>
-            
-                <Calendar
-                    localizer={localizer}
-                    events={appointments}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 500 }}
-                />
-            </div>
-            
-
-            {/* Live Sessions */}
-            {/* Live Sessions */}
-            <div className="section">
-              <h3>Live Sessions</h3>
-              {liveSessions.map(session => (
-                <div key={session.id} className="content-item">
-                  <h4>{session.title}</h4>
-                  {/* Ensure the date is converted to string */}
-                  <p>Date: {format(session.date, 'PPP', { locale: enUS })}</p>
-                </div>
-              ))}
-            </div>
-
-
-            <div className="section">
+          
+          <div className="section">
                 <h3>Unapproved Uploaded Content</h3>
                 {unapprovedVideos.length === 0 ? (
                     <p>No Content Uploaded Yet!</p>
@@ -475,29 +519,52 @@ const ProfessionalDashboard = () => {
                 )}
             </div>
 
-            {/* Progress Updates */}
-            <div className="section">
-                <h3>Client Progress Updates</h3>
-                {progressUpdates.map(update => (
-                    <div key={update.id} className="content-item">
-                        <h4>{update.clientName}</h4>
-                        <p>{update.update}</p>
-                    </div>
-                ))}
-            </div>
-            
-            {/* Supplements Recommendations */}
-            <div className="section">
-                <h3>Supplement Recommendations</h3>
-                {supplements.map(supplement => (
-                    <div key={supplement.id} className="content-item">
-                        <h4>{supplement.name}</h4>
-                        <p>{supplement.benefit}</p>
-                    </div>
-                ))}
-            </div>
 
-            <div className="section">
+
+          <div className="section">
+              <h3>Appointments</h3>
+              <Calendar
+                  localizer={localizer}
+                  events={appointments}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 500 }}
+              />
+          </div>
+          <div className="section">
+              <h3>Live Sessions</h3>
+              {liveSessions.map(session => (
+                  <div key={session.id} className="content-item">
+                      <h4>{session.title}</h4>
+                      <p>Date: {format(session.date, 'PPP', { locale: enUS })}</p>
+                  </div>
+              ))}
+          </div>
+
+
+          <div className="section">
+              <h3>Client Progress Updates</h3>
+              {progressUpdates.map(update => (
+                  <div key={update.id} className="content-item">
+                      <h4>{update.clientName}</h4>
+                      <p>{update.update}</p>
+                  </div>
+              ))}
+          </div>
+
+
+          <div className="section">
+              <h3>Supplement Recommendations</h3>
+              {supplements.map(supplement => (
+                  <div key={supplement.id} className="content-item">
+                      <h4>{supplement.name}</h4>
+                      <p>{supplement.benefit}</p>
+                  </div>
+              ))}
+          </div>
+
+
+           <div className="section">
               <div style={{ float: 'left', marginRight: '20px' }}>
                   <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
               </div>
@@ -520,7 +587,9 @@ const ProfessionalDashboard = () => {
               <div style={{ clear: 'both' }}></div>
           </div>
         </div>
-    );
-} ;
+  </>
+);
+};
 
 export default ProfessionalDashboard;
+
