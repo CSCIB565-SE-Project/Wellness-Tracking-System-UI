@@ -71,6 +71,7 @@ const getUserData = () => {
   return userData;
 }
 
+
 const ProfessionalDashboard = () => {
 
  
@@ -92,11 +93,10 @@ const ProfessionalDashboard = () => {
     const [subscribedClientsCount, setSubscribedClientsCount] = useState([]);
     const [unapprovedVideos, setUnapprovedVideos] = useState([]);
     const [error, setError] = useState(''); 
-    
+    const [UserFullName, setUserFullName] = useState('');
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
 
 
-  
  
   const nav__links=[
     {
@@ -119,6 +119,7 @@ const ProfessionalDashboard = () => {
     
   useEffect(() => {
     const userData = getUserData();
+    getUserFullName();
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
     fetchSubscribedCount(userData);
@@ -245,6 +246,15 @@ const ProfessionalDashboard = () => {
         setError('An error occurred. Please try again later.');
       }   
   };
+
+  const getUserFullName = async() => {
+    const userData = getUserData();
+    var fullName = userData.firstname ;
+    setUserFullName(fullName)   ;
+  };
+
+
+
 
   const deleteWorkoutPlan = async(planId) => {
       setIsLoading(true);
@@ -439,7 +449,7 @@ return (
           </nav>
           <div className="profile-section">
               <div className="profile-icon" onClick={toggleProfileDropdown}></div>
-              <div className="hello-msg">Hello, User</div>
+              <div className="hello-msg">Hello, {UserFullName}</div>
               {isProfileDropdownOpen && (
                   <div className="profile-dropdown">
                       <a href="/change-profile">Change Profile</a>

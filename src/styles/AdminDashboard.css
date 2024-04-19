@@ -1,122 +1,170 @@
-/* General Styles */
-.admin-dashboard {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 960px;
-    margin: auto;
-    padding: 20px;
-    color: #333;
-  }
-  
-  h2 {
-    color: #d96b1c;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  h3 {
-    color: #de6910;
-    margin-bottom: 10px;
-  }
-  
-  /* Content Approval Section */
-  .content-approval, .metrics, .user-feedback, .admin-announcements, .quick-actions {
-    margin-bottom: 30px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    background-color: #f8f9fa;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .content-approval:hover, .metrics:hover, .user-feedback:hover, .admin-announcements:hover, .quick-actions:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  .content-item, .feedback-item, .announcement-item {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease;
-  }
-  
-  .content-item:last-child, .feedback-item:last-child, .announcement-item:last-child {
-    border-bottom: none;
-  }
-  
-  .content-item:hover, .feedback-item:hover, .announcement-item:hover {
-    background-color: #e9ecef;
-  }
-  
-  button {
-    background-color: #f77606;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #fc7120;
-  }
-  
-  /* Quick Actions Panel */
-  .quick-actions button {
-    margin-right: 10px;
-    margin-bottom: 10px;
-    animation: fadeIn 1s ease-out;
-  }
-  
-  /* Animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+/* General resets */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
 
-  .chat-fab-container {
-    position: fixed;
-    right: 2rem; /* 32 pixels */
-    bottom: 2rem;
-    z-index: 1000
-    ; /* Ensure it's above other elements */
-  }
-  
-  .chat-fab {
-    background-color: #ff740a; /* Softer blue color */
-    color: #ffffff;
-    border: none;
-    border-radius: 40px; /* Fully rounded corners for a pill shape */
-    padding: 0.75rem 1.5rem; /* Vertical and Horizontal padding */
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.2); /* Softer shadow */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* Smooth transitions for interaction */
-    font-weight: 450; /* Medium font weight */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A commonly used, friendly font */
-    text-transform: uppercase; /* Uppercase text for emphasis */
-  }
-  
-  .chat-fab:hover {
-    background-color: #f26f0b; /* A darker shade of blue for hover state */
-    box-shadow: 0 5px 25px rgba(0,0,0,0.3); /* Enhanced shadow on hover */
-    transform: scale(1.05); /* Slight increase in size on hover */
-  }
-  
-  .chat-fab:focus {
-    outline: none; /* Remove focus outline */
-    box-shadow: 0 0 0 4px rgba(236, 129, 7, 0.999); /* Focus ring with softer blue color */
-  }
-  
-  
+* {
+  /* box-sizing: border-box; */
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  height: 100%;
+  font-family: Playfair Display, serif;
+}
+
+/* Admin Dashboard styles */
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.welcome {
+  display: flex; /* Use flex instead of 'center' to center the content */
+  justify-content: center; /* Horizontally center the content */
+  align-items: center; /* Vertically center the content */
+  font-family: 'Playfair Display ', serif; /* Example of an attractive font */
+  font-size: 1.2rem; /* Adjust the font size as needed */
+  color: linear-gradient(to right, #ff7e5f, #feb47b); /* Gradient background */
+}
+/* Header styles */
+.dashboard-header {
+  background-color: #f58e45d4; /* Your theme orange color */
+  color: #101010e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.922rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo-container img {
+  width: 50px; /* Example size, adjust as needed */
+}
+
+.logo-container h1 {
+  margin-left: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.main-nav button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.user-section button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Dropdown styles */
+.profile-dropdown {
+  position: absolute;
+  top: 100%; /* Adjust this value as needed */
+  /* right: 0; Align the dropdown to the right side of the user-section */
+  background-color: #fff; /* Or any other color */
+  border: 1px solid #ccc; /* Optional, just for visibility */
+  border-radius: 5px;
+  width: 150px; /* Or any other width */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); /* Optional, for a subtle shadow effect */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+.profile-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.profile-dropdown button:hover {
+  background-color: #f7f7f7;
+}
+/* Content sections */
+.dashboard-content {
+  display: flex;
+  flex-grow: 1;
+}
+
+.sidebar-left, .sidebar-right {
+  width: 50%; /* Splits the screen in half */
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.section-card {
+  background-color: #dc0505;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+}
+
+
+
+.content-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.video-column {
+  flex-grow: 2; /* Adjust as needed */
+}
+
+.status-column {
+  flex-grow: 1; /* Adjust as needed */
+}
+
+.action-buttons button {
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #4CAF50; /* Green for approve */
+  color: white;
+}
+
+.action-buttons button:last-child {
+  background-color: #f44336; /* Red for reject */
+}
+
+/* Chat button styles */
+.chat-fab-container {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+}
+
+.chat-fab {
+  background-color: #ff4500; /* A darker shade of your theme orange */
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

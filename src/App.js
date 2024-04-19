@@ -17,6 +17,8 @@ import VideoUpload from './DashboardPage/VideoUpload';
 import ChatPage from './ChatPage/ChatPage.js';
 import WorkoutPlanPage from './DashboardPage/WorkoutPlanPage.jsx'
 import WorkoutPlanVideoPage from './DashboardPage/WorkoutPlanVideoPage.jsx';
+import Footer from './components/UI/Footer';
+
 
 
 const LandingPage = () => (
@@ -27,9 +29,9 @@ const LandingPage = () => (
     <Pricing />
     <Start />
     <Testimonial />
+<Footer/>
   </>
 );
-
 
 function App() {
   return (
@@ -39,7 +41,7 @@ function App() {
        
          <Route path="/" element={<LandingPage />} />
          <Route path="/login" element={<LoginPage logo={logo} />} />
-         <Route path="/signup" element={<SignUpPage/>} />
+         {/* <Route path="/signup" element={<SignUpPage/>} /> */}
          <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
@@ -51,8 +53,11 @@ function App() {
 
       </Routes>
     </Router>
+
+
   
   );
   }
+
 
   export default App;
