@@ -11,7 +11,7 @@ const PasswordResetForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   
-    fetch('http://localhost:9191/password-reset', {
+    fetch('https://login-service.azurewebsites.net/password-reset', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ const PasswordResetForm = () => {
       console.log("Data parsed from response:", data);
       setIsError(false); // It's a success message
       setMessage('A password reset link has been sent to your email.');
-      setTimeout(() => navigate('/'), 8000); // Redirect to login after 8 seconds
+      setTimeout(() => navigate('/login'), 8000); // Redirect to login after 8 seconds
     })
     .catch(error => {
       console.error('Fetch error:', error);
@@ -54,7 +54,7 @@ const PasswordResetForm = () => {
             />
           </div>
           <button type="submit" className="login-button">Reset Password</button>
-          <button type="button" className="forgot-link" onClick={() => navigate('/')}>Return to Login</button>
+          <button type="button" className="forgot-link" onClick={() => navigate('/login')}>Return to Login</button>
         </form>
       </div>
     </div>

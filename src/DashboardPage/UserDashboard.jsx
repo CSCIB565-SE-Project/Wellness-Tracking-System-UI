@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -12,6 +12,7 @@ import ClientProgressDashboard from '../DashboardPage/ClientProgressDashboard.js
 import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 
+
 const locales = {
   'en-US': enUS,
 };
@@ -22,6 +23,11 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+const getUserData = () => {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  return userData;
+}
 
 //A function to connect to the chat
 const connectToStreamChat = async (navigate) => {
@@ -120,6 +126,8 @@ const subscribedTrainers = [
   
   // TrainerList subcomponent
   const TrainerList = ({ trainers }) => {
+    if (!trainers) return <div>Loading trainers...</div>; 
+    
     return (
       <div className="trainer-list">
         <h3>Subscribed Trainers</h3>
@@ -133,6 +141,7 @@ const subscribedTrainers = [
       </div>
     );
   };
+  
 
 
 
@@ -191,20 +200,57 @@ const subscribedTrainers = [
 
   const UserDashboard = () => {
     const navigate = useNavigate();
+    const userData = getUserData();
+    const [trainers, setTrainers] = useState(null);
+    const [trainerPlans, setTrainerPlans] = useState({});
+
     // User data from your example
     const user = {
-      id: 1,
-      fname: "Prinston",
-      mname: "",
-      lname: "Rebello",
-      dob: "1997-11-29T00:00:00.000+00:00",
-      gender: "male",
-      username: "ddrake",
-      email: "rebelloprinston29@gmail.com",
-      role: "USER",
+      id: userData.id,
+      fname: userData.fname,
+      mname: userData.mname,
+      lname: userData.lname,
+      dob: userData.dob,
+      gender: userData.gender,
+      username: userData.username,
+      email: userData.email,
+      role: userData.role,
       enabled: true
     
     };
+
+    // Get the array of subscribed trainers from backend 
+    useEffect(() => {
+      const fetchTrainers = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/api/users/sub/${userData.id}`);  
+          const data = await response.json();
+          setTrainers(data);  // Assuming the response is the array of trainers
+        } catch (error) {
+          console.error('Failed to fetch trainers', error);
+        }
+      }
+      fetchTrainers();
+
+      if (!trainers) return;
+      fetchTrainerPlans(trainers).catch(console.error);
+
+    }, [], userData.id, [trainers]);
+
+    const fetchTrainerPlans = async (trainers) => {
+      const plans = {};
+      for (const trainer of trainers) {
+        try {
+          const response = await fetch(`http://your-backend-url/workoutplans/fetch/${trainer.id}`);  
+          const data = await response.json();
+          plans[trainer.id] = data;  // Assuming the response contains workout plans
+        } catch (error) {
+          console.error('Failed to fetch plans for trainer', trainer.id, error);
+        }
+      }
+      setTrainerPlans(plans);
+    };
+
     const handleSearch = (filters) => {
       console.log('Searching with filters:', filters);
       // Here you would integrate the search logic or API call to fetch search results based on filters
@@ -212,12 +258,12 @@ const subscribedTrainers = [
   
     const events = generateFitnessSchedule(); // Generate the user's fitness schedule
     
-    const workoutPlan = {
-  description: '4-week Intensive Strength and Conditioning Program',
+    const workoutPlan = { // your workout plans 
+  description: '4-week Intensive Strength and Conditioning Program', // description
   details: [
     {
       week: 1,
-      focus: 'Full Body Conditioning',
+      focus: 'Full Body Conditioning', //title
       sessions: [
         { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
         { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
@@ -290,10 +336,11 @@ const subscribedTrainers = [
         />
 
 
-        <TrainerList trainers={subscribedTrainers} />
+        <TrainerList trainers={trainers} />
         <ClientProgressDashboard 
               workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
+               yourPlans={trainerPlans}
         />
 
 
