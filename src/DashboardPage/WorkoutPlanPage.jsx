@@ -21,6 +21,7 @@ const WorkoutPlanPage = () => {
     const [modeOfInstruction, setModeOfInstruction] = useState('');
     const [videoFile, setVideoFile] = useState(null);
     const [showAddVideoForm, setShowAddVideoForm] = useState(false);
+    const [editVideoId, setEditVideoId] = useState(null);
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -31,8 +32,9 @@ const WorkoutPlanPage = () => {
                 console.error('Error fetching plan details:', error);
                 setError('Failed to load plan details.');
             });
+            fetchVideos(planId).catch(setError);
         }
-        fetchVideos(planId).catch(setError);
+        
     }, [planId]);
 
     // Function to get the details of the workout plan to display 
@@ -68,7 +70,7 @@ const WorkoutPlanPage = () => {
                 throw new Error("Workout plan not found");
             }
 
-            setPlanDetails(specificPlan); // You might want to handle this differently, e.g., setting a different state variable for the single plan
+            setPlanDetails(specificPlan);
             setIsLoading(false);
         } catch (error) {
             console.error('Fetch error:', error);
@@ -259,6 +261,39 @@ const WorkoutPlanPage = () => {
         }
     };
 
+    const updateVideoDetails = async () => {
+        if (!editVideoId) return;
+
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const jwtToken = userData ? userData.token : null;
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/videos/${editVideoId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+                body: JSON.stringify({
+                    title: videoTitle,
+                    description: videoDescription,
+                    type: videoType,
+                    modeOfInstruction
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update video');
+            }
+
+            await fetchVideos(planId); 
+            setEditVideoId(null); 
+        } catch (error) {
+            setError('An error occurred while updating the video. Contact admin.');
+        }
+    };
+
+
     return (
         <div>
             {isLoading && <p>Loading...</p>}
@@ -279,7 +314,7 @@ const WorkoutPlanPage = () => {
                                 value={videoTitle}
                                 onChange={e => setVideoTitle(e.target.value)}
                             />
-                            
+    
                             <label htmlFor="videoDescription">Description:</label>
                             <textarea
                                 id="videoDescription"
@@ -287,7 +322,7 @@ const WorkoutPlanPage = () => {
                                 value={videoDescription}
                                 onChange={e => setVideoDescription(e.target.value)}
                             />
-                            
+    
                             <label htmlFor="videoType">Workout Type:</label>
                             <select
                                 id="videoType"
@@ -303,7 +338,7 @@ const WorkoutPlanPage = () => {
                                 <option value="strength">Strength Training</option>
                                 <option value="stretching">Stretching</option>
                             </select>
-                            
+    
                             <label htmlFor="modeOfInstruction">Mode of Instruction:</label>
                             <select
                                 id="modeOfInstruction"
@@ -314,7 +349,7 @@ const WorkoutPlanPage = () => {
                                 <option value="Online">Online</option>
                                 <option value="In Person">In Person</option>
                             </select>
-                            
+    
                             <label htmlFor="videoFile">Upload Video:</label>
                             <input
                                 type="file"
@@ -327,65 +362,91 @@ const WorkoutPlanPage = () => {
                     )}
                     <button onClick={() => fetchVideos(planId)}>Refresh Video Approval</button>
                     <button onClick={() => setEditMode(!editMode)}>
-                        {editMode ? 'Finish Editing' : 'Edit Videos'}
+                        {editMode ? 'Finish Editing' : 'Delete Videos'}
                     </button>
                     {editMode && (
-                        <button onClick={deleteSelectedVideos} disabled={selectedVideos.length === 0}>
-                            Delete Selected Videos From Plan
-                        </button>
+                        <>
+                            <button onClick={deleteSelectedVideos} disabled={selectedVideos.length === 0}>
+                                Delete Selected Videos From Plan
+                            </button>
+                            {videos.map(video => (
+                                <div key={video._id} className="video-edit-controls">
+                                    <button onClick={() => {
+                                        setEditVideoId(video._id);
+                                        setVideoTitle(video.title);
+                                        setVideoDescription(video.description);
+                                        setVideoType(video.type);
+                                        setModeOfInstruction(video.modeOfInstruction);
+                                    }}>
+                                        Edit Video
+                                    </button>
+                                </div>
+                            ))}
+                            {editVideoId && (
+                                <div>
+                                    <input type="text" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} />
+                                    <textarea value={videoDescription} onChange={e => setVideoDescription(e.target.value)} />
+                                    <select value={videoType} onChange={e => setVideoType(e.target.value)}>
+                                        {/* Options for video types */}
+                                    </select>
+                                    <select value={modeOfInstruction} onChange={e => setModeOfInstruction(e.target.value)}>
+                                        {/* Options for mode of instruction */}
+                                    </select>
+                                    <button onClick={updateVideoDetails}>Update Video Details</button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </>
             )}
             {planDetails ? (
-            <>
-                <h2>{planDetails.title}</h2>
-                <p>Type: {planDetails.typeOfWorkout}</p>
-                <p>Description: {planDetails.description}</p>
-                <p>Created On: {new Date(planDetails.createdAt).toLocaleDateString()}</p>
-            </>
-        ) : (
-            <p>Waiting for plan details...</p>
-        )}
+                <>
+                    <h2>{planDetails.title}</h2>
+                    <p>Type: {planDetails.typeOfWorkout}</p>
+                    <p>Description: {planDetails.description}</p>
+                    <p>Created On: {new Date(planDetails.createdAt).toLocaleDateString()}</p>
+                </>
+            ) : (
+                <p>Waiting for plan details...</p>
+            )}
             <h3>Videos</h3>
-                {videos.length > 0 ? (
+            {videos.length > 0 ? (
                 <div className="video-grid">
                     {videos.map(video => (
-                            <div key={video._id} className="video-card">
-                                <Link to={`/videos/${video._id}`}>
-                                <div key={video._id} className="video-card">
-                                    <div className="thumbnail">
-                                        {video.thumbnailUrl ? (
-                                            <img src={video.thumbnailUrl} alt={video.title} />
-                                        ) : (
-                                            <div className="placeholder-thumbnail">
-                                                <span>{video.title}</span>
-                                            </div>
-                                        )}
-                                    </div>
+                        <div key={video._id} className="video-card">
+                            <Link to={`/videos/${video._id}`}>
+                                <div className="thumbnail">
+                                    {video.thumbnailUrl ? (
+                                        <img src={video.thumbnailUrl} alt={video.title} />
+                                    ) : (
+                                        <div className="placeholder-thumbnail">
+                                            <span>{video.title}</span>
+                                        </div>
+                                    )}
                                 </div>
-                                </Link>
-                                <div className="video-info">
-                                    <h4>{video.title}</h4>
-                                    {/* Additional video details if needed */}
-                                    <p>Description: {video.description}</p>
-                                </div>
-                                {editMode && (
-                                    <div className="checkbox-container">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedVideos.includes(video._id)}
-                                            onChange={() => toggleVideoSelection(video._id)}
-                                        />
-                                    </div>
-                                )}
+                            </Link>
+                            <div className="video-info">
+                                <h4>{video.title}</h4>
+                                <p>Description: {video.description}</p>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p>No videos found for this plan.</p>
-                )}
+                            {editMode && (
+                                <div className="checkbox-container">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedVideos.includes(video._id)}
+                                        onChange={() => toggleVideoSelection(video._id)}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p>No videos found for this plan.</p>
+            )}
         </div>
     );
+    
     
 };
 
