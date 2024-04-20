@@ -10,7 +10,8 @@ const PasswordResetForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
+  //http://localhost:8080/password-reset
+  //https://login-service.azurewebsites.net/password-reset
     fetch('https://login-service.azurewebsites.net/password-reset', {
       method: 'POST',
       headers: {
