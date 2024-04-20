@@ -101,8 +101,12 @@ const LoginForm = ({ logo }) => {
         localStorage.setItem('user', JSON.stringify({
           userId: user.id,
           username: user.username,
-          firstname: user.fname,
-          lastname: user.lname,
+          fname: user.fname,
+          mname: user.mname,
+          lname: user.lname,
+          dob: user.dob,
+          gender: user.gender,
+          email: user.email,
           fullName: fullName,
           role: user.role
           ,token: data.token
@@ -125,17 +129,18 @@ const LoginForm = ({ logo }) => {
 
   // Redirecting to dashboard
   const redirectToDashboard = (user) => {
-    if(user.role == "USER"){
+    if(String(user.role) === "USER"){
       navigate('/userdashboard'); 
     }
-    else if(user.role == "PROFESSIONAL"){
+    else if(String(user.role) === "PROFESSIONAL"){
       navigate('/professionaldashboard');
     } 
-    else if(user.role == "ADMIN"){
+    else if(String(user.role) === "ADMIN"){
       navigate('/admindashboard');
     }
     else{
-      throw "Invalid Role";
+      throw Object.assign( new Error("Invalid Role"), 
+      { code: 402 });
     } 
   };
 

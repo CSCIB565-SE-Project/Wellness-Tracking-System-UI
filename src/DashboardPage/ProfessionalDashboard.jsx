@@ -115,8 +115,7 @@ const ProfessionalDashboard = () => {
         path:'/clients',
         display: 'Clients'
     }]
-  
-    
+   
   useEffect(() => {
     const userData = getUserData();
     getUserFullName();
@@ -139,7 +138,7 @@ const ProfessionalDashboard = () => {
     
       const convertedAppointments = mockAppointments.map(appointment => {
         const startTime = parseISO(`${appointment.date}T${appointment.time}`);
-        const endTime = addHours(startTime, 1); // Correctly adding 1 hour
+        const endTime = addHours(startTime, 1); 
         return { ...appointment, start: startTime, end: endTime };
       });
     
@@ -444,15 +443,15 @@ return (
                   <li onClick={() => onNavigate('/workout-plans')}>Workout Plans</li>
                   <li onClick={() => onNavigate('/appointments')}>Appointments</li>
                   <li onClick={() => onNavigate('/client-metrics')}>Client Metrics</li>
-                  <li onClick={() => onNavigate('/clients')}>Clients</li>
+                  <li onClick={() => onNavigate('/clients')}>Subscribed Clients</li>
               </ul>
           </nav>
+
           <div className="profile-section">
-              <div className="profile-icon" onClick={toggleProfileDropdown}></div>
-              <div className="hello-msg">Hello, {UserFullName}</div>
+              <button onClick={toggleProfileDropdown}>Hello, {UserFullName}</button>
               {isProfileDropdownOpen && (
                   <div className="profile-dropdown">
-                      <a href="/change-profile">Change Profile</a>
+                      <button onClick={() => navigate('/change-profile')}>Change Profile</button>
                       <button onClick={() => onNavigate('/logout')}>Logout</button>
                   </div>
               )}

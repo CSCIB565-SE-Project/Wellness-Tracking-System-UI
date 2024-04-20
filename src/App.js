@@ -19,6 +19,9 @@ import WorkoutPlanPage from './DashboardPage/WorkoutPlanPage.jsx'
 import WorkoutPlanVideoPage from './DashboardPage/WorkoutPlanVideoPage.jsx';
 import Footer from './components/UI/Footer';
 import OAuthSignupForm from './LoginPage/OAuthSignUpForm.js';
+import PasswordResetForm from './LoginPage/PasswordResetForm.js';
+import SignupForm from './LoginPage/SignupForm.js';
+import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
 
 
 
@@ -52,6 +55,8 @@ function App() {
         <Route path="/chat" element={<ChatPage />} /> 
         <Route path="/workout-plan/:planId" element={<WorkoutPlanPage />} />
         <Route path="/videos/:videoId" element={<WorkoutPlanVideoPage />} />
+        <Route path="/forgot-password" element={<PasswordResetForm />} />
+        <Route path="/reset-password" element={<NewPasswordResetForm />} />
 
       </Routes>
     </Router>
