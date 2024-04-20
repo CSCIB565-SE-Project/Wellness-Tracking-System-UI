@@ -31,7 +31,7 @@
 
 /* Calendar styles */
 .rbc-calendar {
-    height: auto; /* or any other height you prefer */
+  height: auto; /* or any other height you prefer */
   max-width: 100%;
   margin: auto;
   border-radius: 8px;
@@ -47,9 +47,14 @@
   /* Add any additional styling here */
 }
 
-/* Custom event styles
-.rbc-event {
-   background-color: var(--primary-color); 
+@media (max-width: 768px) {
+  .dashboard-container {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+}
+
+ .rbc-event {
+  background-color: var(--primary-color); 
   color: white;
   border: none;
   display: flex;
@@ -59,19 +64,24 @@
   overflow: hidden; 
   position: relative;
   border-radius: 4px;
+  cursor: pointer;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-} */
+  font-size: 0.875rem;
 
-.rbc-event {
+}
+/* .rbc-event {
   padding: 4px;
-  overflow: hidden; /* Hides the overflow by default */
+  overflow: hidden; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 4px;
   cursor: pointer;
-}
+} */
+
+
+
 .rbc-event:hover {
   background-color: #fb8c00; /* Darker orange on hover */
 }
@@ -105,6 +115,7 @@ height: 5px;
   padding: 4px 10px;
   text-align: center;
   cursor: pointer;
+  height: 100px;
 }
 
 /* Date cell styles */
@@ -185,6 +196,9 @@ height: 5px;
   color: white; /* White text color */
   overflow: hidden; /* Hide overflow */
 }
+
+
+
 .trainer-list {
   margin-top: 20px;
   padding: 20px;
@@ -328,3 +342,51 @@ height: 5px;
   font-size: 16px;
 
 }
+
+
+/* Modal styles */
+.MuiDialog-paper {
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.MuiDialogTitle-root {
+  font-size: 1.25rem;
+  color: #1976d2;
+}
+
+.MuiDialogContent-root {
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.MuiTextField-root {
+  margin-bottom: 20px;
+}
+
+.MuiButton-root {
+  margin-right: 8px;
+}
+
+/* Button styles */
+.MuiButton-containedPrimary {
+  background-color: #1976d2;
+  color: white;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: #115293;
+}
+
+.MuiButton-outlinedPrimary {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+.MuiButton-outlinedPrimary:hover {
+  border-color: #115293;
+  color: #115293;
+}
+
+
+

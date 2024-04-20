@@ -166,10 +166,23 @@ const [isFlippedContent, setIsFlippedContent] = useState(false);
 const [isFlippedMetrics, setIsFlippedMetrics] = useState(false);
 const [isFlippedFeedback, setIsFlippedFeedback] = useState(false);
 
-const handleFlipContent = () => setIsFlippedContent(!isFlippedContent);
-const handleFlipMetrics = () => setIsFlippedMetrics(!isFlippedMetrics);
-const handleFlipFeedback = () => setIsFlippedFeedback(!isFlippedFeedback);
+const handleFlipContent = () => {
+  setIsFlippedContent(!isFlippedContent);
+  setIsFlippedMetrics(false);
+  setIsFlippedFeedback(false);
+};
 
+const handleFlipMetrics = () => {
+  setIsFlippedMetrics(!isFlippedMetrics);
+  setIsFlippedContent(false);
+  setIsFlippedFeedback(false);
+};
+
+const handleFlipFeedback = () => {
+  setIsFlippedFeedback(!isFlippedFeedback);
+  setIsFlippedContent(false);
+  setIsFlippedMetrics(false);
+};
 
 
 
@@ -179,7 +192,7 @@ return (
       <header className="dashboard-header">
         <div className="logo-container">
           <img src={logo} alt="Company Logo" onClick={() => navigate('/')} />
-          <h1>Fit Inc.</h1>
+          <h1>Fit Inc.</h1>a
         </div>
 
         <nav className="main-nav">
@@ -207,10 +220,10 @@ return (
 
       <main className="dashboard-content">
         <aside className="sidebar-left">
-        {/* <button onClick={handleFlipContent}>Contents</button> */}
-        <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`}>
-              <div className="card">
-                <div className="card-front">
+       
+        <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`} onClick={handleFlipContent}>
+               <div className="card">
+                <div className="card-back">
                     <section className={`content-approval section-card fade-in ${isLoaded ? 'visible' : ''}`}>
                           <h3>Content Approval</h3>
                           {contents.map(content => (
@@ -229,18 +242,19 @@ return (
                           ))}
                     </section>
                   </div> 
+                
 
-                <div className="card-back">
-                <h4>Approval History</h4>
-                  <p>Last approved by: Jane Doe</p>
-                  <p>Approval date: September 10, 2024</p>
-                  </div>
+                <div className="card-front">
+                <h4>Contents to be approved</h4>
+                  <p>Number of videos pending: 5</p>
+                  <p>Most recent submission by: Prinston Rebello</p>
+                  <p>Most submissions from: Krina Shah</p>                 
               </div>
             </div>
+          </div>
           
-          <button onClick={handleFlipMetrics}>Toggle Metrics</button>
 
-            <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`}>
+            <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`} onClick={handleFlipMetrics}>
               <div className="card">
                 <div className="card-front">
                   <section>
@@ -258,10 +272,11 @@ return (
               <li>Comments: 35</li>
               <li>Share Rate: 2.5%</li>
             </ul>
-            </div>
-            </div>
-            </div>
+          </div>
+        </div>
+      </div>
   </aside>
+  </main>
 
 
           
@@ -304,7 +319,7 @@ return (
                  ))}
           </section>
         </aside>
-      </main>
+   
 
       <div className="chat-fab-container">
         <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>💬 Chat</button>
