@@ -18,6 +18,7 @@ import ChatPage from './ChatPage/ChatPage.js';
 import WorkoutPlanPage from './DashboardPage/WorkoutPlanPage.jsx'
 import WorkoutPlanVideoPage from './DashboardPage/WorkoutPlanVideoPage.jsx';
 import Footer from './components/UI/Footer';
+import OAuthSignupForm from './LoginPage/OAuthSignUpForm.js';
 
 
 
@@ -39,10 +40,11 @@ function App() {
 
       <Routes>
        
-         <Route path="/" element={<LandingPage />} />
-         <Route path="/login" element={<LoginPage logo={logo} />} />
-         {/* <Route path="/signup" element={<SignUpPage/>} /> */}
-         <Route path="/userdashboard" element={<UserDashboard />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage logo={logo} />} />
+        <Route path="/signup" element={<SignUpPage/>} />
+        <Route path="/signup/OAuth" element={<OAuthSignupForm />} />
+        <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/video-upload" element={<VideoUpload />} />

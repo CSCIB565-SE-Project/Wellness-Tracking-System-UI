@@ -24,7 +24,7 @@ const SignupForm = () => {
             return;
         }
         try {
-            const payload = {email, password, fname, lname, username, role};
+            const payload = {email, password, fname, lname, username, role, isOAuth: false};
             console.log("Sending payload:", payload);
             const response = await fetch('https://login-service.azurewebsites.net/register', {
                 method: 'POST',
