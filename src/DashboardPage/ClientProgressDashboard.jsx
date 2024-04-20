@@ -47,7 +47,7 @@ import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import '../styles/ClientProgressDashboard.css'; 
 
-const ClientProgressDashboard = ({ workoutPlan, mindfulnessSessions = [], dailyMeals = [] }) => {
+const ClientProgressDashboard = ({ workoutPlan, mindfulnessSessions = [], dailyMeals = [],  yourPlans }) => {
   // Example data for charts
   const progressData = {
     labels: workoutPlan.metrics.map(metric => metric.name),
@@ -198,19 +198,6 @@ const recentlyWatchedVideos = [
           {upcomingVideos.map(video => (
             <div key={video.id} className="video-item">
               <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recently Watched Videos */}
-      <div className="video-section">
-        <h3>Recently Watched Videos</h3>
-        <div className="videos-list">
-          {recentlyWatchedVideos.map(video => (
-            <div key={video.id} className="video-item">
-              <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
-              <p>Watched on: {video.watchedOn}</p>
             </div>
           ))}
         </div>

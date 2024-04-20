@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 import Modal from 'react-modal';
 
+
 const locales = {
   'en-US': enUS,
 };
@@ -28,6 +29,45 @@ const getUserData = () => {
   const userData = JSON.parse(localStorage.getItem('user'));
   return userData;
 }
+//A function to connect to the chat
+const connectToStreamChat = async (navigate) => {
+  const apiKey = 'v5zqy2qw283c';
+  const client = StreamChat.getInstance(apiKey);
+  const userData = JSON.parse(localStorage.getItem('user'));
+  const authToken = userData ? userData.token : null;
+
+  try {
+      const response = await fetch('http://localhost:5000/auth/verifyToken', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              token: authToken, // JWT token from Spring Boot
+          }),
+      });
+
+      const data = await response.json();
+
+      if (data.streamToken) {
+          await client.connectUser({
+              id: data.id,
+              username: userData.username,
+              fullName: userData.fullName,
+              role: userData.role,
+              //role: 'professional' testing
+          }, data.streamToken);
+
+          // Navigate to chat page after successful connection
+          navigate('/chat');
+      } else {
+          // Handle error or invalid token response
+          console.error('Failed to get StreamChat token JWT may have expired:', data.message);
+      }
+  } catch (error) {
+      console.error('Error fetching StreamChat token:', error);
+  }
+};
 
 const UserDashboard = () => {
 
@@ -43,8 +83,10 @@ const UserDashboard = () => {
   const[eventTitle,SetTitle]  =useState(false);
   const[date,setDate]=useState(false);
   const[Workout,setWorkout]  =useState(false);
-
+  const [trainers, setTrainers] = useState(null);
+  const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
+  const userData = getUserData();
 
 
   const handleSelectSlot = ({ start, end }) => {
@@ -62,8 +104,6 @@ const UserDashboard = () => {
     setWorkout(event.workout); // assuming workout type is stored in event
     setModalOpen(true);
   };
-
-
 
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -91,7 +131,6 @@ const UserDashboard = () => {
       createNewEvent(newEvent);
     }
   };
-
 
 
   const createNewEvent = async(event) => {
@@ -143,69 +182,8 @@ const UserDashboard = () => {
         handleCloseModal();
       };
 
-//A function to connect to the chat
-          const connectToStreamChat = async (navigate) => {
-            const apiKey = 'v5zqy2qw283c';
-            const client = StreamChat.getInstance(apiKey);
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const authToken = userData ? userData.token : null;
 
-            try {
-                const response = await fetch('http://localhost:5000/auth/verifyToken', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        token: authToken, // JWT token from Spring Boot
-                    }),
-                });
-
-                const data = await response.json();
-
-                if (data.streamToken) {
-                    await client.connectUser({
-                        id: data.id,
-                        username: userData.username,
-                        fullName: userData.fullName,
-                        role: userData.role,
-                        //role: 'professional' testing
-                    }, data.streamToken);
-
-                    // Navigate to chat page after successful connection
-                    navigate('/chat');
-                } else {
-                    // Handle error or invalid token response
-                    console.error('Failed to get StreamChat token JWT may have expired:', data.message);
-                }
-            } catch (error) {
-                console.error('Error fetching StreamChat token:', error);
-            }
-          };
-
-
-  // const createEvent = (dayOffset, title, startHour, endHour) => {
-  //     const startDate = new Date(new Date().setHours(startHour, 0, 0, 0));
-  //     const endDate = new Date(new Date().setHours(endHour, 0, 0, 0));
-  //     return {
-  //       title, // No times in the title
-  //       start: addDays(startDate, dayOffset),
-  //       end: addDays(endDate, dayOffset),
-  //       allDay: false,
-  //     };
-  // };
-
-
-  useEffect(() => {
-    const userData = getUserData();
-    getUserFullName();
-    generateFitnessSchedule(userData);
-    setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-
-  }, []);
-
-
-  
+ 
   const getUserFullName = async() => {
     const userData = getUserData();
     var fullName = userData.firstname ;
@@ -246,73 +224,40 @@ const UserDashboard = () => {
   }
   };
 
-  
-  
-  const workoutPlan = {
-    description: '4-week Intensive Strength and Conditioning Program',
-    details: [
-      {
-        week: 1,
-        focus: 'Full Body Conditioning',
-        sessions: [
-          { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
-          { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
-          { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
-        ],
-      },
-    ],
-
-
-    caloriesBurnt: 5000,
-    goalProgress: 0.75, // 75%
-    metrics: [
-      { id: 'strength', name: 'Strength', value: '80%' },
-      { id: 'flexibility', name: 'Flexibility', value: '60%' },
-      { id: 'endurance', name: 'Endurance', value: '50%' },
-      // ... Additional metrics
-    ],
-    nutrition: [
-      { mealTime: 'Breakfast', items: ['Oatmeal', 'Protein Shake', 'Banana'] },
-      { mealTime: 'Lunch', items: ['Grilled Chicken', 'Quinoa', 'Salad'] },
-      { mealTime: 'Dinner', items: ['Salmon', 'Sweet Potatoes', 'Steamed Veggies'] },
-      // ... Additional meals/snacks
-    ],
-    supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
-  };
- 
-
-      const EventAgenda = ({ event }) => {
+  const EventAgenda = ({ event }) => {
           return (
             <div className="event-agenda-container">
               <strong className="event-agenda-title">{event.title}</strong>
             </div>
           );
         };
-
-
-  // Mock data for subscribed trainers
-const subscribedTrainers = [
-    { id: 1, name: 'Alex Johnson', specialty: 'Strength Training' },
-    { id: 2, name: 'Morgan Williams', specialty: 'Cardio Fitness' },
-    { id: 3, name: 'Sam Smith', specialty: 'Yoga and Flexibility' },
-    { id: 4, name: 'Taylor Brown', specialty: 'Nutrition' }
-  ];
   
-  // TrainerList subcomponent
-  const TrainerList = ({ trainers }) => {
-    return (
-      <div className="trainer-list">
-        <h3>Subscribed Trainers</h3>
-        <ul>
-          {trainers.map(trainer => (
-            <li key={trainer.id}>
-              <strong>{trainer.name}</strong> - {trainer.specialty}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
+  const subscribedTrainers = [
+          { id: 1, name: 'Alex Johnson', specialty: 'Strength Training' },
+          { id: 2, name: 'Morgan Williams', specialty: 'Cardio Fitness' },
+          { id: 3, name: 'Sam Smith', specialty: 'Yoga and Flexibility' },
+          { id: 4, name: 'Taylor Brown', specialty: 'Nutrition' }
+        ];
+        
+        // TrainerList subcomponent
+        const TrainerList = ({ trainers }) => {
+          if (!trainers) return <div>Loading trainers...</div>; 
+          
+          return (
+            <div className="trainer-list">
+              <h3>Subscribed Trainers</h3>
+              <ul>
+                {trainers.map(trainer => (
+                  <li key={trainer.id}>
+                    <strong>{trainer.name}</strong> - {trainer.specialty}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        };
+
+
 
     const SearchBar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -368,11 +313,94 @@ const subscribedTrainers = [
     );
   };
 
-   const handleSearch = (filters) => {
+    // User data from your example
+    // const user = {
+    //   id: userData.id,
+    //   fname: userData.fname,
+    //   mname: userData.mname,
+    //   lname: userData.lname,
+    //   dob: userData.dob,
+    //   gender: userData.gender,
+    //   username: userData.username,
+    //   email: userData.email,
+    //   role: userData.role,
+    //   enabled: true
+    
+    // };
+
+    // Get the array of subscribed trainers from backend 
+    useEffect(() => {  
+      const userData = getUserData();
+      getUserFullName();
+      generateFitnessSchedule(userData);
+      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+
+      const fetchTrainers = async () => {
+        try {
+          const response = await fetch(`http://localhost:8000/api/users/sub/${userData.id}`);  
+          const data = await response.json();
+          setTrainers(data);  // Assuming the response is the array of trainers
+        } catch (error) {
+          console.error('Failed to fetch trainers', error);
+        }
+      }
+      fetchTrainers();
+
+      if (!trainers) return;
+      fetchTrainerPlans(trainers).catch(console.error);
+
+    }, [], userData.id, [trainers]);
+
+    const fetchTrainerPlans = async (trainers) => {
+      const plans = {};
+      for (const trainer of trainers) {
+        try {
+          const response = await fetch(`http://your-backend-url/workoutplans/fetch/${trainer.id}`);  
+          const data = await response.json();
+          plans[trainer.id] = data;  // Assuming the response contains workout plans
+        } catch (error) {
+          console.error('Failed to fetch plans for trainer', trainer.id, error);
+        }
+      }
+      setTrainerPlans(plans);
+    };
+
+    const handleSearch = (filters) => {
       console.log('Searching with filters:', filters);
       // Here you would integrate the search logic or API call to fetch search results based on filters
     };
-
+  
+      
+  const workoutPlan = { // your workout plans 
+  description: '4-week Intensive Strength and Conditioning Program', // description
+  details: [
+    {
+      week: 1,
+      focus: 'Full Body Conditioning', //title
+      sessions: [
+        { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
+        { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
+        { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
+      ],
+    },
+    // ... Additional weeks
+  ],
+  caloriesBurnt: 5000,
+  goalProgress: 0.75, // 75%
+  metrics: [
+    { id: 'strength', name: 'Strength', value: '80%' },
+    { id: 'flexibility', name: 'Flexibility', value: '60%' },
+    { id: 'endurance', name: 'Endurance', value: '50%' },
+    // ... Additional metrics
+  ],
+  nutrition: [
+    { mealTime: 'Breakfast', items: ['Oatmeal', 'Protein Shake', 'Banana'] },
+    { mealTime: 'Lunch', items: ['Grilled Chicken', 'Quinoa', 'Salad'] },
+    { mealTime: 'Dinner', items: ['Salmon', 'Sweet Potatoes', 'Steamed Veggies'] },
+    // ... Additional meals/snacks
+  ],
+  supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
+};
 
 
  return (
@@ -405,55 +433,60 @@ const subscribedTrainers = [
           selectable
           onSelectEvent={handleSelectEvent}
           onSelectSlot={handleSelectSlot}
+          components={{
+            event: EventAgenda, 
+          }}
         />
       
-{modalOpen && (
-  <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details">
-    {/* <h2>{selectedEvent.id ? 'Edit Event' : 'Add Event'}</h2> */}
-    <form onSubmit={handleEventSubmit}>
-    <input
-  type="text"
-  placeholder="Event Title"
-  value={eventTitle}
-  onChange={(e) => SetTitle(e.target.value)}
-/>
-<input
-  type="date"
-  value={date}
-  onChange={(e) => setDate(e.target.value)}
-/>
-<input
-  type="time"
-  value={starttime}
-  onChange={(e) => SetStartTime(e.target.value)}
-/>
-<input
-  type="time"
-  value={endtime}
-  onChange={(e) => SetEndTime(e.target.value)}
-/>
-<select
-  value={Workout}
-  onChange={(e) => setWorkout(e.target.value)}
->
-  <option value="">Select Workout Type</option>
-  <option value="Yoga">Yoga</option>
-  <option value="Cardio">Cardio</option>
-  <option value="Strength">Strength Training</option>
-  <option value="Zumba">Zumba</option>
-  </select>
-  <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
-  {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
-  <button type="button" onClick={handleCloseModal}>Cancel</button>
-</form>
-  </Modal>
-      )}
+          {modalOpen && (
+            <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details">
+              {/* <h2>{selectedEvent.id ? 'Edit Event' : 'Add Event'}</h2> */}
+              <form onSubmit={handleEventSubmit}>
+              <input
+            type="text"
+            placeholder="Event Title"
+            value={eventTitle}
+            onChange={(e) => SetTitle(e.target.value)}
+          />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <input
+            type="time"
+            value={starttime}
+            onChange={(e) => SetStartTime(e.target.value)}
+          />
+          <input
+            type="time"
+            value={endtime}
+            onChange={(e) => SetEndTime(e.target.value)}
+          />
+          <select
+            value={Workout}
+            onChange={(e) => setWorkout(e.target.value)}
+          >
+            <option value="">Select Workout Type</option>
+            <option value="Yoga">Yoga</option>
+            <option value="Cardio">Cardio</option>
+            <option value="Strength">Strength Training</option>
+            <option value="Zumba">Zumba</option>
+            </select>
+            <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
+            {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
+            <button type="button" onClick={handleCloseModal}>Cancel</button>
+          </form>
+            </Modal>
+                )}
 
      
-        <TrainerList trainers={subscribedTrainers} />
+        <TrainerList trainers={trainers} />
+        
         <ClientProgressDashboard 
               workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
+               yourPlans={trainerPlans}
         />
 
         <div className="chat-fab-container">
