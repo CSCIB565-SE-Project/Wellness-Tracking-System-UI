@@ -94,7 +94,7 @@ const Header =()=> {
                      <div className="nav__right">
                         <button className="register__btn" onClick={handleRegisterClick}>Register</button>
                          <span className="mobile__menu">
-                            <i class="ri-menu-line"></i>
+                            <i className="ri-menu-line"></i>
                          </span>
                      </div>
 

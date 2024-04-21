@@ -1,6 +1,6 @@
 import './SignupForm.css';
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const SignupForm = () => {
     const [email, setEmail] = useState('');
@@ -12,10 +12,8 @@ const SignupForm = () => {
     const [role, setUserRole] = useState('USER'); 
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const [gender, setGender] = useState('');
     const [dob, setDob] = useState('');
-    const token = searchParams.get('token'); 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
