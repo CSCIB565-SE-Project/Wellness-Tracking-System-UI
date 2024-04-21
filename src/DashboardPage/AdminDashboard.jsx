@@ -106,11 +106,37 @@ const AdminDashboard = () => {
     const onNavigate = (path) => {
         navigate(path);
     };
+
+    const displayDeleteSuccessMessage = () => {
+      alert('Content Approved!');
+    };
     
-    const approveContent = (id) => {
-        setContents(contents.map(content => 
-            content.id === id ? { ...content, status: "Approved" } : content
-        ));
+    const approveContent = async(id) => {
+        setIsLoading(true);
+        setError('');
+        const userData = getUserData();
+        const jwtToken = userData.token;
+        try{
+          const response = await fetch(`http://localhost:8080/admin/approve`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ id }),
+        });
+        if(!response.ok){
+          throw new Error("Failed to delete workout plans");
+        }
+        else{
+          displayDeleteSuccessMessage();
+          getunapprovedcontent(userData);
+        }
+      } catch(error) {
+        console.error('Fetch error:', error);
+        setError('An error occurred while fetching. Contact admin.');
+        setIsLoading(false);
+      }
     };
 
     const rejectContent = (id) => {
@@ -223,7 +249,7 @@ return (
        
         <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`} onClick={handleFlipContent}>
                <div className="card">
-                <div className="card-back">
+                <div className="card-front">
                     <section className={`content-approval section-card fade-in ${isLoaded ? 'visible' : ''}`}>
                           <h3>Content Approval</h3>
                           {contents.map(content => (
@@ -244,7 +270,7 @@ return (
                   </div> 
                 
 
-                <div className="card-front">
+                <div className="card-back">
                 <h4>Contents to be approved</h4>
                   <p>Number of videos pending: 5</p>
                   <p>Most recent submission by: Prinston Rebello</p>

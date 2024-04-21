@@ -16,6 +16,7 @@ const WorkoutPlanPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [userRole, setUserRole] = useState('user');
     const [videoTitle, setVideoTitle] = useState('');
+    const [caloriesBurnt, setCaloriesBurnt] = useState('');
     const [videoDescription, setVideoDescription] = useState('');
     const [videoType, setVideoType] = useState('');
     const [modeOfInstruction, setModeOfInstruction] = useState('');
@@ -191,6 +192,7 @@ const WorkoutPlanPage = () => {
                     videoUrl: blobName,
                     modeOfInstruction: modeOfInstruction,
                     typeOfWorkout: videoType,
+                    caloriesBurnt: caloriesBurnt
                 }),
             });
 
@@ -349,6 +351,15 @@ const WorkoutPlanPage = () => {
                                 <option value="Online">Online</option>
                                 <option value="In Person">In Person</option>
                             </select>
+
+                            <label htmlFor="caloriesBurnt">Calories:</label>
+                            <input
+                                type="text"
+                                id="caloriesBurnt"
+                                placeholder="Enter Calories"
+                                value={caloriesBurnt}
+                                onChange={e => setCaloriesBurnt(e.target.value)}
+                            />
     
                             <label htmlFor="videoFile">Upload Video:</label>
                             <input

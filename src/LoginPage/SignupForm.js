@@ -9,7 +9,7 @@ const SignupForm = () => {
     const [fname, setFirstName] = useState('');
     const [lname, setLastName] = useState('');
     const [username, setUsername] = useState('');
-    const [role, setUserRole] = useState('user'); 
+    const [role, setUserRole] = useState('USER'); 
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -24,7 +24,7 @@ const SignupForm = () => {
             return;
         }
         try {
-            const payload = {email, password, fname, lname, username, role, isOAuth: false};
+            const payload = {email, password, fname, lname, dob, username, role, isOAuth: false};
             console.log("Sending payload:", payload);
             const response = await fetch('https://login-service.azurewebsites.net/register', {
                 method: 'POST',
