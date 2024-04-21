@@ -9,8 +9,11 @@ import addHours from 'date-fns/addHours';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import enUS from 'date-fns/locale/en-US';
 import { useNavigate } from 'react-router-dom';
-import VideoUpload from './VideoUpload.jsx';
 import { StreamChat } from 'stream-chat';
+import Modal from 'react-modal';
+import logo from '../assests/img/logo.png';
+
+
 
 //A function to connect to the chat
 
@@ -73,9 +76,6 @@ const getUserData = () => {
 
 
 const ProfessionalDashboard = () => {
-
- 
-    const headerRef = useRef(null);
   
     const navigate = useNavigate();
     // States for video uploads
@@ -95,10 +95,24 @@ const ProfessionalDashboard = () => {
     const [error, setError] = useState(''); 
     const [UserFullName, setUserFullName] = useState('');
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-
-
- 
-  const nav__links=[
+    const [events, setEvents] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const[starttime,SetStartTime]  =useState();
+    const[endtime,SetEndTime]  =useState();
+    const[eventTitle,SetTitle]  =useState();
+    const[date,setDate]=useState();
+    const[Workout,setWorkout]  =useState();
+    const [currentEventId, setCurrentEventId] = useState(null);
+    const appointmentcalender = useRef(null);
+    const workoutplansRef = useRef(null);
+    const MetricsRef = useRef(null);
+    const sessionsRef = useRef(null);
+    const subscribedclients=useRef(null);
+     const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
+  
+  
+  
+     const nav__links=[
     {
         path:'/workout-plans',
         display: 'Workout Plans'
@@ -115,7 +129,182 @@ const ProfessionalDashboard = () => {
         path:'/clients',
         display: 'Clients'
     }]
-   
+
+    
+  const handleSelectSlot = ({ start, end }) => {
+    SetStartTime(format(start, 'HH:mm'));  // format time properly
+    SetEndTime(format(end, 'HH:mm'));
+    setDate(format(start, 'yyyy-MM-dd')); // assuming you want the date from the start
+    setModalOpen(true);
+  };
+  
+  const handleSelectEvent = (event) => {
+    SetTitle(event.eventTitle);
+    setDate(format(new Date(event.start), 'yyyy-MM-dd'));
+    SetStartTime(format(new Date(event.start), 'HH:mm'));
+    SetEndTime(format(new Date(event.end), 'HH:mm'));
+    setWorkout(event.workout); // assuming workout type is stored in event
+    setCurrentEventId(event.id);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    SetTitle('');  // Reset title
+    setDate('');  // Reset date
+    SetStartTime('');  // Reset start time
+    SetEndTime('');  // Reset end time
+    setWorkout('');  // Reset workout type
+  };
+
+  const handleEventSubmit = (e) => {
+    e.preventDefault();
+    const newEvent = {
+      id: events.length + 1, // Simplistic approach for unique ID; better use UUIDs
+      title: eventTitle,
+      date: date,
+      startTime: starttime,
+      endTime: endtime,
+      workout: Workout
+    };
+
+
+    if (currentEventId) { // Assume currentEventId tracks the event being edited
+      updateEvent(newEvent);
+    } else {
+      createNewEvent(newEvent);
+    }
+    handleCloseModal(); // Close modal after action
+
+  };
+
+  const createNewEvent = async (event) => {
+    const updatedEvents = [...events, { ...event, id: events.length + 1 }];  
+    setEvents(updatedEvents);
+    const userData = getUserData();
+    console.log(userData);
+    const jwtToken = userData.token;
+    const day  = date;
+    const startTime = starttime;
+    const title= eventTitle;
+    const endTime= endtime;
+    const workout = Workout;
+    const userid = userData.userId;
+
+    try{
+      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userid}`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ userid, title, day, workout, startTime,endTime }),
+        });
+        console.log(response);
+        const data = await response.json();
+        if (data) {
+          console.log('Workout Plan Created Successfully!', data);
+        }}
+
+      catch{
+        
+        console.error('Create error:', error);
+        setError('An error occurred. Please try again later.');
+      
+      }
+      };
+
+      const updateEvent = (updatedEvent) => {
+        const updatedEvents = events.map(evt => 
+          evt.id === updatedEvent.id ? updatedEvent : evt // Mapping and checking for the id
+        );
+        setEvents(updatedEvents); // Setting the updated events array to state
+      };
+
+      // const handleEventDelete = () => {
+      //   setEvents(events.filter(evt => evt.id !== currentEventId));
+      //   handleCloseModal();
+      // };
+
+    const handleEventDelete = async () => {
+        const userData = getUserData();
+        const jwtToken = userData.token;
+        const id = currentEventId;
+      
+        try {
+          // Send delete request to the server
+          const response = await fetch(`http://localhost:8080/timetables/deleteEvent?eventId=${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${jwtToken}`
+            },
+          });
+      
+          if (!response.ok) {
+            throw new Error("Failed to delete the event.");
+          }
+      
+          // Update the local events state to reflect the deletion
+          const updatedEvents = events.filter(event => event.id !== id);
+          setEvents(updatedEvents);
+          setCurrentEventId(null); // Reset the current event ID
+          setModalOpen(false); // Close the modal
+      
+        } catch (error) {
+          console.error('Delete error:', error);
+          setError('An error occurred while deleting the event. Please try again later.');
+        }
+      };
+
+
+    const generateFitnessSchedule = async(userData) => {
+        setIsLoading(true);
+        setError('');
+        const jwtToken = userData.token;
+        var userId =userData.userId;
+    
+        console.log(jwtToken);
+        try{
+          const response = await fetch(`http://localhost:8080/timetables/getByUser?userId=${userId}`, { 
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+        });
+    
+        if(!response.ok){
+          throw new Error("Failed to fetch VIDEOS");
+        }
+      
+        console.log(response);
+        const data = await response.json();
+        console.log(data);
+      
+          // Map fetched data to the required format
+          const formattedEvents = data.map(event => {
+            // Combine date and time fields to create start and end Date objects
+            const startDateTime = new Date(`${event.day}T${event.startTime}`);
+            const endDateTime = new Date(`${event.day}T${event.endTime}`);
+      
+            return {
+              id: event.id,
+              title: event.title,
+              start: startDateTime,
+              end: endDateTime,
+            };
+          }
+        );
+          setEvents(formattedEvents);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Fetch error:', error);
+          setError('An error occurred while fetching events. Contact admin.');
+          setIsLoading(false);
+        }
+      };
+    
+      
   useEffect(() => {
     const userData = getUserData();
     getUserFullName();
@@ -148,6 +337,8 @@ const ProfessionalDashboard = () => {
     //A way to plan live sessions for the future: Name of session, and date + time, then generate a key 
     // Then a way to join that session through OBS when time comes, GetKey???
     // Add the key and the ingress to the live session 
+    
+    
     const mockLiveSessions = [{ id: 1, title: "Live Yoga Session", date: new Date() }];
     
     setLiveSessions(mockLiveSessions);
@@ -166,9 +357,7 @@ const ProfessionalDashboard = () => {
       { id: 2, name: "Vitamin D", benefits: "Supports bone health and immune function." },
     ];
 
-
     setSupplements(mockSupplementRecommendations);
-
 
   }, []);
 
@@ -251,9 +440,6 @@ const ProfessionalDashboard = () => {
     var fullName = userData.firstname ;
     setUserFullName(fullName)   ;
   };
-
-
-
 
   const deleteWorkoutPlan = async(planId) => {
       setIsLoading(true);
@@ -417,46 +603,45 @@ const ProfessionalDashboard = () => {
     alert('Workout Plan Deleted Successfully!');
   };
 
-  const handleScroll = () => {
-    if (headerRef.current) {
-        if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
-            headerRef.current.classList.add('sticky__header');
-        } else {
-            headerRef.current.classList.remove('sticky__header');
-        }
-    }
-};
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
 };
 
-const onNavigate = (path) => {
-    navigate(path);
+const handleLogout = () => {
+  // Clear local storage or any other clean-ups.
+  navigate('/login');
 };
+
 
 return (
   <>
-      <div className="header" ref={headerRef}>
-          <img src="../assets/img/logo.png" alt="Company Logo" className="company-logo" onClick={() => onNavigate('/')} />
-          <nav className="navigation">
-              <ul>
-                  <li onClick={() => onNavigate('/workout-plans')}>Workout Plans</li>
-                  <li onClick={() => onNavigate('/appointments')}>Appointments</li>
-                  <li onClick={() => onNavigate('/client-metrics')}>Client Metrics</li>
-                  <li onClick={() => onNavigate('/clients')}>Subscribed Clients</li>
-              </ul>
-          </nav>
+       <header className="dashboard-header">
+            <div className="logo-container">
+              <img src={logo} alt="Company Logo" onClick={() => navigate('/')} />
+              <h1>Fit Inc.</h1>
+            </div>
 
-          <div className="profile-section">
-              <button onClick={toggleProfileDropdown}>Hello, {UserFullName}</button>
-              {isProfileDropdownOpen && (
-                  <div className="profile-dropdown">
-                      <button onClick={() => navigate('/change-profile')}>Change Profile</button>
-                      <button onClick={() => onNavigate('/logout')}>Logout</button>
-                  </div>
-              )}
-          </div>
-      </div>
+            <nav className="main-nav">
+              {/* Define these functions to handle navigation or simply use `navigate` */}
+              <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>
+              <button onClick={() => scrollToRef()}>Training Videos</button>            
+              <button onClick={() => scrollToRef()}>Sessions</button>
+              <button onClick={() => scrollToRef(workoutplansRef)}>Workout Plans</button>
+
+            </nav>
+
+            <div className="user-section">
+            <button onClick={toggleProfileDropdown}>Hello,{UserFullName}</button>
+            {isProfileDropdownOpen && (
+            <div className="profile-dropdown">
+              <button onClick={() => navigate('/login')}>Change Profile</button>
+              <button onClick={handleLogout}>Logout</button>
+            </div>
+          )}
+        </div>
+      </header>
+
+
       <div className="professional-dashboard">
         <div className="chat-fab-container">
         <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
@@ -522,14 +707,71 @@ return (
 
           <div className="section">
               <h3>Appointments</h3>
+             
+
               <Calendar
                   localizer={localizer}
-                  events={appointments}
+                  events={events}
                   startAccessor="start"
                   endAccessor="end"
                   style={{ height: 500 }}
-              />
+                  selectable
+                  onSelectEvent={handleSelectEvent}
+                  onSelectSlot={handleSelectSlot}
+                />
+                {modalOpen && (
+                <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
+                <h2>Create your own schedule</h2> 
+                <div className="modal-content">
+                <form onSubmit={handleEventSubmit}>
+                  <input
+                  type="text"
+                  placeholder="Enter Event Title"
+                  value={eventTitle}
+                  onChange={(e) => SetTitle(e.target.value)}
+                />
+                <input
+                  type="date"
+                  value={date}m
+                  onChange={(e) => setDate(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={starttime}
+                  onChange={(e) => SetStartTime(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={endtime}
+                  onChange={(e) => SetEndTime(e.target.value)}
+                />
+                <select
+                  value={Workout}
+                  onChange={(e) => setWorkout(e.target.value)}
+                >
+                  <option value="">Select Workout Type</option>
+                  <option value="Yoga">Yoga</option>
+                  <option value="Cardio">Cardio</option>
+                  <option value="Strength">Strength Training</option>
+                  <option value="Zumba">Zumba</option>
+                  </select>
+                  <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
+                  {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
+                  <button type="button" onClick={handleCloseModal}>Cancel</button>
+                </form>
+                </div>
+                  </Modal>
+                      )}
+
+        
           </div>
+
+
+
+
+
+
+
           <div className="section">
               <h3>Live Sessions</h3>
               {liveSessions.map(session => (

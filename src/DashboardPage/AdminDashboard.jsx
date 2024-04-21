@@ -223,7 +223,7 @@ return (
        
         <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`} onClick={handleFlipContent}>
                <div className="card">
-                <div className="card-back">
+                <div className="card-front">
                     <section className={`content-approval section-card fade-in ${isLoaded ? 'visible' : ''}`}>
                           <h3>Content Approval</h3>
                           {contents.map(content => (
@@ -244,7 +244,7 @@ return (
                   </div> 
                 
 
-                <div className="card-front">
+                <div className="card-back">
                 <h4>Contents to be approved</h4>
                   <p>Number of videos pending: 5</p>
                   <p>Most recent submission by: Prinston Rebello</p>
