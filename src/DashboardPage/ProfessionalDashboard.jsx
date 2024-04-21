@@ -182,7 +182,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/videos/unapproved/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/unapproved/${trainerId}`, { 
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ const ProfessionalDashboard = () => {
       const typeOfWorkout = planType;
 
       try{
-        const response = await fetch('http://localhost:8000/api/workoutplan/add', { 
+        const response = await fetch('https://cdnservice.azurewebsites.net/api/workoutplan/add', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -267,7 +267,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const userId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/workoutplan/delete/${planId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/delete/${planId}`, { 
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -295,7 +295,7 @@ const ProfessionalDashboard = () => {
     const jwtToken = userData.token;
     const trainerId = userData.userId;
     try{
-      const response = await fetch(`http://localhost:8000/api/trainers/subc/${trainerId}`, { 
+      const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/subc/${trainerId}`, { 
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -324,7 +324,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       for(var subId in subIds){
           try{
-            const response = await fetch(`http://localhost:8000/api/users/${subId}`, { 
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/${subId}`, { 
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -353,7 +353,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/sub/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -392,7 +392,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

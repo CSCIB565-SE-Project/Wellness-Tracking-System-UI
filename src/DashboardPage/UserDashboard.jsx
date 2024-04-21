@@ -86,10 +86,22 @@ const UserDashboard = () => {
   const [trainers, setTrainers] = useState(null);
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
-  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState(null);
+  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
 
 
+  useEffect(() => {  
+    const userData = getUserData();
+    getUserFullName();
+    generateFitnessSchedule(userData);
+    fetchTrainerIds(userData);
+    // setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    fetchSubscribedPlans(userData, subscribedTrainerIds);  
+    // if (!subscribedTrainerIds) return;
+    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
+
+  }, []);
+  
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
     SetEndTime(format(end, 'HH:mm:ss'));
@@ -314,32 +326,30 @@ const UserDashboard = () => {
   };
 
     // Get the array of subscribed trainers from backend 
-    useEffect(() => {  
-      const userData = getUserData();
-      getUserFullName();
-      generateFitnessSchedule(userData);
-      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
 
-      const fetchTrainerIds = async () => {
-        try {
-          const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`);  
-          const data = await response.json();
-          setSubscribedTrainerIds(data);  
-        } catch (error) {
-          console.error('Failed to fetch trainerIds', error);
-        }
+    const fetchTrainerIds = async (userData) => {
+      try {
+        const jwtToken = userData.token;
+        const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`, { 
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+        });  
+        const data = await response.json();
+        //console.log(data);
+        setSubscribedTrainerIds(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch trainerIds', error);
       }
-      fetchTrainerIds();
-
-      if (!subscribedTrainerIds) return;
-      fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
-
-    }, [], getUserData, [subscribedTrainerIds]);
+    };
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
       setError(''); 
-  
+      console.log(subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
   
@@ -352,12 +362,13 @@ const UserDashboard = () => {
                       'Authorization': `Bearer ${jwtToken}`
                   },
               });
-  
+              
               if (!response.ok) {
                   throw new Error(`Failed to fetch plans for trainer ${trainerId}`);
               }
   
               const data = await response.json();
+              //console.log(data);
               plans[trainerId] = data.map(plan => ({ ...plan, trainerId }));
               
           } catch (error) {
