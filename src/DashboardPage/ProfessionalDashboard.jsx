@@ -95,6 +95,7 @@ const ProfessionalDashboard = () => {
     const [error, setError] = useState(''); 
     const [UserFullName, setUserFullName] = useState('');
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    const [userData, setUserData] = useState(null);
 
 
  
@@ -118,6 +119,9 @@ const ProfessionalDashboard = () => {
    
   useEffect(() => {
     const userData = getUserData();
+    if (userData) {
+      setUserData(userData);  
+    }
     getUserFullName();
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
@@ -377,8 +381,8 @@ const ProfessionalDashboard = () => {
     }
   };
 
-  const openWorkoutPlan = async(planId) => {
-    navigate(`/workout-plan/${planId}`);
+  const openWorkoutPlan = async(planId,userData) => {
+    navigate(`/workout-plan/${planId}/${userData.userId}`);
     console.log("The plan id of this workout is: ", planId);
   };
 
@@ -492,7 +496,7 @@ return (
                           <h4>{workOutPlan.title}</h4>
                           <p>Type: {workOutPlan.typeOfWorkout}</p>
                           <p>Created On: {workOutPlan.createdAt}</p>
-                          <button onClick={() => openWorkoutPlan(workOutPlan._id)}>Open</button>
+                          <button onClick={() => openWorkoutPlan(workOutPlan._id, userData)}>Open</button>
                           <button onClick={() => deleteWorkoutPlan(workOutPlan._id)}>Delete</button>
                       </div>
                   ))

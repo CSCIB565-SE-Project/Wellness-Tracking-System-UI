@@ -26,11 +26,11 @@ const Pricing =() =>{
 
                     <div className="services">
                         <ul>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Utilize a variety of exercise programs created by certified trainers, perfect for those starting their fitness journey</li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Monitor daily diet with our basic meal tracking system, promoting consistent health habits. </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Engage with a vibrant community of like-minded individuals for mutual support and motivation </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Flexibly arrange your fitness schedule with our standard workout calendar, designed to fit a regular lifestyle.</li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Regular Performance analysis with feedback and recommendations ensuring continuous improvement</li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Utilize a variety of exercise programs created by certified trainers, perfect for those starting their fitness journey</li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Monitor daily diet with our basic meal tracking system, promoting consistent health habits. </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Engage with a vibrant community of like-minded individuals for mutual support and motivation </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Flexibly arrange your fitness schedule with our standard workout calendar, designed to fit a regular lifestyle.</li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Regular Performance analysis with feedback and recommendations ensuring continuous improvement</li>
                         </ul>
                     </div>
                     <div className="btn__services">
@@ -53,11 +53,11 @@ const Pricing =() =>{
 
                     <div className="services">
                         <ul>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Enjoy access to a wider range of intermediate-level training routines, adding variety and challenge to your workouts</li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Leverage advanced meal tracking tools that offer detailed nutritional insights and diet optimization </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Participate in exclusive community groups for goal-specific support and to share achievements </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Benefit from premium scheduling flexibility that includes priority class booking options </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Get bi-weekly customized feedback based on in-depth performance analysis to fine-tune your fitness strategy </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Enjoy access to a wider range of intermediate-level training routines, adding variety and challenge to your workouts</li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Leverage advanced meal tracking tools that offer detailed nutritional insights and diet optimization </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Participate in exclusive community groups for goal-specific support and to share achievements </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Benefit from premium scheduling flexibility that includes priority class booking options </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Get bi-weekly customized feedback based on in-depth performance analysis to fine-tune your fitness strategy </li>
                         </ul>
                     </div>
                     <div className="btn__services">
@@ -78,11 +78,11 @@ const Pricing =() =>{
 
                     <div className="services">
                         <ul>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Exclusive access to elite training programs with advanced exercises tailored by top fitness experts </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Comprehensive dietary management with personalized meal planning and one-on-one nutritionist consultations </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Engage in a premium community platform that offers mentorship from wellness gurus and personalized support </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Enjoy the ultimate convenience with a personal assistant for scheduling, ensuring your workouts never conflict </li>
-                            <li><span><i class="ri-checkbox-blank-circle-fill"></i></span> Get tailored, in-depth feedback and continuous fitness plan enhancement from personal trainers </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Exclusive access to elite training programs with advanced exercises tailored by top fitness experts </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Comprehensive dietary management with personalized meal planning and one-on-one nutritionist consultations </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Engage in a premium community platform that offers mentorship from wellness gurus and personalized support </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Enjoy the ultimate convenience with a personal assistant for scheduling, ensuring your workouts never conflict </li>
+                            <li><span><i className="ri-checkbox-blank-circle-fill"></i></span> Get tailored, in-depth feedback and continuous fitness plan enhancement from personal trainers </li>
                         </ul>
                     </div>
                     <div className="btn__services">

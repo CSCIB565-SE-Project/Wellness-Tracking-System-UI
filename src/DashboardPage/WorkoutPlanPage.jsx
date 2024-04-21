@@ -7,6 +7,7 @@ const { BlobServiceClient } = require("@azure/storage-blob");
 
 const WorkoutPlanPage = () => {
     const { planId } = useParams();
+    const { trainerId } = useParams();
     const [planDetails, setPlanDetails] = useState(null);
     const [videos, setVideos] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +29,7 @@ const WorkoutPlanPage = () => {
         setUserRole(userData.role.toLowerCase());
         console.log("user role is: ", setUserRole);
         if (planId) {
-            fetchPlanDetails(planId).catch(error => {
+            fetchPlanDetails(planId, trainerId).catch(error => {
                 console.error('Error fetching plan details:', error);
                 setError('Failed to load plan details.');
             });
@@ -40,12 +41,12 @@ const WorkoutPlanPage = () => {
     // Function to get the details of the workout plan to display 
     // Would not work for users because there is no way to get their trainer id from the backend 
     // Seperate function if user??
-    const fetchPlanDetails = async (planId) => {
+    const fetchPlanDetails = async (planId, trainerId) => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setIsLoading(true);
         setError('');
         const jwtToken = userData.token;
-        const trainerId = userData.userId;
+        
         
         try {
             const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
@@ -86,7 +87,7 @@ const WorkoutPlanPage = () => {
         const jwtToken = userData ? userData.token : null;
     
         if (!jwtToken) {
-            setError("You must be logged in to view videos.");
+            setError("You must be logged in to view videos. JWT expired");
             setIsLoading(false);
             return;
         }
@@ -442,7 +443,7 @@ const WorkoutPlanPage = () => {
                     ))}
                 </div>
             ) : (
-                <p>No videos found for this plan.</p>
+                <p></p>
             )}
         </div>
     );
