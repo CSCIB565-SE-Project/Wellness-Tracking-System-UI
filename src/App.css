@@ -1,5 +1,5 @@
 /* google fonts */
-@import url("https://fonts.googleapis.com/css2?family=Questrial&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
 
 :root {
   --primary-color: #e63232;
@@ -9,11 +9,11 @@
     rgb(246, 98, 49) 27%,
     rgb(245, 165, 136) 85%
   );
-  --font-name: "Questrial", sans-serif;
+  --font-name: "Playfair Display", sans-serif;
 
   /* 
         #9785f2
-        #b5a9f3
+        #b5a9f3s
         #d3cef2
         #d7337a
     */

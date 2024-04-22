@@ -1,9 +1,9 @@
 /* UserDashboard.css */
-@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
 
 .rbc-calendar,
 .rbc-event-content {
-  font-family: 'Questrial', sans-serif;
+  font-family: 'PlayFair Display', sans-serif;
 }
 
 .rbc-toolbar {
@@ -179,7 +179,7 @@ height: 5px;
   overflow: hidden; /* Hide overflow */
 }
 
-/* .trainer-list {
+.trainer-list {
   margin-top: 20px;
   padding: 20px;
   background: #fff;
@@ -206,7 +206,7 @@ height: 5px;
   border-radius: 4px;
   font-size: 0.9rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-} */
+} 
 
 
 
@@ -232,7 +232,7 @@ height: 5px;
   justify-content: center;
   transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s; /* Smooth transitions for interaction */
   font-weight: 500; /* Medium font weight */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A commonly used, friendly font */
+  font-family: 'PlayFair Display', sans-serif;
   text-transform: uppercase; /* Uppercase text for emphasis */
 }
 
@@ -478,3 +478,102 @@ input::placeholder {
   font-size: 1.8rem;
   margin-bottom: 2px;
 }
+
+
+.section-workout {
+  background: #fff; /* Change to a lighter background for better readability */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Enhance the workout plan items */
+.content-item {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  justify-content: space-between; /* Space out content and button */
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #ffebe5; /* A softer background color */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content-item h4 {
+  margin: 0; /* Remove default margins */
+  font-size: 1.2rem; /* Increase font-size */
+  color: #333;
+}
+
+.content-item p {
+  margin: 0; /* Remove default margins */
+  color: #555;
+}
+
+/* Hide the creation timestamp by default and only show it on hover */
+.content-item p.created-timestamp {
+  display: none;
+}
+
+.content-item:hover p.created-timestamp {
+  display: block; /* Show the timestamp on hover */
+}
+
+/* Ensure buttons are visually consistent and clear */
+.content-item button {
+  padding: 10px 20px;
+  background-color: #ff740a; /* Consistent button color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.content-item button:hover {
+  background-color: #e65a00; /* Darker shade on hover */
+}
+
+/* Style the 'Open' button with an icon */
+.content-item button.open-btn {
+  display: flex;
+  align-items: center;
+}
+
+.content-item button.open-btn::before {
+  content: '📂\00a0'; /* Folder icon with a space */
+  font-size: 1.2rem;
+}
+
+/* Make sure the layout is responsive */
+@media (max-width: 768px) {
+  .content-item {
+    flex-direction: column; /* Stack elements on smaller screens */
+    align-items: flex-start; /* Align to start */
+  }
+}
+
+  .content-item h4 {
+    margin-bottom: 5px; /* Add space between title and paragraph */
+  }
+
+  .content-item button {
+    width: 100%; /* Full-width buttons on small screens */
+    margin-top: 10px; /* Space between paragraph and button */
+  }
+
+/* Ensure buttons are visually consistent 
+
+  color: var(--heading-color);
+  background-color: transparent;
+  box-shadow: none;
+  border: 1px solid #ffccbc;
+  border-radius: 4px;
+} 
+
+.content-item buttonhover {
+  background-color: #ffccbc;
+  color: white;
+}
+*/

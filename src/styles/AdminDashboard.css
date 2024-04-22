@@ -1,4 +1,10 @@
 /* General dashboard styles */
+:root {
+  --bg-gradient-opposite: linear-gradient(
+    90deg,
+    rgb(255, 172, 113) 15%, /* Adjusted for a similar look in reverse */
+    rgb(246, 98, 49) 73% /* Adjusted for a similar look in reverse */
+);}
 
 /* General resets */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
@@ -12,21 +18,32 @@
 }
 
 .dashboard-header {
-  background: #ff6c03;
-  color: white;
+  background:var(--bg-gradient-opposite); /* Navy blue */
+  color: white;  
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.dashboard-header h1 {
+  margin: 0; 
+  font-size: 24px;
+}
+
 .logo-container img {
   height: 50px;
-  margin-right: flex;
+  /* margin-right: flex; */
+}
+
+.logo-container {
+  display: flex;
+  align-items: center; /* This will vertically center align the items */
+  gap: 10px; /* This will create some space between the image and the text */
 }
 
 .main-nav button {
-  background: none;
+  background: transparent;
   border: none;
   color: #ffffff;
   font-size: 16px;
@@ -48,13 +65,14 @@
 }
 
 .profile-dropdown {
-  position: absolute;
+   position: absolute;
   right: none;
   background:none;
   color: black;
   border: 1px solid #ccc;
   padding: 5px;
   display: none;
+ 
 }
 
 .user-section{
