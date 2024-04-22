@@ -108,11 +108,12 @@ const ProfessionalDashboard = () => {
     const MetricsRef = useRef(null);
     const sessionsRef = useRef(null);
     const subscribedclients=useRef(null);
-     const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
-  
-  
-  
-     const nav__links=[
+    const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
+    const [userData, setUserData] = useState(null);
+
+
+ 
+  const nav__links=[
     {
         path:'/workout-plans',
         display: 'Workout Plans'
@@ -307,6 +308,9 @@ const ProfessionalDashboard = () => {
       
   useEffect(() => {
     const userData = getUserData();
+    if (userData) {
+      setUserData(userData);  
+    }
     getUserFullName();
     fetchWorkoutPlans(userData);
     fetchSubscribedClients(userData);
@@ -367,7 +371,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/videos/unapproved/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/unapproved/${trainerId}`, { 
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -410,7 +414,7 @@ const ProfessionalDashboard = () => {
       const typeOfWorkout = planType;
 
       try{
-        const response = await fetch('http://localhost:8000/api/workoutplan/add', { 
+        const response = await fetch('https://cdnservice.azurewebsites.net/api/workoutplan/add', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -449,7 +453,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const userId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/workoutplan/delete/${planId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/delete/${planId}`, { 
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -477,7 +481,7 @@ const ProfessionalDashboard = () => {
     const jwtToken = userData.token;
     const trainerId = userData.userId;
     try{
-      const response = await fetch(`http://localhost:8000/api/trainers/subc/${trainerId}`, { 
+      const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/subc/${trainerId}`, { 
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -506,7 +510,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       for(var subId in subIds){
           try{
-            const response = await fetch(`http://localhost:8000/api/users/${subId}`, { 
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/${subId}`, { 
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -535,7 +539,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/sub/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -563,8 +567,8 @@ const ProfessionalDashboard = () => {
     }
   };
 
-  const openWorkoutPlan = async(planId) => {
-    navigate(`/workout-plan/${planId}`);
+  const openWorkoutPlan = async(planId,userData) => {
+    navigate(`/workout-plan/${planId}/${userData.userId}`);
     console.log("The plan id of this workout is: ", planId);
   };
 
@@ -574,7 +578,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -677,7 +681,7 @@ return (
                           <h4>{workOutPlan.title}</h4>
                           <p>Type: {workOutPlan.typeOfWorkout}</p>
                           <p>Created On: {workOutPlan.createdAt}</p>
-                          <button onClick={() => openWorkoutPlan(workOutPlan._id)}>Open</button>
+                          <button onClick={() => openWorkoutPlan(workOutPlan._id, userData)}>Open</button>
                           <button onClick={() => deleteWorkoutPlan(workOutPlan._id)}>Delete</button>
                       </div>
                   ))

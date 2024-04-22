@@ -29,7 +29,7 @@ const Hero =() => {
                             <button className="register__btn">Get Started</button>
                             <button className="watch__btn">
                                 <span>
-                                    <i class="ri-play-fill"></i>
+                                    <i className="ri-play-fill"></i>
                                 </span>
                                 Watch Video
                             </button>
@@ -55,13 +55,13 @@ const Hero =() => {
                             data-aos ="fade-right"
                             data-aos-duration ="1500" >
                                 <h5> Heart Rate</h5>
-                                <span><i class="ri-heart-pulse-fill"></i></span>
+                                <span><i className="ri-heart-pulse-fill"></i></span>
                                 <h5> 2567 BPM</h5>
                             </div>
 
                             <div className="gym__location"data-aos ="fade-left"
                             data-aos-duration ="1500" >
-                                <span> <i class="ri-map-pin-2-fill"></i></span>
+                                <span> <i className="ri-map-pin-2-fill"></i></span>
                                 <h5> Workout from  <br/> Anywhere!</h5>
                             </div>
 

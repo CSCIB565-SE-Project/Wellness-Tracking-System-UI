@@ -106,11 +106,37 @@ const AdminDashboard = () => {
     const onNavigate = (path) => {
         navigate(path);
     };
+
+    const displayDeleteSuccessMessage = () => {
+      alert('Content Approved!');
+    };
     
-    const approveContent = (id) => {
-        setContents(contents.map(content => 
-            content.id === id ? { ...content, status: "Approved" } : content
-        ));
+    const approveContent = async(id) => {
+        setIsLoading(true);
+        setError('');
+        const userData = getUserData();
+        const jwtToken = userData.token;
+        try{
+          const response = await fetch(`http://localhost:8080/admin/approve`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ id }),
+        });
+        if(!response.ok){
+          throw new Error("Failed to delete workout plans");
+        }
+        else{
+          displayDeleteSuccessMessage();
+          getunapprovedcontent(userData);
+        }
+      } catch(error) {
+        console.error('Fetch error:', error);
+        setError('An error occurred while fetching. Contact admin.');
+        setIsLoading(false);
+      }
     };
 
     const rejectContent = (id) => {

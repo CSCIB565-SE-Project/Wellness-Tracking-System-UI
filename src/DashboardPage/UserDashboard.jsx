@@ -93,8 +93,11 @@ const UserDashboard = () => {
   const workoutplansRef = useRef(null);
   const MetricsRef = useRef(null);
   const sessionsRef = useRef(null)
-   const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
-   const clientDashboardRef = useRef();
+  const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
+  const clientDashboardRef = useRef();
+
+  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
+  const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
@@ -102,9 +105,21 @@ const UserDashboard = () => {
     }
   };
 
+  useEffect(() => {  
+    const userData = getUserData();
+    getUserFullName();
+    generateFitnessSchedule(userData);
+    fetchTrainerIds(userData);
+    // setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    fetchSubscribedPlans(userData, subscribedTrainerIds);  
+    // if (!subscribedTrainerIds) return;
+    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
+
+  }, []);
+  
   const handleSelectSlot = ({ start, end }) => {
-    SetStartTime(format(start, 'HH:mm'));  // format time properly
-    SetEndTime(format(end, 'HH:mm'));
+    SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
+    SetEndTime(format(end, 'HH:mm:ss'));
     setDate(format(start, 'yyyy-MM-dd')); // assuming you want the date from the start
     setModalOpen(true);
   };
@@ -112,8 +127,8 @@ const UserDashboard = () => {
   const handleSelectEvent = (event) => {
     SetTitle(event.eventTitle);
     setDate(format(new Date(event.start), 'yyyy-MM-dd'));
-    SetStartTime(format(new Date(event.start), 'HH:mm'));
-    SetEndTime(format(new Date(event.end), 'HH:mm'));
+    SetStartTime(format(new Date(event.start), 'HH:mm:ss'));
+    SetEndTime(format(new Date(event.end), 'HH:mm:ss'));
     setWorkout(event.workout); // assuming workout type is stored in event
     setCurrentEventId(event.id);
     setModalOpen(true);
@@ -160,16 +175,16 @@ const UserDashboard = () => {
     const title= eventTitle;
     const endTime= endtime;
     const workout = Workout;
-    const userid = userData.userId;
+    const userId = userData.userId;
 
     try{
-      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userid}`, { 
+      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userId}`, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwtToken}`
           },
-          body: JSON.stringify({ userid, title, day, workout, startTime,endTime }),
+          body: JSON.stringify({ userId, title, day, workout, startTime,endTime }),
         });
         console.log(response);
         const data = await response.json();
@@ -240,7 +255,6 @@ const UserDashboard = () => {
     const jwtToken = userData.token;
     var userId =userData.userId;
 
-    console.log(jwtToken);
     try{
       const response = await fetch(`http://localhost:8080/timetables/getByUser?userId=${userId}`, { 
       method: 'GET',
@@ -290,13 +304,7 @@ const UserDashboard = () => {
           );
         };
   
-  const subscribedTrainers = [
-          { id: 1, name: 'Alex Johnson', specialty: 'Strength Training' },
-          { id: 2, name: 'Morgan Williams', specialty: 'Cardio Fitness' },
-          { id: 3, name: 'Sam Smith', specialty: 'Yoga and Flexibility' },
-          { id: 4, name: 'Taylor Brown', specialty: 'Nutrition' }
-        ];
-        
+
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
           if (!trainers) return <div>Loading trainers...</div>; 
@@ -371,64 +379,73 @@ const UserDashboard = () => {
     );
   };
 
-    // User data from your example
-    // const user = {
-    //   id: userData.id,
-    //   fname: userData.fname,
-    //   mname: userData.mname,
-    //   lname: userData.lname,
-    //   dob: userData.dob,
-    //   gender: userData.gender,
-    //   username: userData.username,
-    //   email: userData.email,
-    //   role: userData.role,
-    //   enabled: true
-    
-    // };
-
     // Get the array of subscribed trainers from backend 
 
-    useEffect(() => {  
-      const userData = getUserData();
-      getUserFullName();
-      generateFitnessSchedule(userData);
-      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-
-      const fetchTrainers = async () => {
-        try {
-          const response = await fetch(`http://localhost:8000/api/users/sub/${userData.id}`);  
-          const data = await response.json();
-          setTrainers(data);  // Assuming the response is the array of trainers
-        } catch (error) {
-          console.error('Failed to fetch trainers', error);
-        }
+    const fetchTrainerIds = async (userData) => {
+      try {
+        const jwtToken = userData.token;
+        const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`, { 
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+        });  
+        const data = await response.json();
+        //console.log(data);
+        setSubscribedTrainerIds(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch trainerIds', error);
       }
-      fetchTrainers();
-
-      if (!trainers) return;
-      fetchTrainerPlans(trainers).catch(console.error);
-
-    }, [], userData.id, [trainers]);
-
-    const fetchTrainerPlans = async (trainers) => {
-      const plans = {};
-      for (const trainer of trainers) {
-        try {
-          const response = await fetch(`http://your-backend-url/workoutplans/fetch/${trainer.id}`);  
-          const data = await response.json();
-          plans[trainer.id] = data;  // Assuming the response contains workout plans
-        } catch (error) {
-          console.error('Failed to fetch plans for trainer', trainer.id, error);
-        }
-      }
-      setTrainerPlans(plans);
     };
+
+    const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
+      setIsLoading(true); 
+      setError(''); 
+      console.log(subscribedTrainerIds);
+      const jwtToken = userData.token;
+      const plans = {};
+  
+      for (const trainerId of subscribedTrainerIds) {
+          try {
+              const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${jwtToken}`
+                  },
+              });
+              
+              if (!response.ok) {
+                  throw new Error(`Failed to fetch plans for trainer ${trainerId}`);
+              }
+  
+              const data = await response.json();
+              //console.log(data);
+              plans[trainerId] = data.map(plan => ({ ...plan, trainerId }));
+              
+          } catch (error) {
+              console.error('Failed to fetch plans for trainer', trainerId, error);
+              setError(`Error fetching plans for trainer ${trainerId}. ${error.message}`);
+              
+          }
+      }
+      const allPlans = Object.values(plans).flat();
+      setYourWorkoutPlans(allPlans); 
+      setIsLoading(false);
+  };
+  
 
     const handleSearch = (filters) => {
       console.log('Searching with filters:', filters);
       // Here you would integrate the search logic or API call to fetch search results based on filters
     };
-  
+
+    const openWorkoutPlan = async(planId, trainerId) => {
+      navigate(`/workout-plan/${planId}/${trainerId}`);
+      console.log("The plan id of this workout is: ", planId);
+    };
       
   const workoutPlan = { // your workout plans 
   description: '4-week Intensive Strength and Conditioning Program', // description
@@ -600,7 +617,25 @@ const UserDashboard = () => {
         />
        </section>
       
-      <div className="chat-fab-container">
+      
+      <div className="section">
+          <h3>Your Subscribed Workout Plans</h3>
+          {yourWorkoutPlans.length === 0 ? (
+              <p>No Subscribed Plans</p>
+          ) : (
+            yourWorkoutPlans.map(plan => (
+                  <div key={plan._id} className="content-item">
+                      <h4>{plan.title}</h4>
+                      <p>Type: {plan.typeOfWorkout}</p>
+                      <p>Created On: {plan.createdAt}</p>
+                      <button onClick={() => openWorkoutPlan(plan._id, plan.trainerId)}>Open</button>
+                  </div>
+              ))
+          )}
+      </div>
+
+
+        <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
             💬 Chat
           </button>

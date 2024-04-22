@@ -1,6 +1,6 @@
 import './SignupForm.css';
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const SignupForm = () => {
     const [email, setEmail] = useState('');
@@ -9,13 +9,11 @@ const SignupForm = () => {
     const [fname, setFirstName] = useState('');
     const [lname, setLastName] = useState('');
     const [username, setUsername] = useState('');
-    const [role, setUserRole] = useState('user'); 
+    const [role, setUserRole] = useState('USER'); 
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const [gender, setGender] = useState('');
     const [dob, setDob] = useState('');
-    const token = searchParams.get('token'); 
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,7 +22,7 @@ const SignupForm = () => {
             return;
         }
         try {
-            const payload = {email, password, fname, lname, username, role};
+            const payload = {email, password, fname, lname, dob, username, role, isOAuth: false};
             console.log("Sending payload:", payload);
             const response = await fetch('https://login-service.azurewebsites.net/register', {
                 method: 'POST',

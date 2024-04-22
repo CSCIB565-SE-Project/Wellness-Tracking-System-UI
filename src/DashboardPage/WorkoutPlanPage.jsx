@@ -7,6 +7,7 @@ const { BlobServiceClient } = require("@azure/storage-blob");
 
 const WorkoutPlanPage = () => {
     const { planId } = useParams();
+    const { trainerId } = useParams();
     const [planDetails, setPlanDetails] = useState(null);
     const [videos, setVideos] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +17,7 @@ const WorkoutPlanPage = () => {
     const [editMode, setEditMode] = useState(false);
     const [userRole, setUserRole] = useState('user');
     const [videoTitle, setVideoTitle] = useState('');
+    const [caloriesBurnt, setCaloriesBurnt] = useState('');
     const [videoDescription, setVideoDescription] = useState('');
     const [videoType, setVideoType] = useState('');
     const [modeOfInstruction, setModeOfInstruction] = useState('');
@@ -28,7 +30,7 @@ const WorkoutPlanPage = () => {
         setUserRole(userData.role.toLowerCase());
         console.log("user role is: ", setUserRole);
         if (planId) {
-            fetchPlanDetails(planId).catch(error => {
+            fetchPlanDetails(planId, trainerId).catch(error => {
                 console.error('Error fetching plan details:', error);
                 setError('Failed to load plan details.');
             });
@@ -40,15 +42,15 @@ const WorkoutPlanPage = () => {
     // Function to get the details of the workout plan to display 
     // Would not work for users because there is no way to get their trainer id from the backend 
     // Seperate function if user??
-    const fetchPlanDetails = async (planId) => {
+    const fetchPlanDetails = async (planId, trainerId) => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setIsLoading(true);
         setError('');
         const jwtToken = userData.token;
-        const trainerId = userData.userId;
+        
         
         try {
-            const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, { 
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,13 +88,13 @@ const WorkoutPlanPage = () => {
         const jwtToken = userData ? userData.token : null;
     
         if (!jwtToken) {
-            setError("You must be logged in to view videos.");
+            setError("You must be logged in to view videos. JWT expired");
             setIsLoading(false);
             return;
         }
     
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/get/${planId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/get/${planId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -170,13 +172,14 @@ const WorkoutPlanPage = () => {
 			const blobClient = containerClient.getBlockBlobClient(blobName);
 			const response = await blobClient.uploadData(await videoFile.arrayBuffer());
 			console.log('Video uploaded successfully');
+
             let thumbnailImg = await generateVideoThumbnails(videoFile, 1);
             const thumbnailBlob = await base64ToBlob(thumbnailImg[0], 'image/jpeg');
             const thumbnailBlobName = `${userData.userId}/${planId}/${videoFile.name.split('.')[0]}.jpeg`;
             const thumbnailBlobClient = containerClient.getBlockBlobClient(thumbnailBlobName);
             await thumbnailBlobClient.uploadData(thumbnailBlob, thumbnailBlob.length);
 
-            const res = await fetch(`http://localhost:8000/api/videos/add/${planId}`, {
+            const res = await fetch(`https://cdnservice.azurewebsites.net/api/videos/add/${planId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${jwtToken}`,
@@ -191,8 +194,10 @@ const WorkoutPlanPage = () => {
                     videoUrl: blobName,
                     modeOfInstruction: modeOfInstruction,
                     typeOfWorkout: videoType,
+                    caloriesBurnt: caloriesBurnt
                 }),
             });
+            console.log(response);
 
             if (!res.ok) {
                 throw new Error('Failed to upload video');
@@ -228,7 +233,7 @@ const WorkoutPlanPage = () => {
 
         try {
             // Assuming backend can handle an array of video IDs for deletion
-            const response = await fetch(`http://localhost:8000/api/videos/delete`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/delete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -268,7 +273,7 @@ const WorkoutPlanPage = () => {
         const jwtToken = userData ? userData.token : null;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/${editVideoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/${editVideoId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -349,6 +354,15 @@ const WorkoutPlanPage = () => {
                                 <option value="Online">Online</option>
                                 <option value="In Person">In Person</option>
                             </select>
+
+                            <label htmlFor="caloriesBurnt">Calories:</label>
+                            <input
+                                type="text"
+                                id="caloriesBurnt"
+                                placeholder="Enter Calories"
+                                value={caloriesBurnt}
+                                onChange={e => setCaloriesBurnt(e.target.value)}
+                            />
     
                             <label htmlFor="videoFile">Upload Video:</label>
                             <input
@@ -442,7 +456,7 @@ const WorkoutPlanPage = () => {
                     ))}
                 </div>
             ) : (
-                <p>No videos found for this plan.</p>
+                <p></p>
             )}
         </div>
     );
