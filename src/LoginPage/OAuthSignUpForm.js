@@ -15,6 +15,9 @@ const OAuthSignupForm = () => {
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const [userLocation, setLocation] = useState('');
+
+  
 
   useEffect(() => {
     if (isOAuth) {
