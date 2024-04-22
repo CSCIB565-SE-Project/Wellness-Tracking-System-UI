@@ -132,7 +132,7 @@ const WorkoutPlanVideoPage = () => {
         }
     
         try {
-            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/dislike/${videoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/unlike/${videoId}`, {
                 method: 'GET', 
                 headers: {
                     'Content-Type': 'application/json',

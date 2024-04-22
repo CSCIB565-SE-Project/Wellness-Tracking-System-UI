@@ -230,32 +230,33 @@ const WorkoutPlanPage = () => {
         setIsLoading(true);
         const userData = JSON.parse(localStorage.getItem('user'));
         const jwtToken = userData ? userData.token : null;
-
-        try {
-            // Assuming backend can handle an array of video IDs for deletion
-            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/delete`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${jwtToken}`
-                },
-                body: JSON.stringify({ videoIds: selectedVideos }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete videos');
+        for(const videoId of selectedVideos){
+            try {
+                // Assuming backend can handle an array of video IDs for deletion
+                const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/delete/${videoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwtToken}`,
+                    },
+                    body: JSON.stringify({ userId: userData.trainerId }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to delete videos');
+                }
+    
+                // Refresh the videos list after deletion
+                fetchVideos(planId);
+                setSelectedVideos([]); // Clear selection after deletion
+                setEditMode(false); // Exit edit mode
+            } catch (error) {
+                console.error('Delete error:', error);
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
             }
-
-            // Refresh the videos list after deletion
-            fetchVideos(planId);
-            setSelectedVideos([]); // Clear selection after deletion
-            setEditMode(false); // Exit edit mode
-        } catch (error) {
-            console.error('Delete error:', error);
-            setError(error.message);
-        } finally {
-            setIsLoading(false);
-        }
+        }   
     };
 
     const navigateToDashboard = () => {
