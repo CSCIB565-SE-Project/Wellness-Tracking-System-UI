@@ -2,8 +2,8 @@
 :root {
   --bg-gradient-opposite: linear-gradient(
     90deg,
-    rgb(255, 172, 113) 15%, /* Adjusted for a similar look in reverse */
-    rgb(246, 98, 49) 73% /* Adjusted for a similar look in reverse */
+    rgb(251, 165, 103) 25%, /* Adjusted for a similar look in reverse */
+    rgb(246, 98, 49) 80% /* Adjusted for a similar look in reverse */
 );}
 
 /* General resets */

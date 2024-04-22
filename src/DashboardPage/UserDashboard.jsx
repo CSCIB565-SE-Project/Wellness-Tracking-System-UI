@@ -88,9 +88,9 @@ const UserDashboard = () => {
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const TrainingvideosRef = useRef(null);
   const workoutplansRef = useRef(null);
   const MetricsRef = useRef(null);
+  const CalenderRef = useRef(null);
   const sessionsRef = useRef(null)
   const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
   const clientDashboardRef = useRef();
@@ -99,7 +99,7 @@ const UserDashboard = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
   const [mealPlans, setMealPlans] = useState([]);
-
+  
 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
@@ -502,20 +502,47 @@ const generateFitnessSchedule = async(userData) => {
       console.log("The plan id of this workout is: ", planId);
     };
       
-  const workoutPlan = { // your workout plans 
-  description: '4-week Intensive Strength and Conditioning Program', // description
-  details: [
-    {
-      week: 1,
-      focus: 'Full Body Conditioning', //title
-      sessions: [
-        { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
-        { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
-        { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
+    const workoutPlan = {
+      description: '4-week Intensive Strength and Conditioning Program',
+      details: [
+        {
+          week: 1,
+          focus: 'Full Body Conditioning',
+          sessions: [
+            { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
+            { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
+            { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
+          ],
+        },
+        {
+          week: 2,
+          focus: 'Upper Body Strength',
+          sessions: [
+            { day: 'Monday', exercises: ['Bench Press', 'Bicep Curls', 'Tricep Dips'], notes: '4 sets of 10 reps' },
+            { day: 'Wednesday', exercises: ['Shoulder Press', 'Lat Pull-downs', 'Push-Ups'], notes: '4 sets of 12 reps' },
+            { day: 'Friday', exercises: ['Pull-Ups', 'Face Pulls', 'Chest Flies'], notes: '3 sets of 15 reps' },
+          ],
+        },
+        {
+          week: 3,
+          focus: 'Lower Body Power',
+          sessions: [
+            { day: 'Monday', exercises: ['Deadlifts', 'Leg Press', 'Calf Raises'], notes: '5 sets of 5 reps' },
+            { day: 'Wednesday', exercises: ['Squats', 'Lunges', 'Hamstring Curls'], notes: '5 sets of 8 reps' },
+            { day: 'Friday', exercises: ['Glute Bridges', 'Box Jumps', 'Quad Extensions'], notes: '4 sets of 10 reps' },
+          ],
+        },
+        {
+          week: 4,
+          focus: 'Core and Agility',
+          sessions: [
+            { day: 'Monday', exercises: ['Planks', 'Russian Twists', 'Leg Raises'], notes: '3 sets of 20 reps' },
+            { day: 'Wednesday', exercises: ['Mountain Climbers', 'Side Planks', 'Bicycle Crunches'], notes: '4 sets of 15 reps each side' },
+            { day: 'Friday', exercises: ['Jump Rope', 'Tuck Jumps', 'Burpees'], notes: '30 seconds on, 15 seconds rest, for 3 rounds' },
+          ],
+        },
       ],
-    },
-    // ... Additional weeks
-  ],
+    
 
 
   caloriesBurnt: 5000,
@@ -598,8 +625,8 @@ const generateMealSchedule = async(userData) => {
 
             <nav className="main-nav">
               {/* Define these functions to handle navigation or simply use `navigate` */}
-              <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>
-              <button onClick={() => clientDashboardRef.current.scrollToTrainingVideos()}>Training Videos</button>            
+              <button onClick={() => scrollToRef(CalenderRef)}>Calender</button>
+              <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>            
               <button onClick={() => clientDashboardRef.current.scrollToSessions()}>Sessions</button>
               <button onClick={() => scrollToRef(workoutplansRef)}>Workout Plans</button>
 
@@ -622,7 +649,7 @@ const generateMealSchedule = async(userData) => {
       {/* <h2> Workout Programs </h2>
       <SearchBar onSearch={handleSearch} /> */}
 
-      <h2> {UserFullName}'s Fitness and Wellness Schedule</h2>
+      <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
 
             {/* <div className="search-bar-container">
               <div className="search-results-header">
@@ -637,7 +664,7 @@ const generateMealSchedule = async(userData) => {
 
     <div className="dashboard-grid">
       {/* Row 1 */}
-    <section className="calendar-section">
+      <section ref={CalenderRef} className="calendar-section">
               <h3>Calendar</h3>  
               <Calendar
                 localizer={localizer}
@@ -718,16 +745,14 @@ const generateMealSchedule = async(userData) => {
               </div>
           </Modal>)}
         </section>
-    
-     
         <section className="trainer-list-section">
           <h3>Trainer List</h3>
           <TrainerList trainers={trainers} />
         </section>
-    </div>
+       </div>
 
-    <section ref={MetricsRef} className="progress-overview-section">
-      <h2>Health & Fitness Dashboard</h2>        
+    <section  ref={MetricsRef} className="progress-overview-section">
+      <h2 className="common-header">Health & Fitness Dashboard</h2>        
          <ClientProgressDashboard 
                workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
@@ -738,7 +763,7 @@ const generateMealSchedule = async(userData) => {
       
       
       <div ref={workoutplansRef} className="section-workout">
-          <h3>Your Subscribed Workout Plans</h3>
+          <h2 className="common-header" >Your Subscribed Workout Plans</h2>
           {yourWorkoutPlans.length === 0 ? (
               <p>No Subscribed Plans</p>
           ) : (
@@ -756,9 +781,7 @@ const generateMealSchedule = async(userData) => {
           }
       </div>
 
-    
-
-
+  
         <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
             💬 Chat

@@ -34,7 +34,9 @@ const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = []
         const userData = getUserData();
         upcomingvideos(userData);
 
-        console.log("Fetching progress metrics..."); // Log at the beginning of useEffect
+        console.log("Fetching progress metrics..."); 
+        
+        // Log at the beginning of useEffect
         const fetchProgressMetrics = async (userData) => {
         if (!userData) return;
         setIsLoading(true);
@@ -140,27 +142,57 @@ try {
 
 
   const mindfulnessSessions = [
-  { date: '2024-04-18', type: 'Guided Meditation', duration: 30 },
-  { date: '2024-04-16', type: 'Breathing Exercises', duration: 15 },
-  { date: '2024-04-14', type: 'Body Scan Meditation', duration: 20 },
-  { date: '2024-04-12', type: 'Loving Kindness Meditation', duration: 25 },
-  { date: '2024-04-10', type: 'Progressive Relaxation', duration: 35 },
+    {
+      date: 'Tuesday, April 18',
+      time: '08:00 AM',
+      type: 'Guided Meditation',
+      duration: '30 minutes',
+      description: 'Find peace and calm with a session focused on deep breathing and presence.'
+    },
+    {
+      date: 'Thursday, April 20',
+      time: '07:00 PM',
+      type: 'Evening Yoga',
+      duration: '45 minutes',
+      description: 'Unwind with a gentle yoga flow designed to relax your body and mind before sleep.'
+    },
+    {
+      date: 'Saturday, April 22',
+      time: '09:00 AM',
+      type: 'Mindful Movement',
+      duration: '20 minutes',
+      description: 'Start your weekend with purpose through a sequence of mindful stretches.'
+    },
+    {
+      date: 'Monday, April 24',
+      time: '12:00 PM',
+      type: 'Lunchtime Relaxation',
+      duration: '15 minutes',
+      description: 'Take a break from your day with a quick meditation to reset and recharge.'
+    },
+    {
+      date: 'Wednesday, April 26',
+      time: '06:00 AM',
+      type: 'Sunrise Affirmation',
+      duration: '20 minutes',
+      description: 'Begin your day with positive affirmations and set intentions for a productive day.'
+    },
+    {
+      date: 'Friday, April 28',
+      time: '05:30 PM',
+      type: 'Gratitude Reflection',
+      duration: '25 minutes',
+      description: 'Reflect on the week with gratitude practice that celebrates the small victories.'
+    },
+    {
+      date: 'Sunday, April 30',
+      time: '10:00 AM',
+      type: 'Nature Meditation',
+      duration: '35 minutes',
+      description: 'Connect with nature and find serenity with a guided meditation in the great outdoors.'
+    }
   ];
 
-  const mindfulnessSummary = mindfulnessSessions.length ? mindfulnessSessions.map((session, index) => (
-    <li key={index}>
-      {session.date}: {session.type} - {session.duration} minutes
-    </li>
-  )) : <li>No mindfulness sessions recorded.</li>;
-
-  // Meal Planner Detailed View
-  const mealPlannerView = dailyMeals.length ? dailyMeals.map((meal, index) => (
-    <div key={index} className="meal">
-      <h4>{meal.time}: {meal.type}</h4>
-      <p>Items: {meal.items.join(", ")}</p>
-      <p>Calories: {meal.calories} kcal</p>
-    </div>
-  )) : <div>No meals planned.</div>;
 
 
   // Placeholder data for upcoming and recently watched videos
@@ -201,14 +233,6 @@ try {
     }
   };
 
-
-
-
-
-
-
-
-
 const recentlyWatchedVideos = [
   { id: 1, title: "Strength Training 101", url: "https://example.com/strength-training-101-video", watchedOn: "2023-03-25" },
   { id: 2, title: "Morning Stretch Routine", url: "https://example.com/morning-stretch-video", watchedOn: "2023-03-24" },
@@ -228,12 +252,6 @@ useImperativeHandle(ref, () => ({
       sessionsRef.current?.scrollIntoView({ behavior: 'smooth' });
   }
 }));
-
-
-
-
-
-
 
   return (
     <div ref={ref} className="client-progress-dashboard">
@@ -277,7 +295,6 @@ useImperativeHandle(ref, () => ({
     </div>
 
 
-
     {/* Sleep Tracker */}
   <div className="dashboard-row">
     <div className="dashboard-column">
@@ -287,9 +304,8 @@ useImperativeHandle(ref, () => ({
       </div>
     </div>
       
-
        {/* Upcoming Training Videos */}
-    <div className="dashboard-column">  
+    {/* <div className="dashboard-column">  
        <div   className="video-section">
         <h3>Upcoming Training Videos</h3>
         <div className="videos-list">
@@ -300,22 +316,24 @@ useImperativeHandle(ref, () => ({
           ))}
         </div>
       </div>
-     </div>
-</div>
+     </div>*/}
+</div> 
 
       {/* Mindfulness Sessions */}
-        <div ref={sessionsRef} class="container">
-          <div class="item">
-            <h2>Mindfulness Sessions</h2>   
-              <ul>{mindfulnessSummary}</ul>
-            </div>
-        `<div class="item">
-            <h2>Meal Planner</h2>
-              {mealPlannerView}
-          </div>
-        </div>
+  <div className="mindfulness-container">
+  <h2 className="dashboard-section-header">Mindfulness Sessions</h2>
+  {mindfulnessSessions.map((session, index) => (
+    <div key={index} className="mindfulness-session-card">
+      <div className="mindfulness-date">{session.date}</div>
+      <div className="mindfulness-type">{session.type} - {session.duration}</div>
+      <p className="mindfulness-description">{session.description}</p>
+    </div>
+  ))}
+</div>
 
-      {/* Workout Plan Details */}
+ 
+
+      {/* Workout Plan Details
       <div className="workout-details">
         <h3>Workout Routine</h3>
         {workoutPlan.details.map((detail, index) => (
@@ -329,7 +347,26 @@ useImperativeHandle(ref, () => ({
           </div>
         ))}
       </div>
-     </div>
+     </div> */}
+
+
+
+    <div className="workout-details">
+    <h2 className="dashboard-section-header">Recommended Workout Routine</h2>
+    {workoutPlan.details.map((detail, index) => (
+      <div key={index}>
+        <div className="week-label">Week {detail.week}: {detail.focus}</div>
+        <ul className="dashboard-list">
+          {detail.sessions.map((session, sIndex) => (
+            <li key={sIndex} className="dashboard-list-item">
+              {session.day}: {session.exercises.join(", ")}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</div>
   
   );
 });
