@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 import Modal from 'react-modal';
 import logo from '../assests/img/logo.png';
+import axios from "axios";
 
 
 
@@ -97,11 +98,11 @@ const ProfessionalDashboard = () => {
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [events, setEvents] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
-    const[starttime,SetStartTime]  =useState();
-    const[endtime,SetEndTime]  =useState();
-    const[eventTitle,SetTitle]  =useState();
-    const[date,setDate]=useState();
-    const[Workout,setWorkout]  =useState();
+    const [starttime,SetStartTime]  =useState();
+    const [endtime,SetEndTime]  =useState();
+    const [eventTitle,SetTitle]  =useState();
+    const [date,setDate]=useState();
+    const [Workout,setWorkout]  =useState();
     const [currentEventId, setCurrentEventId] = useState(null);
     const appointmentcalender = useRef(null);
     const workoutplansRef = useRef(null);
@@ -111,6 +112,8 @@ const ProfessionalDashboard = () => {
     const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
     const [userData, setUserData] = useState(null);
     const [isViewing, setIsViewing] = useState(false);
+    const [stramKey, setStreamKey] = useState('');
+    const [streamPoint, setStreamPoint] = useState('');
 
 
     useEffect(() => {
@@ -124,6 +127,8 @@ const ProfessionalDashboard = () => {
       fetchSubscribedClients(userData);
       fetchSubscribedCount(userData);
       fetchUnapprovedVideos(userData);
+      getStreamKey();
+      getStreamPoint();
    
     const mockArticles = [
       { id: 1, title: "Benefits of Yoga", content: "Yoga improves flexibility, strength, and mental well-being." },
@@ -603,6 +608,43 @@ const handleClientClick = () => {
 
 }
 
+const getStreamKey = async () => {
+    setIsLoading(true);
+    try {
+        const response = await fetch('http://live-streaming-service.azurewebsites.net/channel/getKey/test1');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const sessions = await response.text();
+        setStreamKey(sessions);
+    } catch (error) {
+        console.error('Failed to fetch live sessions:', error);
+        setError('Failed to load live sessions.');
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+const getStreamPoint = async () => {
+    setIsLoading(true);
+    try {
+        const response = await fetch('http://live-streaming-service.azurewebsites.net/channel/getPoint/test1');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const sessions = await response.text();
+        setStreamPoint(sessions);
+    } catch (error) {
+        console.error('Failed to fetch live sessions:', error);
+        setError('Failed to load live sessions.');
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+console.log(userData);
+
+
 return (
   <>
        <header className="dashboard-header">
@@ -633,22 +675,25 @@ return (
 
 
       <div className="professional-dashboard">
-        <div className="chat-fab-container">
-        <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
-          💬 Chat
-        </button>
-        </div>
+          <div className="chat-fab-container">
+              <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
+                  💬 Chat
+              </button>
+          </div>
           <h2>User Content Management</h2>
-         
-           <form onSubmit={handleSubmit} className="upload-form">
-                <h3>Create New Workout Plan</h3>
-                <input type="text" placeholder="Plan Title" value={workoutPlanTitle} onChange={(e) => setworkoutPlanTitle(e.target.value)} required />
-                <input type="text" placeholder="Plan Description" value={planDescription} onChange={(e) => setplanDescription(e.target.value)} required />
-                <input type="text" placeholder="Plan Type" value={planType} onChange={(e) => setplanType(e.target.value)} required />
-                <button type="submit">{isLoading ? 'Creating...' : 'Create Plan'}</button>
-            </form>
 
-            <div className="section">
+          <form onSubmit={handleSubmit} className="upload-form">
+              <h3>Create New Workout Plan</h3>
+              <input type="text" placeholder="Plan Title" value={workoutPlanTitle}
+                     onChange={(e) => setworkoutPlanTitle(e.target.value)} required/>
+              <input type="text" placeholder="Plan Description" value={planDescription}
+                     onChange={(e) => setplanDescription(e.target.value)} required/>
+              <input type="text" placeholder="Plan Type" value={planType} onChange={(e) => setplanType(e.target.value)}
+                     required/>
+              <button type="submit">{isLoading ? 'Creating...' : 'Create Plan'}</button>
+          </form>
+
+          <div className="section">
               <h3>Workout Plans</h3>
               {workOutPlans.length === 0 ? (
                   <p>No Workout Plans Created</p>
@@ -665,24 +710,24 @@ return (
               )}
           </div>
 
-          
+
           <div className="section">
-                <h3>Unapproved Uploaded Content</h3>
-                {unapprovedVideos.length === 0 ? (
-                    <p>No Content Uploaded Yet!</p>
-                ) : (
-                    <ul>
-                        {unapprovedVideos.map((video) => (
-                            <li key={video._id}>
-                                <p>Title: {video.title}</p>
-                                <p>Type: {video.typeOfWorkout}</p>
-                                <p>Mode: {video.modeOfInstruction}</p>
-                                <button onClick={() => openVideo(video._id)}>Open</button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+              <h3>Unapproved Uploaded Content</h3>
+              {unapprovedVideos.length === 0 ? (
+                  <p>No Content Uploaded Yet!</p>
+              ) : (
+                  <ul>
+                      {unapprovedVideos.map((video) => (
+                          <li key={video._id}>
+                              <p>Title: {video.title}</p>
+                              <p>Type: {video.typeOfWorkout}</p>
+                              <p>Mode: {video.modeOfInstruction}</p>
+                              <button onClick={() => openVideo(video._id)}>Open</button>
+                          </li>
+                      ))}
+                  </ul>
+              )}
+          </div>
 
           <div className="section">
               <h3>Appointments</h3>
@@ -691,70 +736,77 @@ return (
                   events={events}
                   startAccessor="start"
                   endAccessor="end"
-                  style={{ height: 500 }}
+                  style={{height: 500}}
                   selectable
                   onSelectEvent={handleSelectEvent}
                   onSelectSlot={handleSelectSlot}
-                />
-            {modalOpen && (
-              <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
-            <div className={isViewing ? "view-event-modal-content" : "create-event-modal-content"}>
-            {isViewing ? (
-          // Content when viewing an existing event
-          <>
-            <h2>Event Details</h2>
-            <p>Title: {eventTitle}</p>
-            <p>Date: {date}</p>
-            <p>Start Time: {starttime}</p>
-            <p>End Time: {endtime}</p>
-            <p>Workout Type: {Workout}</p>
-            <button type="button" onClick={() => { handleEventDelete(currentEventId); handleCloseModal(); }}>Delete Event</button>
-            <button type="button" onClick={handleCloseModal}>Close</button>
-          </>
-        ) : (
-          <>
-           <h2> Create appointments </h2> 
-                <div className="modal-content">
-                <form onSubmit={handleEventSubmit}>
-                  <input
-                  type="text"
-                  placeholder="Enter Event Title"
-                  value={eventTitle}
-                  onChange={(e) => SetTitle(e.target.value)}
-                />
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-                <input
-                  type="time"
-                  value={starttime}
-                  onChange={(e) => SetStartTime(e.target.value)}
-                />
-                <input
-                  type="time"
-                  value={endtime}
-                  onChange={(e) => SetEndTime(e.target.value)}
-                />
-                
-                  <button type="submit"> Create </button> 
-                  <button type="button" onClick={handleCloseModal}>Cancel</button>
-                </form>
-              </div>
-                </>
-              )}
-              </div>
-          </Modal>)}
-        </div>
-   <div className="section">
+              />
+              {modalOpen && (
+                  <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"
+                         className="YourCustomModalClass">
+                      <div className={isViewing ? "view-event-modal-content" : "create-event-modal-content"}>
+                          {isViewing ? (
+                              // Content when viewing an existing event
+                              <>
+                                  <h2>Event Details</h2>
+                                  <p>Title: {eventTitle}</p>
+                                  <p>Date: {date}</p>
+                                  <p>Start Time: {starttime}</p>
+                                  <p>End Time: {endtime}</p>
+                                  <p>Workout Type: {Workout}</p>
+                                  <button type="button" onClick={() => {
+                                      handleEventDelete(currentEventId);
+                                      handleCloseModal();
+                                  }}>Delete Event
+                                  </button>
+                                  <button type="button" onClick={handleCloseModal}>Close</button>
+                              </>
+                          ) : (
+                              <>
+                                  <h2> Create appointments </h2>
+                                  <div className="modal-content">
+                                      <form onSubmit={handleEventSubmit}>
+                                          <input
+                                              type="text"
+                                              placeholder="Enter Event Title"
+                                              value={eventTitle}
+                                              onChange={(e) => SetTitle(e.target.value)}
+                                          />
+                                          <input
+                                              type="date"
+                                              value={date}
+                                              onChange={(e) => setDate(e.target.value)}
+                                          />
+                                          <input
+                                              type="time"
+                                              value={starttime}
+                                              onChange={(e) => SetStartTime(e.target.value)}
+                                          />
+                                          <input
+                                              type="time"
+                                              value={endtime}
+                                              onChange={(e) => SetEndTime(e.target.value)}
+                                          />
+
+                                          <button type="submit"> Create</button>
+                                          <button type="button" onClick={handleCloseModal}>Cancel</button>
+                                      </form>
+                                  </div>
+                              </>
+                          )}
+                      </div>
+                  </Modal>)}
+          </div>
+          <div className="section">
               <h3>Live Sessions</h3>
               {liveSessions.map(session => (
                   <div key={session.id} className="content-item">
                       <h4>{session.title}</h4>
-                      <p>Date: {format(session.date, 'PPP', { locale: enUS })}</p>
+                      <p>Date: {format(session.date, 'PPP', {locale: enUS})}</p>{/* Display the session location */}
                   </div>
               ))}
+              <div> StreamKey: {stramKey}</div>
+              <div> IngestPoint: {streamPoint}</div>
           </div>
 
 
@@ -781,33 +833,34 @@ return (
 
 
           <div className="section">
-          <div style={{ float: 'left', marginRight: '20px' }}>
-                <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
-            </div>
-            <div style={{ float: 'left' }}>
-                <h3>Subscribed Clients</h3>
-                {subscribedClients.length === 0 ? (
-                    <p>No Subscribers</p>
-                ) : (
-                    <ul>
-                        {subscribedClients.map((clientArray, index) => (
-                            <li key={index}>
-                                {clientArray.map((client) => (
-                                    <div key={client._id}>
-                                        <button onClick={() => handleClientClick(client)}>
-                                            <p>{client.userFname} {client.userLName} - Email: {client.userEmail}</p>
-                                        </button>
-                                    </div>
-                                ))}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-              <div style={{ clear: 'both' }}></div>
-            </div>
-        </div>
+              <div style={{float: 'left', marginRight: '20px'}}>
+                  <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
+              </div>
+              <div style={{float: 'left'}}>
+                  <h3>Subscribed Clients</h3>
+                  {subscribedClients.length === 0 ? (
+                      <p>No Subscribers</p>
+                  ) : (
+                      <ul>
+                          {subscribedClients.map((clientArray, index) => (
+                              <li key={index}>
+                                  {clientArray.map((client) => (
+                                      <div key={client._id}>
+                                          <button onClick={() => handleClientClick(client)}>
+                                              <p>{client.userFname} {client.userLName} - Email: {client.userEmail}</p>
+                                          </button>
+                                      </div>
+                                  ))}
+                              </li>
+                          ))}
+                      </ul>
+                  )}
+              </div>
+              <div style={{clear: 'both'}}></div>
+          </div>
+      </div>
   </>
-)};
+)
+};
 
 export default ProfessionalDashboard;

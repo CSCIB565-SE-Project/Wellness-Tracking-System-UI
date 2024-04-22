@@ -99,6 +99,7 @@ const UserDashboard = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
 
+  const playUrl = 'https://1f04bc26d841.us-east-1.playback.live-video.net/api/video/v1/us-east-1.339713062444.channel.X9rzTeCVphDj.m3u8';
 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
