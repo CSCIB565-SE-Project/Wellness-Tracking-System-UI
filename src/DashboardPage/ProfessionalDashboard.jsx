@@ -317,35 +317,47 @@ const ProfessionalDashboard = () => {
   }
 };
 
+  const getUserInfo = async(userid) => {
+    const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/find/${userid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = response.json();
+    return data;
+  };
+
   const getSubscribersList = async(subIds, userData) => {
       setIsLoading(true);
       setError('');
       const clientList = [];
+      const userId = userData.id;
       const jwtToken = userData.token;
-      for(var subId in subIds){
+      for(var subId of subIds){
           try{
-            const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/${subId}`, { 
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${jwtToken}`
-            },
-          });
-          if(!response.ok){
-            throw new Error("Failed to fecth subscribers");
+              const response = await fetch(`http://localhost:8000/api/users/find/${subId}`, { 
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+              },
+            });
+            if(!response.ok){
+              throw new Error("Failed to fecth subscribers");
+            }
+            else{
+              const data = await response.json();
+              clientList.push(data);
+            } 
+          }catch (error) {
+            console.error("Error fetching user info for user ID:", userId, error); // Log any errors from getUserInfo
+            // Handle the error as needed, e.g., continue processing other user IDs
           }
-          else{
-            const data = await response.json();
-            clientList.push(data);
-          }
-        } catch(error) {
-          console.error('Fetch error:', error);
-          setError('An error occurred while fetching. Contact admin.');
-          setIsLoading(false);
         }
-      }
-      return clientList;
-  };
+        setIsLoading(false);
+        return clientList;
+      };
 
   const fetchSubscribedClients = async(userData) => {
       setIsLoading(true);
@@ -353,7 +365,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/sub/${trainerId}`, { 
+        const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -365,7 +377,8 @@ const ProfessionalDashboard = () => {
       }
       else{
         const data = await response.json();
-        var clients = getSubscribersList(data, userData);
+        console.log(data);
+        var clients = await getSubscribersList(data, userData);
         if(clients.length > 0){
           setSubscribedClients(clients);
         }
