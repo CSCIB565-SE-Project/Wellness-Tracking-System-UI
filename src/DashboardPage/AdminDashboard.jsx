@@ -15,7 +15,8 @@ const connectToStreamChat = async (navigate) => {
     const authToken = userData ? userData.token : null;
   
     try {
-      const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken',{            method: 'POST',
+        const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },

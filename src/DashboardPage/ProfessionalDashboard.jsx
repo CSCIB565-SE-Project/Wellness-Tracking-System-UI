@@ -549,8 +549,6 @@ const fetchSubscribedClients = async(userData) => {
   }
 };
 
-  
-  
   const openWorkoutPlan = async(planId,userData) => {
     navigate(`/workout-plan/${planId}/${userData.userId}`);
     console.log("The plan id of this workout is: ", planId);
@@ -581,6 +579,7 @@ const fetchSubscribedClients = async(userData) => {
       setIsLoading(false);
     }
   };
+
 
 
   const displaySuccessMessage = () => {
@@ -805,10 +804,9 @@ return (
                     </ul>
                 )}
             </div>
-            <div style={{ clear: 'both' }}></div>
-          </div>
+              <div style={{ clear: 'both' }}></div>
             </div>
-        
+        </div>
   </>
 )};
 

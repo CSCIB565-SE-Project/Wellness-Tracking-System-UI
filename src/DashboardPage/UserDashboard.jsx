@@ -38,8 +38,8 @@ const connectToStreamChat = async (navigate) => {
   const authToken = userData ? userData.token : null;
 
   try {
-    const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', { 
-      method: 'POST',
+      const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
+          method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           },
@@ -335,6 +335,7 @@ const generateFitnessSchedule = async(userData) => {
     const [location, setLocation] = useState('');
     const [mode, setMode] = useState('');
     const [type, setType] = useState('');
+
   
     const handleSearch = (e) => {
       e.preventDefault();
@@ -381,7 +382,7 @@ const generateFitnessSchedule = async(userData) => {
         <button onClick={handleSearch}>Search</button>
       </div>
     );
-  };
+  }; 
 
 
   const getTrainerList = async(userData, trainerIds) => {
@@ -413,6 +414,9 @@ const generateFitnessSchedule = async(userData) => {
       setIsLoading(false);
       return trainerList;
     };
+
+
+
 
 
     // Get the array of subscribed trainers from backend 
@@ -448,7 +452,9 @@ const generateFitnessSchedule = async(userData) => {
         setSubscribedTrainerIds([]);
       }
 
+      
     };
+    // Get the array of subscribed trainers from backend 
 
 
 
@@ -456,6 +462,7 @@ const generateFitnessSchedule = async(userData) => {
       setIsLoading(true); 
       setError(''); 
       console.log("Subscribed Trainer IDs:", subscribedTrainerIds);
+      console.log(subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
   
