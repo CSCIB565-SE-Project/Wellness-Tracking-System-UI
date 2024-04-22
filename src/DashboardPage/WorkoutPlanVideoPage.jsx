@@ -27,7 +27,7 @@ const WorkoutPlanVideoPage = () => {
         }
     
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/trainer/get/${videoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/trainer/get/${videoId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const WorkoutPlanVideoPage = () => {
         const video = await getVideoUrl(videoId);
         const videoUrl = video.videoUrl;
         setVideoDetails({
-            src: `http://localhost:8000/api/videos/play?videoUrl=${videoUrl}`,
+            src: `https://cdnservice.azurewebsites.net/api/videos/play?videoUrl=${videoUrl}`,
             title: video.title,
             id: video._id
         });
@@ -62,7 +62,7 @@ const WorkoutPlanVideoPage = () => {
     const getComments = async (videoId) => {
         console.log('Fetching comments for:', videoId);
         try {
-            const response = await fetch(`http://localhost:8000/api/comments/${videoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/comments/${videoId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ const WorkoutPlanVideoPage = () => {
         }
     
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/like/${videoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/like/${videoId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ const WorkoutPlanVideoPage = () => {
         }
     
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/dislike/${videoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/dislike/${videoId}`, {
                 method: 'GET', 
                 headers: {
                     'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ const WorkoutPlanVideoPage = () => {
         const text = comment;
 
         try{
-            const response = await fetch('http://localhost:8000/api/comments', { 
+            const response = await fetch('https://cdnservice.azurewebsites.net/api/comments', { 
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',

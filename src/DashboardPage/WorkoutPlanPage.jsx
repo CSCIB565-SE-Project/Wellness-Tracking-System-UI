@@ -50,7 +50,7 @@ const WorkoutPlanPage = () => {
         
         
         try {
-            const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, { 
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const WorkoutPlanPage = () => {
         }
     
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/get/${planId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/get/${planId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,13 +172,14 @@ const WorkoutPlanPage = () => {
 			const blobClient = containerClient.getBlockBlobClient(blobName);
 			const response = await blobClient.uploadData(await videoFile.arrayBuffer());
 			console.log('Video uploaded successfully');
+
             let thumbnailImg = await generateVideoThumbnails(videoFile, 1);
             const thumbnailBlob = await base64ToBlob(thumbnailImg[0], 'image/jpeg');
             const thumbnailBlobName = `${userData.userId}/${planId}/${videoFile.name.split('.')[0]}.jpeg`;
             const thumbnailBlobClient = containerClient.getBlockBlobClient(thumbnailBlobName);
             await thumbnailBlobClient.uploadData(thumbnailBlob, thumbnailBlob.length);
 
-            const res = await fetch(`http://localhost:8000/api/videos/add/${planId}`, {
+            const res = await fetch(`https://cdnservice.azurewebsites.net/api/videos/add/${planId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${jwtToken}`,
@@ -196,6 +197,7 @@ const WorkoutPlanPage = () => {
                     caloriesBurnt: caloriesBurnt
                 }),
             });
+            console.log(response);
 
             if (!res.ok) {
                 throw new Error('Failed to upload video');
@@ -231,7 +233,7 @@ const WorkoutPlanPage = () => {
 
         try {
             // Assuming backend can handle an array of video IDs for deletion
-            const response = await fetch(`http://localhost:8000/api/videos/delete`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/delete`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -271,7 +273,7 @@ const WorkoutPlanPage = () => {
         const jwtToken = userData ? userData.token : null;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/${editVideoId}`, {
+            const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/${editVideoId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

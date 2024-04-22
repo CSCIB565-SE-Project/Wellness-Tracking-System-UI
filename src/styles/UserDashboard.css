@@ -1,21 +1,11 @@
 /* UserDashboard.css */
 @import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 
-
-.dashboard-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
-  gap: 1rem; /* Spacing between grid items */
-  margin: 1rem; /* Outer spacing */
-}
-
-/* Utilize the Questrial font throughout the UserDashboard for consistency */
 .rbc-calendar,
 .rbc-event-content {
   font-family: 'Questrial', sans-serif;
 }
 
-/* Header styles */
 .rbc-toolbar {
   background: var(--bg-gradient);
   margin-bottom: 20px;
@@ -29,32 +19,25 @@
   color: white;
 }
 
-/* Calendar styles */
 .rbc-calendar {
-  height: auto; /* or any other height you prefer */
+  height: auto; 
   max-width: 100%;
   margin: auto;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(244, 6, 97, 0.747);
+  
 }
 
-.dashboard-item {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  /* Add any additional styling here */
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    grid-template-columns: 1fr; /* Stack columns on smaller screens */
-  }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* two columns */
+  grid-gap: 20px; /* space between grid items */
+  flex-wrap: wrap;
 }
 
  .rbc-event {
-  background-color: var(--primary-color); 
+  /* background-color: var(--primary-color);  */
   color: white;
   border: none;
   display: flex;
@@ -86,7 +69,7 @@
   background-color: #fb8c00; /* Darker orange on hover */
 }
 
-/* Scrollable event description styles */
+
 .event-agenda-desc {
   overflow-y: auto; /* Allows vertical scrolling */
   overflow-x: hidden; /* Hides horizontal scrolling */
@@ -95,14 +78,13 @@
   scrollbar-color: #e67e22 #ffe0b2; /* Scrollbar color for non-WebKit browsers */
 }
 
-/* Styles for WebKit-based browsers */
 .event-agenda-desc::-webkit-scrollbar {
 height: 5px;
   width: 5px; /* Sets the width of the scrollbar */
 }
 
 .event-agenda-desc::-webkit-scrollbar-thumb {
-  background: #e67e22; /* Scrollbar thumb color */
+  background: #f19748; /* Scrollbar thumb color */
   border-radius: 10px;
 }
 
@@ -120,7 +102,7 @@ height: 5px;
 
 /* Date cell styles */
 .rbc-date-cell {
-  padding: 8px;
+  padding: 2px;
   font-weight: bold;
   color: var(--heading-color);
 }
@@ -197,9 +179,7 @@ height: 5px;
   overflow: hidden; /* Hide overflow */
 }
 
-
-
-.trainer-list {
+/* .trainer-list {
   margin-top: 20px;
   padding: 20px;
   background: #fff;
@@ -213,8 +193,9 @@ height: 5px;
 }
 
 .trainer-list ul {
-  list-style-type: none;
-  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
 }
 
 .trainer-list li {
@@ -224,7 +205,9 @@ height: 5px;
   margin-bottom: 5px;
   border-radius: 4px;
   font-size: 0.9rem;
-}
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+} */
+
 
 
 .chat-fab-container {
@@ -294,7 +277,7 @@ height: 5px;
 
 .search-bar button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #ff8800;
   color: white;
   border: none;
   border-radius: 5px;
@@ -343,50 +326,155 @@ height: 5px;
 
 }
 
+:root {
+  --gradient-start: #7b4397; /* Start color for gradient */
+  --gradient-end: #dc2430;   /* End color for gradient */
+  --input-bg: #ffffff;       /* Input background color */
+}
 
-/* Modal styles */
-.MuiDialog-paper {
-  border-radius: 8px;
+.YourCustomModalClass {
+  background: linear-gradient(to bottom, #ffffff 0%, #fdc6c6 100%);
   padding: 20px;
+  box-shadow: 0 6px 25px rgba(255, 151, 151, 0.862);
+  z-index: 10000; /* High z-index to ensure it's on top of other elements */
+  width: 80%; /* Adjusted width */
+  max-width: 450px; /* Maximum width */
+  height: auto;
+  max-height: 80%; /* Maximum height */
+  margin: auto; /* Center the modal on the screen */
+  overflow: auto; /* Adds scroll to the modal if content is too long */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center children horizontally */
+  justify-content: center;
+  /* Other styles you want to apply to the modal */
 }
 
-.MuiDialogTitle-root {
-  font-size: 1.25rem;
-  color: #1976d2;
+.YourCustomModalClass  h2{
+  padding: 2px;
+  font-size:1.4rem;
+
+}
+input::placeholder {
+  color: #9e9b9b;
+  font-size:0.8rem /* Light grey placeholder text */
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+  z-index: 10000; /* High z-index to be on top */
 }
 
-.MuiDialogContent-root {
-  font-size: 1rem;
-  margin-top: 10px;
+.modal-content {
+  /* background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));  */
+  background: linear-gradient(to bottom, #ffffff 0%, #fdc6c6 100%);
+  color: rgb(195, 60, 60); /* Text color */
+  z-index: 10000;
+  padding: 0.2rem;
+  position: flex;
+  border-radius: 1.2px;
+  max-width:auto;
+  width: auto;
+  margin: 2rem auto;
+  display: flex; 
+  flex-direction: column; 
+  gap: 20px; 
 }
 
-.MuiTextField-root {
-  margin-bottom: 20px;
+/* Form inside modal styles */
+.modal-content form {
+  display: flex;
+  flex-direction: column; 
 }
 
-.MuiButton-root {
-  margin-right: 8px;
-}
-
-/* Button styles */
-.MuiButton-containedPrimary {
-  background-color: #1976d2;
-  color: white;
-}
-
-.MuiButton-containedPrimary:hover {
-  background-color: #115293;
-}
-
-.MuiButton-outlinedPrimary {
-  border-color: #1976d2;
-  color: #1976d2;
-}
-
-.MuiButton-outlinedPrimary:hover {
-  border-color: #115293;
-  color: #115293;
+.modal-content [type="text"],
+.modal-content [type="date"],
+.modal-content [type="time"],
+.modal-content  select {
+  border: 0.5px solid #f0d2d2;
+  padding: 0.5px; /* Padding inside inputs and select */
+  border-radius:1px; /* Slightly rounded corners */
+  margin-bottom: 15px; /* Space below each input/select */
+  background-color: var(--input-bg); /* Light background color for inputs */
+  color: #362f2f; /* Dark text for contrast */
+  font-size: 0.9rem; /* Readable font size */
 }
 
 
+.modal-content form button {
+  padding: 0.2rem 0.2rem;
+  /* margin-right: flex; */
+  border: none;
+  background-color:linear-gradient(to right, var(--gradient-start), var(--gradient-end)); /* Gradient background */;
+  border-radius: 2px;
+  width:auto;
+  cursor: pointer;
+}
 
+.modal-content form button:hover {
+  background-color: #e7dadae5;
+
+}
+/* Make modal overlay cover the entire screen */
+.ReactModal__Overlay {
+  z-index: 1000;
+  background-color: rgba(227, 32, 32, 0.915); /* Dim the background */
+}
+
+/* Ensure the modal content is on top of the overlay */
+.ReactModal__Content {
+  z-index: 100000;
+}
+
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1rem;
+    max-width: 90%;
+  }
+
+  .modal-content h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .calendar-section,
+  .trainer-list-section,
+  .progress-overview-section {
+    flex: 1 1 48%; /* Allows two sections in a row */
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .calendar-section,
+  .trainer-list-section,
+  .progress-overview-section {
+    width: 100%; /* Full width on smaller screens */
+  }
+}
+
+.progress-overview-section h2 {
+  margin-top: auto;
+  margin-bottom: 5px;
+  justify-content: center;
+  text-align: center; 
+  display: flex;
+}
+
+.progress-overview-section{
+  margin-top: 2px;
+}
+
+.user-dashboard h2{
+  justify-content: center;
+  text-align: center; 
+  display:flex;
+  font-size: 1.8rem;
+  margin-bottom: 2px;
+}
