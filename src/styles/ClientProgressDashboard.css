@@ -2,63 +2,175 @@
 
 .client-progress-dashboard {
   font-family: 'Questrial', sans-serif;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  margin: auto;
-  max-width: 1000px;
+  background-color: transparent; /* Optional: depending on your design preference */
+  padding: 0;
+  box-shadow: none;
+  margin: 0;
+  max-width: none; /* Allows the component to take the full width of its container */
+  margin-bottom: 0;
+  justify-content: space-around; 
+  align-items: stretch;  
 }
 
 .client-progress-dashboard h2, 
 .client-progress-dashboard h3 {
   color: #132742;
-  text-align: center;
+  width: 100%; /* Make the header full width */
+  text-align: center; /* Center align the header text */
+  margin: 0; /* Remove margin for tight spacing */
+  padding: 20px 0; 
 
 }
+
+.workout-details{
+  background: var(--bg-gradient);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgb(246, 98, 6);
+  margin-bottom: 20px;
+  min-width: 0;
+}
+
+/* .chart-container{
+   width: 100%; /* or any other fixed width 
+   height: 300px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+    margin:auto;
+    position: relative;
+  
+} */
+
 
 .chart-container {
-    margin: 20px 0;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  width: 100%; /* Full width of the container */
+  /* max-width: 200px; Maximum width of the charts. Adjust as needed */
+  margin: 10px auto;  
+  padding: 20px; /* Spacing inside the container */
+  box-shadow: 0 4px 8px rgba(237, 3, 104, 0.915); /* A subtle shadow for some depth */
+  background: #fff; /* White background for the chart */
+  border-radius: 5px; /* Rounded corners */
+  overflow: hidden; 
+  padding-bottom: 1%; 
+  margin-bottom: 10px;
+
+
+}
+
+.chart {
+  /* position: relative; */
+  width: 100%;
+  padding-top: 10%; /* Adjust the padding-top value to change the aspect ratio */
+  height: 0; /* Set height to 0 to maintain aspect ratio based on width */
 }
 
 
+/* 
 .section {
     margin: 20px 0;
-    padding: 15px;
-    background-color: #f9f9f9;
+    /* padding: 15px; 
+    background-color: #f9f9f9; 
     border-radius: 8px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-  }
+    /* box-shadow: inset 0 0 10px rgba(0,0,0,0.05); 
+    min-width: 0;
+  }  */
 
+
+@keyframes slideUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.container {
+  display: flex; /* This enables Flexbox layout */
+  justify-content: space-between; /* This will space out the items evenly */
+  align-items: center; /* This will vertically align items in the center, if they have different heights */
+  flex-wrap: wrap; /* This allows items to wrap onto the next line if the container is too narrow */
+  gap: 20px; /* This adds space between the items */
+}
+
+.item {
+  flex: 1; /* This allows the item to grow and shrink as needed */
+  min-width: calc(50% - 10px); /* This ensures that each item will not be smaller than half the container width minus the gap */
+}
+
+@media (max-width: 768px) {
+  .item {
+    min-width: 100%; /* On smaller screens, each item will take the full width */
+  }
+}
+
+/* .section {
+  animation: slideUpAndFade 0.5s ease-out forwards;
+}
+
+.section {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.section:nth-child(1) {
+  animation-delay: 0.5s;
+}
+
+.section:nth-child(2) {
+  animation-delay: 1s;}
 
   .section h3 {
     margin-bottom: 15px;
-  }
+  } */
   
   .meal {
-    background-color: #e3f2fd;
+    background-color: #e3f2fdb9;
     margin: 10px 0;
     padding: 10px;
     border-radius: 8px;
   }
   
   .meal h4 {
-    margin-bottom: 5px;
+    margin-bottom: 2px;
   }
 
-  
-  
 
 .workout-details {
   margin-top: 20px;
-}
+} 
 
 .weekly-routine {
-  background: #f9f9f9;
+  /* background: #f9f9f9; */
   padding: 15px;
   margin-top: 10px;
   border-radius: 8px;
@@ -81,16 +193,58 @@
   border-radius: 5px;
 }
 
+
 @media (max-width: 768px) {
   .chart-container , .section{
     height: auto;
-    padding: 10px;
+    padding: 30px;
+  }
+}
+
+.dashboard-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Adjust if necessary to space-around or space-evenly */
+  box-shadow: none; /* Remove box shadow for a flat look */
+  border: none; /* Remove borders if any */
+  padding: 0; 
+  align-items: stretch; /* This will make them the same height */
+}
+
+.dashboard-column {
+  flex: 1; /* Allow the column to grow if needed */
+  flex-basis: calc(50% - 10px); /* Adjust the 10px to account for margins or padding */
+  margin: 5px; /* This is half of the subtracted value in flex-basis for equal spacing */
+  min-width: calc(50% - 20px); /* Adjust the 50% for the desired breakpoint of wrapping */
+  background: none; /* Remove the background to eliminate the box appearance */
+  box-shadow: none; /* Remove shadow for a flat look */
+  border: none; /* Remove borders if any */
+}
+
+@media (max-width: 768px) {
+  .dashboard-column {
+    flex-basis: 100%;
+    margin: 5px 0; /* Adjust margins for mobile */
+  }
+
+  /* Clear right margin for the second column in a row */
+.dashboard-column:nth-child(even) {
+    margin-right: 0;
+  }
+}
+
+
+@media (min-width: 769px) {
+  /* You might want to adjust padding, margins, etc., to better utilize space */
+  .client-progress-dashboard {
+    padding: 40px; /* More padding on larger screens */
+    /* Other styling adjustments if needed */
   }
 }
 
 
 .video-section {
-  margin-top: 20px;
+margin-top: 20px;
 }
 
 .videos-list {
@@ -113,6 +267,5 @@
 .video-item p {
   margin-top: 5px;
   font-size: 0.9rem;
-}
-
+} 
 

@@ -172,6 +172,7 @@ const WorkoutPlanPage = () => {
 			const blobClient = containerClient.getBlockBlobClient(blobName);
 			const response = await blobClient.uploadData(await videoFile.arrayBuffer());
 			console.log('Video uploaded successfully');
+
             let thumbnailImg = await generateVideoThumbnails(videoFile, 1);
             const thumbnailBlob = await base64ToBlob(thumbnailImg[0], 'image/jpeg');
             const thumbnailBlobName = `${userData.userId}/${planId}/${videoFile.name.split('.')[0]}.jpeg`;
@@ -196,6 +197,7 @@ const WorkoutPlanPage = () => {
                     caloriesBurnt: caloriesBurnt
                 }),
             });
+            console.log(response);
 
             if (!res.ok) {
                 throw new Error('Failed to upload video');
