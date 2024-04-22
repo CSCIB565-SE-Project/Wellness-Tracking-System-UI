@@ -98,6 +98,7 @@ const UserDashboard = () => {
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
   const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
+  const [mealPlans, setMealPlans] = useState([]);
 
 
    const scrollToTrainingVideos = () => {
@@ -110,6 +111,7 @@ const UserDashboard = () => {
     const userData = getUserData();
     getUserFullName();
     generateFitnessSchedule(userData);
+    generateMealSchedule(userData);
     fetchTrainerIds(userData);
     setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
     //fetchSubscribedPlans(userData, subscribedTrainerIds);  
@@ -415,10 +417,6 @@ const generateFitnessSchedule = async(userData) => {
       return trainerList;
     };
 
-
-
-
-
     // Get the array of subscribed trainers from backend 
     const fetchTrainerIds = async (userData) => {
       const jwtToken = userData.token;
@@ -455,8 +453,6 @@ const generateFitnessSchedule = async(userData) => {
       
     };
     // Get the array of subscribed trainers from backend 
-
-
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
@@ -520,6 +516,8 @@ const generateFitnessSchedule = async(userData) => {
     },
     // ... Additional weeks
   ],
+
+
   caloriesBurnt: 5000,
   goalProgress: 0.75, // 75%
   metrics: [
@@ -541,7 +539,46 @@ const generateFitnessSchedule = async(userData) => {
   supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
 };
 
+const generateMealSchedule = async(userData) => {
+  setIsLoading(true);
+  setError('');
+  const jwtToken = userData.token;
+  var userId =userData.userId;
 
+  try{
+    const response = await fetch(`http://localhost:8080/mealplan/getByUser?userId=${userId}`, { 
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`
+    },
+  });
+
+  if(!response.ok){
+    throw new Error("Failed to fetch meal plan");
+  }
+
+  
+  const data = await response.json();
+
+    // Map fetched data to the required format
+    const formattedMealPlans = data.map(plan => ({
+      id: plan.id,
+      title: plan.title + " (Meal)",
+      start: new Date(`${plan.day}T${plan.startTime}`),
+      end: new Date(`${plan.day}T${plan.endTime}`),
+      allDay: false,
+      type: 'meal'
+    }));
+
+    setEvents(currentEvents => [...currentEvents, ...formattedMealPlans]);
+  } catch (error) {
+    console.error('Fetch error:', error);
+    setError('An error occurred while fetching meal plans. Please try again later.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
@@ -603,18 +640,25 @@ const generateFitnessSchedule = async(userData) => {
     <section className="calendar-section">
               <h3>Calendar</h3>  
               <Calendar
-                  localizer={localizer}
-                  events={events}
-                  startAccessor="start"
-                  endAccessor="end"
-                  style={{ height: 500 }}
-                  selectable
-                  onSelectEvent={handleSelectEvent}
-                  onSelectSlot={handleSelectSlot}
-                  components={{
-                    event: EventAgenda, 
-                  }}
-                />
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500 }}
+                selectable
+                onSelectEvent={handleSelectEvent}
+                onSelectSlot={handleSelectSlot}
+                eventPropGetter={(event) => {
+                  return {
+                    style: {
+                      backgroundColor: event.type === 'meal' ? '#fdae6b' : '#3174ad' // Different colors for meal plans and other events
+                    }
+                  };
+                }}
+                components={{
+                  event: EventAgenda, // Customize how events are rendered if necessary
+                }}
+              />
       {modalOpen && (
             <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
               <div className={isViewing ? "view-event-modal-content" : "create-event-modal-content"}>
@@ -687,27 +731,32 @@ const generateFitnessSchedule = async(userData) => {
          <ClientProgressDashboard 
                workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
-               yourPlans={trainerPlans} 
+              // yourPlans={trainerPlans} 
               
         />
        </section>
       
       
-      <div className="section">
+      <div ref={workoutplansRef} className="section-workout">
           <h3>Your Subscribed Workout Plans</h3>
           {yourWorkoutPlans.length === 0 ? (
               <p>No Subscribed Plans</p>
           ) : (
             yourWorkoutPlans.map(plan => (
-                  <div key={plan._id} className="content-item">
-                      <h4>{plan.title}</h4>
-                      <p>Type: {plan.typeOfWorkout}</p>
-                      <p>Created On: {plan.createdAt}</p>
-                      <button onClick={() => openWorkoutPlan(plan._id, plan.trainerId)}>Open</button>
-                  </div>
-              ))
-          )}
+              <div key={plan._id} className="content-item">
+                <div>
+                  <h4>{plan.title}</h4>
+                  <p>Type: {plan.typeOfWorkout}</p>
+                  <p className="created-timestamp">Created On: {new Date(plan.createdAt).toLocaleDateString()}</p>
+                </div>
+                <button className="open-btn" onClick={() => openWorkoutPlan(plan._id, plan.trainerId)}>Open</button>
+              </div>
+            ))
+          )
+          }
       </div>
+
+    
 
 
         <div className="chat-fab-container">
