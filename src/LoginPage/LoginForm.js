@@ -45,7 +45,7 @@ const LoginForm = ({ logo }) => {
             body: JSON.stringify({ email: decodedData.email, password: '', isOAuth: true }),
           });
       
-          const data = await response.json(); 
+          const data = await response.text(); 
       
           if (response.ok && data.status) {
             console.log('Login successful:', data);
