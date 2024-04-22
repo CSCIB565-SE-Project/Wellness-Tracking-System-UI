@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './LandingPage/Header';
 import Hero from './LandingPage/Hero';
 import Exercises from './LandingPage/Exercises';

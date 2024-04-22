@@ -38,8 +38,8 @@ const connectToStreamChat = async (navigate) => {
   const authToken = userData ? userData.token : null;
 
   try {
-      const response = await fetch('http://localhost:5000/auth/verifyToken', {
-          method: 'POST',
+    const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', { 
+      method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           },
@@ -97,6 +97,8 @@ const UserDashboard = () => {
   const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
   const [isViewing, setIsViewing] = useState(false);
+  const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
+
 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
@@ -109,12 +111,16 @@ const UserDashboard = () => {
     getUserFullName();
     generateFitnessSchedule(userData);
     fetchTrainerIds(userData);
-    // setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-    fetchSubscribedPlans(userData, subscribedTrainerIds);  
+    setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    //fetchSubscribedPlans(userData, subscribedTrainerIds);  
     // if (!subscribedTrainerIds) return;
     // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
-
-  }, []);
+    if (subscribedTrainerIds.length > 0) {
+      console.log("now to fetch plans");
+      fetchSubscribedPlans(userData, subscribedTrainerIds);
+  }
+}, [subscribedTrainerIds]); 
+ 
   
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
@@ -307,7 +313,7 @@ const generateFitnessSchedule = async(userData) => {
   
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
-          if (!trainers) return <div>Loading trainers...</div>; 
+          if (!trainers) return <div></div>; 
           
           return (
             <div className="trainer-list">
@@ -377,36 +383,85 @@ const generateFitnessSchedule = async(userData) => {
     );
   };
 
-    // Get the array of subscribed trainers from backend 
-  const fetchTrainerIds = async (userData) => {
-    try {
-      const jwtToken = userData.token;
-      const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`, { 
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`
-        },
-      });  
-      const data = await response.json();
-      //console.log(data);
-      setSubscribedTrainerIds(data);
+
+  const getTrainerList = async(userData, trainerIds) => {
+    setIsLoading(true);
+    setError('');
+    const trainerList = [];
+    const jwtToken = userData.token;
+    for(const subId of trainerIds){
+        try{
+            const response = await fetch(`https://login-service.azurewebsites.net/users/getdetails?userId=${subId}`, { 
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwtToken}`
+            },
+          });
+          if(!response.ok){
+            throw new Error("Failed to fetch trainers");
+          }
+          else{
+            const data = await response.json();
+            trainerList.push(data);
+          } 
+        }catch (error) {
+          console.error("Error fetching user info for trainer ID:", subId, error); // Log any errors from getUserInfo
+          // Handle the error as needed, e.g., continue processing other user IDs
+        }
+      }
       setIsLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch trainerIds', error);
-    }
-  };
+      return trainerList;
+    };
+
+
+    // Get the array of subscribed trainers from backend 
+    const fetchTrainerIds = async (userData) => {
+      const jwtToken = userData.token;
+      try {
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/getsub/${userData.userId}`, {
+          method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+        });  
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setSubscribedTrainerIds(data);
+          console.log("setting data");
+          console.log("now to fetch plans");
+          var trainers = await getTrainerList(userData, subscribedTrainerIds);
+          if(trainers.length > 0){
+            setSubscribedTrainers(trainers);
+          }
+          else{
+            setSubscribedTrainers([]);
+          }
+          fetchSubscribedPlans(userData, subscribedTrainerIds)
+        } else {
+          console.error('Expected an array but got:', data);
+          setSubscribedTrainerIds([]);  // Ensure it's always an array
+        }
+      } catch (error) {
+        console.error('Failed to fetch trainerIds', error);
+        setSubscribedTrainerIds([]);
+      }
+
+    };
+
+
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
       setError(''); 
-      console.log(subscribedTrainerIds);
+      console.log("Subscribed Trainer IDs:", subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
   
       for (const trainerId of subscribedTrainerIds) {
           try {
-              const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, {
+              const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, {
                   method: 'PUT',
                   headers: {
                       'Content-Type': 'application/json',
