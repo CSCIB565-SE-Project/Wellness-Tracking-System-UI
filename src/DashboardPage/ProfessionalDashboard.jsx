@@ -522,7 +522,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       for(var subId of subIds){
           try{
-              const response = await fetch(`http://localhost:8000/api/users/find/${subId}`, { 
+              const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/find/${subId}`, { 
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -551,7 +551,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, { 
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/sub/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -571,6 +571,7 @@ const ProfessionalDashboard = () => {
         else{
           setSubscribedClients([]);
         }
+        console.log(subscribedClients);
         setIsLoading(false);
       }
     } catch(error) {
@@ -611,6 +612,9 @@ const ProfessionalDashboard = () => {
     }
   };
 
+  const handleClientClick = () => {
+
+  }
 
   const displaySuccessMessage = () => {
     alert('Workout Plan Created Successfully!');
@@ -709,7 +713,7 @@ return (
                 ) : (
                     <ul>
                         {unapprovedVideos.map((video) => (
-                            <li key={video._idid}>
+                            <li key={video._id}>
                                 <p>Title: {video.title}</p>
                                 <p>Type: {video.typeOfWorkout}</p>
                                 <p>Mode: {video.modeOfInstruction}</p>
@@ -822,28 +826,32 @@ return (
           </div>
 
 
-           <div className="section">
-              <div style={{ float: 'left', marginRight: '20px' }}>
-                  <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
-              </div>
-              <div style={{ float: 'left' }}>
-                  <h3>Subscribed Clients</h3>
-                  {subscribedClients.length === 0 ? (
-                      <p>No Subscribers</p>
-                  ) : (
-                      <ul>
-                          {subscribedClients.map(client => (
-                              <li key={client.userId}>
-                                  {client.userFname} {client.userLname}<br/>
-                                  Email: {client.userEmail}<br/>
-                                  Gender: {client.userGender}
-                              </li>
-                          ))}
-                      </ul>
-                  )}
-              </div>
+          <div className="section">
+          <div style={{ float: 'left', marginRight: '20px' }}>
+                <h3>Subscribed Clients Count: {subscribedClientsCount}</h3>
+            </div>
+            <div style={{ float: 'left' }}>
+                <h3>Subscribed Clients</h3>
+                {subscribedClients.length === 0 ? (
+                    <p>No Subscribers</p>
+                ) : (
+                    <ul>
+                        {subscribedClients.map((clientArray, index) => (
+                            <li key={index}>
+                                {clientArray.map((client) => (
+                                    <div key={client._id}>
+                                        <button onClick={() => handleClientClick(client)}>
+                                            <p>{client.userFname} {client.userLName} - Email: {client.userEmail}</p>
+                                        </button>
+                                    </div>
+                                ))}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
               <div style={{ clear: 'both' }}></div>
-          </div>
+            </div>
         </div>
   </>
 );
