@@ -28,9 +28,12 @@ const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = []
   const [progressMetrics, setProgressMetrics] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [upcomingVideos , setupcomingVideos]=useState([]);
 
   useEffect(() => {
         const userData = getUserData();
+        upcomingvideos(userData);
+
         console.log("Fetching progress metrics..."); // Log at the beginning of useEffect
         const fetchProgressMetrics = async (userData) => {
         if (!userData) return;
@@ -161,11 +164,50 @@ try {
 
 
   // Placeholder data for upcoming and recently watched videos
-const upcomingVideos = [
-  { id: 1, title: "Yoga Basics", url: "https://example.com/yoga-basics-video" },
-  { id: 2, title: "Advanced Cardio Workout", url: "https://example.com/advanced-cardio-video" },
+
+  // { id: 1, title: "Yoga Basics", url: "https://example.com/yoga-basics-video" },
+  // { id: 2, title: "Advanced Cardio Workout", url: "https://example.com/advanced-cardio-video" },
   // Add more videos as needed
-];
+
+
+  const upcomingvideos= async(userData) => {
+    setIsLoading(true);
+    setError('');
+    const jwtToken = userData.token;
+    
+  try{
+    const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/trend`, { 
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`
+    },
+  });
+
+  if(!response.ok){
+    throw new Error("Failed to fetch VIDEOS");
+  }
+
+  console.log(response);
+  const data = await response.json();
+  console.log(data);
+
+      setupcomingVideos(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching events. Contact admin.');
+      setIsLoading(false);
+    }
+  };
+
+
+
+
+
+
+
+
 
 const recentlyWatchedVideos = [
   { id: 1, title: "Strength Training 101", url: "https://example.com/strength-training-101-video", watchedOn: "2023-03-25" },

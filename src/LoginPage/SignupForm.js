@@ -2,7 +2,7 @@ import './SignupForm.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const SignupForm = () => {
+const SignupForm = ({ logo }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,6 +14,8 @@ const SignupForm = () => {
     const navigate = useNavigate();
     const [gender, setGender] = useState('');
     const [dob, setDob] = useState('');
+    const [specialty, setSpecialty] = useState('');
+    const [location, setLocation] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -21,6 +23,13 @@ const SignupForm = () => {
             setMessage("Passwords do not match.");
             return;
         }
+        let payload;
+        if (role === 'PROFESSIONAL') {
+            payload = {email, password, fname, lname, dob, username, role, specialty, location, isOAuth: false};
+        } else {
+            payload = {email, password, fname, lname, dob, username, role, isOAuth: false};
+        }
+
         try {
             const payload = {email, password, fname, lname, dob, username, role, isOAuth: false};
             console.log("Sending payload:", payload);
@@ -49,8 +58,10 @@ const SignupForm = () => {
     return (
         <div className="login-container">
             <div className="form-box">
+                {logo && <img src={logo} alt="Company Logo" className="company-logo" />}
                 <h1>Sign Up</h1>
                 {message && <div className="error-message">{message}</div>}
+
                 <form onSubmit={handleSubmit} className="login-form">
                     <div className="form-group">
                         <input
@@ -148,6 +159,31 @@ const SignupForm = () => {
                             <option value="ADMIN">Admin</option>
 
                         </select>
+
+
+                        {role === 'PROFESSIONAL' && (
+                        <>
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    placeholder="Specialty"
+                                    value={specialty}
+                                    onChange={(e) => setSpecialty(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    placeholder="Location"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </>
+                    )}
+
                     </div>
                     <button type="submit" className="login-button">Create Account</button>
                     <button type="button" className="forgot-link" onClick={() => navigate('/login')}>Return to Login</button>

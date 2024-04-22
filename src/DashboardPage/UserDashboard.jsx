@@ -87,7 +87,6 @@ const UserDashboard = () => {
   const [trainers, setTrainers] = useState(null);
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
-  const userData = getUserData();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const TrainingvideosRef = useRef(null);
   const workoutplansRef = useRef(null);
@@ -95,9 +94,9 @@ const UserDashboard = () => {
   const sessionsRef = useRef(null)
   const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
   const clientDashboardRef = useRef();
-
   const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
+  const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
 
 
@@ -107,29 +106,28 @@ const UserDashboard = () => {
     }
   };
 
-    useEffect(() => {
-      const userData = getUserData();
-      getUserFullName();
-      generateFitnessSchedule(userData);
-      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-      fetchTrainerIds(userData);
-
-      // This effect should only run once on component mount, so dependencies related to fetching trainers should not be included.
-  }, []); 
-
-    useEffect(() => {
-      const userData = getUserData();
-      if (subscribedTrainerIds.length > 0) {
-          console.log("now to fetch plans");
-          fetchSubscribedPlans(userData, subscribedTrainerIds);
-      }
-  }, [subscribedTrainerIds]);  // This effect runs whenever subscribedTrainerIds changes
-    
+  useEffect(() => {  
+    const userData = getUserData();
+    getUserFullName();
+    generateFitnessSchedule(userData);
+    fetchTrainerIds(userData);
+    setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    //fetchSubscribedPlans(userData, subscribedTrainerIds);  
+    // if (!subscribedTrainerIds) return;
+    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
+    if (subscribedTrainerIds.length > 0) {
+      console.log("now to fetch plans");
+      fetchSubscribedPlans(userData, subscribedTrainerIds);
+  }
+}, [subscribedTrainerIds]); 
+ 
+  
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
     SetEndTime(format(end, 'HH:mm:ss'));
     setDate(format(start, 'yyyy-MM-dd')); // assuming you want the date from the start
     setModalOpen(true);
+    setIsViewing(false);
   };
   
   const handleSelectEvent = (event) => {
@@ -140,6 +138,7 @@ const UserDashboard = () => {
     setWorkout(event.workout); // assuming workout type is stored in event
     setCurrentEventId(event.id);
     setModalOpen(true);
+    setIsViewing(true);
   };
 
   const handleCloseModal = () => {
@@ -174,9 +173,8 @@ const UserDashboard = () => {
 
   const createNewEvent = async (event) => {
     const updatedEvents = [...events, { ...event, id: events.length + 1 }];  
-    setEvents(updatedEvents);
+    setEvents(updatedEvents);  
     const userData = getUserData();
-    console.log(userData);
     const jwtToken = userData.token;
     const day  = date;
     const startTime = starttime;
@@ -196,6 +194,7 @@ const UserDashboard = () => {
         });
         console.log(response);
         const data = await response.json();
+
         if (data) {
           console.log('Workout Plan Created Successfully!', data);
         
@@ -223,17 +222,17 @@ const UserDashboard = () => {
 
     const handleEventDelete = async () => {
         const userData = getUserData();
-        const jwtToken = userData.token;
         const id = currentEventId;
       
         try {
           // Send delete request to the server
-          const response = await fetch(`http://localhost:8080/timetables/deleteEvent?eventId=${id}`, {
+          const response = await fetch(`http://localhost:8080/timetables/delete?timetableId=${id}`, {
             method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${jwtToken}`
-            },
+            // headers: {
+            //   'Authorization': `Bearer ${jwtToken}`
+            // },
           });
+          console.log(response);
       
           if (!response.ok) {
             throw new Error("Failed to delete the event.");
@@ -257,7 +256,7 @@ const UserDashboard = () => {
         setUserFullName(fullName)   ;
       };
 
-  const generateFitnessSchedule = async(userData) => {
+const generateFitnessSchedule = async(userData) => {
     setIsLoading(true);
     setError('');
     const jwtToken = userData.token;
@@ -312,7 +311,6 @@ const UserDashboard = () => {
           );
         };
   
-
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
           if (!trainers) return <div></div>; 
@@ -330,8 +328,6 @@ const UserDashboard = () => {
             </div>
           );
         };
-
-
 
     const SearchBar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -420,6 +416,10 @@ const UserDashboard = () => {
     };
 
 
+
+
+
+    // Get the array of subscribed trainers from backend 
     const fetchTrainerIds = async (userData) => {
       const jwtToken = userData.token;
       try {
@@ -451,9 +451,12 @@ const UserDashboard = () => {
         console.error('Failed to fetch trainerIds', error);
         setSubscribedTrainerIds([]);
       }
+
       
     };
     // Get the array of subscribed trainers from backend 
+
+
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
@@ -525,28 +528,30 @@ const UserDashboard = () => {
     { id: 'endurance', name: 'Endurance', value: '50%' },
     // ... Additional metrics
   ],
+  
   nutrition: [
     { mealTime: 'Breakfast', items: ['Oatmeal', 'Protein Shake', 'Banana'] },
     { mealTime: 'Lunch', items: ['Grilled Chicken', 'Quinoa', 'Salad'] },
     { mealTime: 'Dinner', items: ['Salmon', 'Sweet Potatoes', 'Steamed Veggies'] },
     // ... Additional meals/snacks
   ],
+
+
+
   supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
 };
-      const toggleProfileDropdown = () => {
-        setIsProfileDropdownOpen(!isProfileDropdownOpen);
-      };
 
+
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  };
       const handleLogout = () => {
         // Clear local storage or any other clean-ups.
         navigate('/login');
     };
 
-
-
-
  return (
-
   <>
      <header className="dashboard-header">
             <div className="logo-container">
@@ -595,7 +600,7 @@ const UserDashboard = () => {
 
     <div className="dashboard-grid">
       {/* Row 1 */}
-      <section className="calendar-section">
+    <section className="calendar-section">
               <h3>Calendar</h3>  
               <Calendar
                   localizer={localizer}
@@ -610,10 +615,24 @@ const UserDashboard = () => {
                     event: EventAgenda, 
                   }}
                 />
-                {modalOpen && (
-                <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
-                <h2>Create your own schedule</h2> 
-                <div className="modal-content">
+      {modalOpen && (
+            <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
+              <div className={isViewing ? "view-event-modal-content" : "create-event-modal-content"}>
+              {isViewing ? (
+      // Content when viewing an existing event
+      <>
+        <h2>Event Details</h2>
+        <p>Title: {eventTitle}</p>
+        <p>Date: {date}</p>
+        <p>Start Time: {starttime}</p>
+        <p>End Time: {endtime}</p>
+        <p>Workout Type: {Workout}</p>
+        <button type="button" onClick={() => { handleEventDelete(currentEventId); handleCloseModal(); }}>Delete Event</button>
+        <button type="button" onClick={handleCloseModal}>Close</button>
+      </>
+    ) : (
+<>            <h2> Create your own schedule </h2> 
+              <div className="modal-content">
                 <form onSubmit={handleEventSubmit}>
                   <input
                   type="text"
@@ -623,7 +642,7 @@ const UserDashboard = () => {
                 />
                 <input
                   type="date"
-                  value={date}m
+                  value={date}
                   onChange={(e) => setDate(e.target.value)}
                 />
                 <input
@@ -646,15 +665,15 @@ const UserDashboard = () => {
                   <option value="Strength">Strength Training</option>
                   <option value="Zumba">Zumba</option>
                   </select>
-                  <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
-                  {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
-                  <button type="button" onClick={handleCloseModal}>Cancel</button>
+                  <button type="submit"> Create</button> 
+                 <button type="button" onClick={handleCloseModal}>Cancel</button>
                 </form>
                 </div>
-                  </Modal>
-                      )}
-
-                    </section>
+                </>
+              )}
+              </div>
+          </Modal>)}
+        </section>
     
      
         <section className="trainer-list-section">
