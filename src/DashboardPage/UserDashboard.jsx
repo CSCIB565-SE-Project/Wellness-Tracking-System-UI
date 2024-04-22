@@ -98,6 +98,8 @@ const UserDashboard = () => {
 
   const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
+  const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
+
 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
@@ -110,7 +112,6 @@ const UserDashboard = () => {
       getUserFullName();
       generateFitnessSchedule(userData);
       setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-
       fetchTrainerIds(userData);
 
       // This effect should only run once on component mount, so dependencies related to fetching trainers should not be included.
@@ -338,6 +339,7 @@ const UserDashboard = () => {
     const [location, setLocation] = useState('');
     const [mode, setMode] = useState('');
     const [type, setType] = useState('');
+
   
     const handleSearch = (e) => {
       e.preventDefault();
@@ -387,6 +389,35 @@ const UserDashboard = () => {
   }; 
 
 
+  const getTrainerList = async(userData, trainerIds) => {
+    setIsLoading(true);
+    setError('');
+    const trainerList = [];
+    const jwtToken = userData.token;
+    for(const subId of trainerIds){
+        try{
+            const response = await fetch(`https://login-service.azurewebsites.net/users/getdetails?userId=${subId}`, { 
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${jwtToken}`
+            },
+          });
+          if(!response.ok){
+            throw new Error("Failed to fetch trainers");
+          }
+          else{
+            const data = await response.json();
+            trainerList.push(data);
+          } 
+        }catch (error) {
+          console.error("Error fetching user info for trainer ID:", subId, error); // Log any errors from getUserInfo
+          // Handle the error as needed, e.g., continue processing other user IDs
+        }
+      }
+      setIsLoading(false);
+      return trainerList;
+    };
 
 
     const fetchTrainerIds = async (userData) => {
@@ -404,6 +435,13 @@ const UserDashboard = () => {
           setSubscribedTrainerIds(data);
           console.log("setting data");
           console.log("now to fetch plans");
+          var trainers = await getTrainerList(userData, subscribedTrainerIds);
+          if(trainers.length > 0){
+            setSubscribedTrainers(trainers);
+          }
+          else{
+            setSubscribedTrainers([]);
+          }
           fetchSubscribedPlans(userData, subscribedTrainerIds)
         } else {
           console.error('Expected an array but got:', data);
