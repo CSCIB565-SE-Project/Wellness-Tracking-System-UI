@@ -14,6 +14,7 @@ const OAuthSignupForm = () => {
   const { email: preloadedEmail, fname: preloadedFirstName, lname: preloadedLastName, isOAuth } = location.state || {};
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
+  const [specialty, setSpecialty] = useState('');
 
   useEffect(() => {
     if (isOAuth) {
