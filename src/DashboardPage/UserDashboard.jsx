@@ -97,7 +97,6 @@ const UserDashboard = () => {
   const clientDashboardRef = useRef();
 
   const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
-  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
 
    const scrollToTrainingVideos = () => {
@@ -106,18 +105,25 @@ const UserDashboard = () => {
     }
   };
 
-  useEffect(() => {  
-    const userData = getUserData();
-    getUserFullName();
-    generateFitnessSchedule(userData);
-    fetchTrainerIds(userData);
-    // setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-    fetchSubscribedPlans(userData, subscribedTrainerIds);  
-    // if (!subscribedTrainerIds) return;
-    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
+    useEffect(() => {
+      const userData = getUserData();
+      getUserFullName();
+      generateFitnessSchedule(userData);
+      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
 
-  }, []);
-  
+      fetchTrainerIds(userData);
+
+      // This effect should only run once on component mount, so dependencies related to fetching trainers should not be included.
+  }, []); 
+
+    useEffect(() => {
+      const userData = getUserData();
+      if (subscribedTrainerIds.length > 0) {
+          console.log("now to fetch plans");
+          fetchSubscribedPlans(userData, subscribedTrainerIds);
+      }
+  }, [subscribedTrainerIds]);  // This effect runs whenever subscribedTrainerIds changes
+    
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
     SetEndTime(format(end, 'HH:mm:ss'));
@@ -378,26 +384,9 @@ const UserDashboard = () => {
         <button onClick={handleSearch}>Search</button>
       </div>
     );
-  };
+  }; 
 
-  useEffect(() => {
-    const userData = getUserData();
-    getUserFullName();
-    generateFitnessSchedule(userData);
-    setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
 
-    fetchTrainerIds(userData);
-
-    // This effect should only run once on component mount, so dependencies related to fetching trainers should not be included.
-}, []);  
-
-useEffect(() => {
-    const userData = getUserData();
-    if (subscribedTrainerIds.length > 0) {
-        console.log("now to fetch plans");
-        fetchSubscribedPlans(userData, subscribedTrainerIds);
-    }
-}, [subscribedTrainerIds]);  // This effect runs whenever subscribedTrainerIds changes
 
 
     const fetchTrainerIds = async (userData) => {
@@ -427,25 +416,6 @@ useEffect(() => {
       
     };
     // Get the array of subscribed trainers from backend 
-
-    const fetchTrainerIds = async (userData) => {
-      try {
-        const jwtToken = userData.token;
-        const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`, { 
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwtToken}`
-          },
-        });  
-        const data = await response.json();
-        //console.log(data);
-        setSubscribedTrainerIds(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch trainerIds', error);
-      }
-    };
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
