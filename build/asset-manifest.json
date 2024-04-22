@@ -1,0 +1,35 @@
+{
+  "files": {
+    "main.css": "/Wellness-Tracking-System-UI/static/css/main.9bc70208.css",
+    "main.js": "/Wellness-Tracking-System-UI/static/js/main.6693e97c.js",
+    "static/js/801.cf91ff84.chunk.js": "/Wellness-Tracking-System-UI/static/js/801.cf91ff84.chunk.js",
+    "static/js/744.1fc2ff78.chunk.js": "/Wellness-Tracking-System-UI/static/js/744.1fc2ff78.chunk.js",
+    "static/js/453.54413c1b.chunk.js": "/Wellness-Tracking-System-UI/static/js/453.54413c1b.chunk.js",
+    "static/media/lunges.png": "/Wellness-Tracking-System-UI/static/media/lunges.2341d3cdb175efdfcf9e.png",
+    "static/media/yoga.png": "/Wellness-Tracking-System-UI/static/media/yoga.83348997bfe06c512c61.png",
+    "static/media/remixicon.svg?t=1590207869815": "/Wellness-Tracking-System-UI/static/media/remixicon.9cedd2150922ead84869.svg",
+    "static/media/extended.png": "/Wellness-Tracking-System-UI/static/media/extended.54fbefedf93c73539c3d.png",
+    "static/media/gym-1.png": "/Wellness-Tracking-System-UI/static/media/gym-1.87751e6cec85844c5c63.png",
+    "static/media/remixicon.eot?t=1590207869815": "/Wellness-Tracking-System-UI/static/media/remixicon.5cb99e6cba5a4619063f.eot",
+    "static/media/remixicon.ttf?t=1590207869815": "/Wellness-Tracking-System-UI/static/media/remixicon.f2616f597cf98f38d234.ttf",
+    "static/media/remixicon.woff?t=1590207869815": "/Wellness-Tracking-System-UI/static/media/remixicon.8d09fa11700ed63cf96e.woff",
+    "static/media/signup.jpg": "/Wellness-Tracking-System-UI/static/media/signup.f535f5e21204d29d2009.jpg",
+    "static/media/remixicon.woff2?t=1590207869815": "/Wellness-Tracking-System-UI/static/media/remixicon.90668f6f9b3c2c18a090.woff2",
+    "static/media/trainer.jpg": "/Wellness-Tracking-System-UI/static/media/trainer.6d7aeb8a1979647535d3.jpg",
+    "static/media/FitInc.png": "/Wellness-Tracking-System-UI/static/media/FitInc.cb024e2c53294a92a145.png",
+    "static/media/logo.png": "/Wellness-Tracking-System-UI/static/media/logo.cb024e2c53294a92a145.png",
+    "static/media/dumble.jpg": "/Wellness-Tracking-System-UI/static/media/dumble.2c84edffbc5d32bdffe9.jpg",
+    "static/media/avatar03.jpeg": "/Wellness-Tracking-System-UI/static/media/avatar03.747183f5b518e6333859.jpeg",
+    "static/media/google.webp": "/Wellness-Tracking-System-UI/static/media/google.8858db25f44f8b3f679e.webp",
+    "index.html": "/Wellness-Tracking-System-UI/index.html",
+    "main.9bc70208.css.map": "/Wellness-Tracking-System-UI/static/css/main.9bc70208.css.map",
+    "main.6693e97c.js.map": "/Wellness-Tracking-System-UI/static/js/main.6693e97c.js.map",
+    "801.cf91ff84.chunk.js.map": "/Wellness-Tracking-System-UI/static/js/801.cf91ff84.chunk.js.map",
+    "744.1fc2ff78.chunk.js.map": "/Wellness-Tracking-System-UI/static/js/744.1fc2ff78.chunk.js.map",
+    "453.54413c1b.chunk.js.map": "/Wellness-Tracking-System-UI/static/js/453.54413c1b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9bc70208.css",
+    "static/js/main.6693e97c.js"
+  ]
+}

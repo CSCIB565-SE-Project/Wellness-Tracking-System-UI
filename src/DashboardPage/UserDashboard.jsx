@@ -37,7 +37,7 @@ const connectToStreamChat = async (navigate) => {
   const authToken = userData ? userData.token : null;
 
   try {
-      const response = await fetch('http://localhost:5000/auth/verifyToken', {
+      const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ const UserDashboard = () => {
   const [trainers, setTrainers] = useState(null);
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
-  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState(null);
+  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
 
 
@@ -241,7 +241,7 @@ const UserDashboard = () => {
         
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
-          if (!trainers) return <div>Loading trainers...</div>; 
+          if (!trainers) return <div></div>; 
           
           return (
             <div className="trainer-list">
@@ -313,39 +313,63 @@ const UserDashboard = () => {
     );
   };
 
-    // Get the array of subscribed trainers from backend 
-    useEffect(() => {  
-      const userData = getUserData();
-      getUserFullName();
-      generateFitnessSchedule(userData);
-      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+  useEffect(() => {
+    const userData = getUserData();
+    getUserFullName();
+    generateFitnessSchedule(userData);
+    setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
 
-      const fetchTrainerIds = async () => {
-        try {
-          const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`);  
-          const data = await response.json();
-          setSubscribedTrainerIds(data);  
-        } catch (error) {
-          console.error('Failed to fetch trainerIds', error);
+    fetchTrainerIds(userData);
+
+    // This effect should only run once on component mount, so dependencies related to fetching trainers should not be included.
+}, []);  
+
+useEffect(() => {
+    const userData = getUserData();
+    if (subscribedTrainerIds.length > 0) {
+        console.log("now to fetch plans");
+        fetchSubscribedPlans(userData, subscribedTrainerIds);
+    }
+}, [subscribedTrainerIds]);  // This effect runs whenever subscribedTrainerIds changes
+
+
+    const fetchTrainerIds = async (userData) => {
+      const jwtToken = userData.token;
+      try {
+        const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/getsub/${userData.userId}`, {
+          method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`
+                },
+        });  
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setSubscribedTrainerIds(data);
+          console.log("setting data");
+          console.log("now to fetch plans");
+          fetchSubscribedPlans(userData, subscribedTrainerIds)
+        } else {
+          console.error('Expected an array but got:', data);
+          setSubscribedTrainerIds([]);  // Ensure it's always an array
         }
+      } catch (error) {
+        console.error('Failed to fetch trainerIds', error);
+        setSubscribedTrainerIds([]);
       }
-      fetchTrainerIds();
-
-      if (!subscribedTrainerIds) return;
-      fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
-
-    }, [], getUserData, [subscribedTrainerIds]);
+      
+    };
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
       setError(''); 
-  
+      console.log("Subscribed Trainer IDs:", subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
   
       for (const trainerId of subscribedTrainerIds) {
           try {
-              const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, {
+              const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, {
                   method: 'PUT',
                   headers: {
                       'Content-Type': 'application/json',
