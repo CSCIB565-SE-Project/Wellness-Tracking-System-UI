@@ -19,7 +19,6 @@
     100% { transform: scale(1); opacity: 1; }
   }
  
-  
 
   
   .upload-form, .content-list {
@@ -73,7 +72,6 @@
   box-shadow: 0 0 8px rgba(76,175,80,0.6);
 }
 
-  
   .upload-form button {
     background-color: #4CAF50;
     color: white;

@@ -1,53 +1,18 @@
-// import React from 'react';
-// import '../../styles/ClientProgressDashboard.css'; // Make sure to create corresponding CSS file
 
-// const ClientProgressDashboard = ({ workoutPlan, progressMetrics }) => {
-//     return (
-//         <div className="client-progress-dashboard">
-//             <h2>Your Fitness Progress</h2>
 
-//             <div className="workout-plan">
-//                 <h3>Enrolled Workout Routine</h3>
-//                 <p>{workoutPlan.description}</p>
-//             </div>
+import React, { useEffect, useState,useRef ,useImperativeHandle} from 'react';
 
-//             <div className="progress-metrics">
-//                 <h3>Progress Metrics</h3>
-//                 <ul>
-//                     {progressMetrics.map(metric => (
-//                         <li key={metric.id}>
-//                             <span className="metric-name">{metric.name}:</span>
-//                             <span className="metric-value">{metric.value}</span>
-//                         </li>
-//                     ))}
-//                 </ul>
-//             </div>
 
-//             <div className="calories-burnt">
-//                 <h3>Calories Burnt</h3>
-//                 <p>{workoutPlan.caloriesBurnt} calories</p>
-//             </div>
 
-//             <div className="goal-tracking">
-//                 <h3>Goal Tracking</h3>
-//                 <p>{Math.round(workoutPlan.goalProgress * 100)}% to goal</p>
-//                 <div className="progress-bar-container">
-//                     <div className="progress-bar" style={{ width: `${workoutPlan.goalProgress * 100}%` }}></div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default ClientProgressDashboard;
-// ClientProgressDashboard.jsx
-
-import React from 'react';
 import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import '../styles/ClientProgressDashboard.css'; 
 
-const ClientProgressDashboard = ({ workoutPlan, mindfulnessSessions = [], dailyMeals = [],  yourPlans }) => {
+const getUserData = () => {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  return userData;
+}
+const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = [],  yourPlans },ref) => {
   // Example data for charts
   const progressData = {
     labels: workoutPlan.metrics.map(metric => metric.name),
@@ -60,16 +25,87 @@ const ClientProgressDashboard = ({ workoutPlan, mindfulnessSessions = [], dailyM
     }],
   };
 
-  const caloriesData = {
-    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  const [progressMetrics, setProgressMetrics] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+        const userData = getUserData();
+        console.log("Fetching progress metrics..."); // Log at the beginning of useEffect
+        const fetchProgressMetrics = async (userData) => {
+        if (!userData) return;
+        setIsLoading(true);
+        setError(null);
+        const jwtToken = userData.token;
+        const userId = userData.userId;
+    
+try {
+ const response = await fetch(`http://localhost:8080/progress-metrics/get?userId=${userId}` ,
+ {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`
+      },
+
+      });
+      console.log("Response:", response); 
+      if (!response.ok) {
+        throw new Error('Failed to fetch progress metrics');
+      }
+      console.log(response);
+        const data = await response.json();
+        setProgressMetrics(data);
+        
+    } catch (error) {
+        console.error('Error fetching progress metrics:', error);
+      setError(error.message);
+      }
+    setIsLoading(false);
+      };
+      fetchProgressMetrics(userData); // Make sure to pass userData if it's required
+        }, []); // Include userData in the dependency array if it's needed to trigger the effect
+        
+
+  // const caloriesData = {
+  //   labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  //   datasets: [{
+  //     label: 'Calories Burnt',
+  //     data: [2000, 2500, 2800, 3000], // Example static data
+  //     fill: true,
+  //     borderColor: '#742774',
+  //     tension: 0.1
+  //   }]
+  // };
+
+  const caloriesChartData = {
+    labels: progressMetrics.map(metric => metric.date),
     datasets: [{
       label: 'Calories Burnt',
-      data: [2000, 2500, 2800, 3000], // Example static data
-      fill: true,
-      borderColor: '#742774',
-      tension: 0.1
+      data: progressMetrics.map(metric => parseFloat(metric.caloriesBurnt)),
+      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+      borderColor: 'rgba(75, 192, 192, 1)',
+      borderWidth: 1,
+      yAxisID: 'y-calories'
     }]
   };
+
+  const options = {
+    scales: {
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        id: 'y-calories',
+        suggestedMin: 0,   // Set the minimum value of the y-axis
+        suggestedMax: 1000, // Set the maximum value of the y-axis
+        grid: {
+          drawOnChartArea: false
+        }
+      }
+    }
+  };  
+
 
   const goalData = {
     labels: ["Goal Progress"],
@@ -98,6 +134,15 @@ const ClientProgressDashboard = ({ workoutPlan, mindfulnessSessions = [], dailyM
       backgroundColor: ['#FF6384', '#36A2EB'],
     }],
   };
+
+
+  const mindfulnessSessions = [
+  { date: '2024-04-18', type: 'Guided Meditation', duration: 30 },
+  { date: '2024-04-16', type: 'Breathing Exercises', duration: 15 },
+  { date: '2024-04-14', type: 'Body Scan Meditation', duration: 20 },
+  { date: '2024-04-12', type: 'Loving Kindness Meditation', duration: 25 },
+  { date: '2024-04-10', type: 'Progressive Relaxation', duration: 35 },
+  ];
 
   const mindfulnessSummary = mindfulnessSessions.length ? mindfulnessSessions.map((session, index) => (
     <li key={index}>
@@ -128,52 +173,105 @@ const recentlyWatchedVideos = [
   // Add more videos as needed
 ];
 
-  return (
-    <div className="client-progress-dashboard">
-      <h2>Health & Fitness Dashboard</h2>
+const trainingVideosRef = useRef();
 
-      {/* Progress Chart */}
-      <div className="chart-container">
-        <h3>Progress Overview</h3>
-        <Bar data={progressData} />
+const sessionsRef = useRef();
+
+useImperativeHandle(ref, () => ({
+  scrollToTrainingVideos: () => {
+    trainingVideosRef.current?.scrollIntoView({ behavior: 'smooth' });
+  },
+
+  scrollToSessions: () => {
+      sessionsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+}));
+
+
+
+
+
+
+
+  return (
+    <div ref={ref} className="client-progress-dashboard">
+    {/* Progress Chart */}
+    <div className="dashboard-row">
+        <div className="dashboard-column">
+        <div className="chart-container"> 
+          <h3>Progress Overview</h3>
+        <Bar data={progressData} /> 
+        </div>
       </div>
 
       {/* Calories Chart */}
-      <div className="chart-container">
-        <h3>Calories Burnt Over Time</h3>
-        <Line data={caloriesData} />
+      <div className="dashboard-column">
+        <div className="chart-container">
+          <h3>Calories Burnt Over Time</h3>
+          <Line data={caloriesChartData} options={options} />        </div>
       </div>
+    </div>
+
 
       {/* Goal Tracking */}
+
+    <div className="dashboard-row">
+     <div className="dashboard-column">
       <div className="chart-container">
-        <h3>Goal Achievement</h3>
-        <Doughnut data={goalData} />
-      </div>
+          <h3>Goal Achievement</h3>
+          <Doughnut data={goalData} />
+        </div>
+    </div>
+    
+  
 
     {/* Hydration Tracker */}
+    <div className="dashboard-column">
     <div className="chart-container">
         <h3>Hydration Tracker</h3>
         <Doughnut data={hydrationChart} />
       </div>
+    </div>
+    </div>
 
-      {/* Sleep Tracker */}
+
+
+    {/* Sleep Tracker */}
+  <div className="dashboard-row">
+    <div className="dashboard-column">
       <div className="chart-container">
         <h3>Sleep Tracker</h3>
         <Bar data={sleepData} />
       </div>
+    </div>
       
+
+       {/* Upcoming Training Videos */}
+    <div className="dashboard-column">  
+       <div   className="video-section">
+        <h3>Upcoming Training Videos</h3>
+        <div className="videos-list">
+          {upcomingVideos.map(video => (
+            <div key={video.id} className="video-item">
+              <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
+            </div>
+          ))}
+        </div>
+      </div>
+     </div>
+</div>
+
       {/* Mindfulness Sessions */}
-      <div className="section">
-        <h3>Mindfulness Sessions</h3>
-        <ul>{mindfulnessSummary}</ul>
-      </div>
-
-      {/* Meal Planner */}
-      <div className="section">
-        <h3>Meal Planner</h3>
-        {mealPlannerView}
-      </div>
-
+        <div ref={sessionsRef} class="container">
+          <div class="item">
+            <h2>Mindfulness Sessions</h2>   
+              <ul>{mindfulnessSummary}</ul>
+            </div>
+        `<div class="item">
+            <h2>Meal Planner</h2>
+              {mealPlannerView}
+          </div>
+        </div>
 
       {/* Workout Plan Details */}
       <div className="workout-details">
@@ -189,23 +287,9 @@ const recentlyWatchedVideos = [
           </div>
         ))}
       </div>
-
-
-      {/* Upcoming Training Videos */}
-      <div className="video-section">
-        <h3>Upcoming Training Videos</h3>
-        <div className="videos-list">
-          {upcomingVideos.map(video => (
-            <div key={video.id} className="video-item">
-              <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-
-    </div>
+     </div>
+  
   );
-};
+});
 
 export default ClientProgressDashboard;

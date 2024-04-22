@@ -12,6 +12,7 @@ import ClientProgressDashboard from '../DashboardPage/ClientProgressDashboard.js
 import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 import Modal from 'react-modal';
+import logo from '../assests/img/logo.png';
 
 
 const locales = {
@@ -78,18 +79,45 @@ const UserDashboard = () => {
   const [error, setError] = useState(''); 
   const [events, setEvents] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const[starttime,SetStartTime]  =useState(false);
-  const[endtime,SetEndTime]  =useState(false);
-  const[eventTitle,SetTitle]  =useState(false);
-  const[date,setDate]=useState(false);
-  const[Workout,setWorkout]  =useState(false);
+  const[starttime,SetStartTime]  =useState();
+  const[endtime,SetEndTime]  =useState();
+  const[eventTitle,SetTitle]  =useState();
+  const[date,setDate]=useState();
+  const[Workout,setWorkout]  =useState();
   const [trainers, setTrainers] = useState(null);
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
+  const userData = getUserData();
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const TrainingvideosRef = useRef(null);
+  const workoutplansRef = useRef(null);
+  const MetricsRef = useRef(null);
+  const sessionsRef = useRef(null)
+  const scrollToRef = (ref) => window.scrollTo(0, ref.current.offsetTop);
+  const clientDashboardRef = useRef();
+
+  const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [subscribedTrainerIds, setSubscribedTrainerIds] = useState([]);
   const [yourWorkoutPlans, setYourWorkoutPlans] = useState([]);
 
+   const scrollToTrainingVideos = () => {
+    if (clientDashboardRef.current) {
+      clientDashboardRef.current.scrollToTrainingVideos();
+    }
+  };
 
+  useEffect(() => {  
+    const userData = getUserData();
+    getUserFullName();
+    generateFitnessSchedule(userData);
+    fetchTrainerIds(userData);
+    // setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    fetchSubscribedPlans(userData, subscribedTrainerIds);  
+    // if (!subscribedTrainerIds) return;
+    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
+
+  }, []);
+  
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
     SetEndTime(format(end, 'HH:mm:ss'));
@@ -103,6 +131,7 @@ const UserDashboard = () => {
     SetStartTime(format(new Date(event.start), 'HH:mm:ss'));
     SetEndTime(format(new Date(event.end), 'HH:mm:ss'));
     setWorkout(event.workout); // assuming workout type is stored in event
+    setCurrentEventId(event.id);
     setModalOpen(true);
   };
 
@@ -131,13 +160,15 @@ const UserDashboard = () => {
     } else {
       createNewEvent(newEvent);
     }
+    handleCloseModal(); // Close modal after action
+
   };
 
 
-  const createNewEvent = async(event) => {
-    setEvents([...events, { ...event, id: events.length + 1 }]);
+  const createNewEvent = async (event) => {
+    const updatedEvents = [...events, { ...event, id: events.length + 1 }];  
+    setEvents(updatedEvents);
     const userData = getUserData();
-
     console.log(userData);
     const jwtToken = userData.token;
     const day  = date;
@@ -148,9 +179,8 @@ const UserDashboard = () => {
     const userId = userData.userId;
 
     try{
-      const response = await fetch(`http://localhost:8080/timetables/create/user/${userId}`, { 
+      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userId}`, { 
           method: 'POST',
-
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwtToken}`
@@ -170,27 +200,55 @@ const UserDashboard = () => {
         setError('An error occurred. Please try again later.');
       
       }
-
-
       };
 
       const updateEvent = (updatedEvent) => {
-        setEvents(events.map(evt => evt.id === updatedEvent.id ? updatedEvent : evt));
+        const updatedEvents = events.map(evt => 
+          evt.id === updatedEvent.id ? updatedEvent : evt // Mapping and checking for the id
+        );
+        setEvents(updatedEvents); // Setting the updated events array to state
       };
 
-      const handleEventDelete = () => {
-        setEvents(events.filter(evt => evt.id !== currentEventId));
-        handleCloseModal();
+      // const handleEventDelete = () => {
+      //   setEvents(events.filter(evt => evt.id !== currentEventId));
+      //   handleCloseModal();
+      // };
+
+    const handleEventDelete = async () => {
+        const userData = getUserData();
+        const jwtToken = userData.token;
+        const id = currentEventId;
+      
+        try {
+          // Send delete request to the server
+          const response = await fetch(`http://localhost:8080/timetables/deleteEvent?eventId=${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${jwtToken}`
+            },
+          });
+      
+          if (!response.ok) {
+            throw new Error("Failed to delete the event.");
+          }
+      
+          // Update the local events state to reflect the deletion
+          const updatedEvents = events.filter(event => event.id !== id);
+          setEvents(updatedEvents);
+          setCurrentEventId(null); // Reset the current event ID
+          setModalOpen(false); // Close the modal
+      
+        } catch (error) {
+          console.error('Delete error:', error);
+          setError('An error occurred while deleting the event. Please try again later.');
+        }
       };
-
-
- 
-  const getUserFullName = async() => {
-    const userData = getUserData();
-    var fullName = userData.fname;
-    setUserFullName(fullName);
-  };
-
+      
+      const getUserFullName = async() => {
+        const userData = getUserData();
+        var fullName = userData.fname ;
+        setUserFullName(fullName)   ;
+      };
 
   const generateFitnessSchedule = async(userData) => {
     setIsLoading(true);
@@ -199,8 +257,7 @@ const UserDashboard = () => {
     var userId =userData.userId;
 
     try{
-      const response = await fetch(`http://localhost:8080/timetables/get/user/${userId}`, { 
-
+      const response = await fetch(`http://localhost:8080/timetables/getByUser?userId=${userId}`, { 
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -211,18 +268,34 @@ const UserDashboard = () => {
     if(!response.ok){
       throw new Error("Failed to fetch VIDEOS");
     }
+  
     console.log(response);
     const data = await response.json();
     console.log(data);
-    setEvents(data);
-    setIsLoading(false);
-
-  } catch(error) {
-    console.error('Fetch error:', error);
-    setError('An error occurred while fetching. Contact admin.');
-    setIsLoading(false);  
-  }
+  
+      // Map fetched data to the required format
+      const formattedEvents = data.map(event => {
+        // Combine date and time fields to create start and end Date objects
+        const startDateTime = new Date(`${event.day}T${event.startTime}`);
+        const endDateTime = new Date(`${event.day}T${event.endTime}`);
+  
+        return {
+          id: event.id,
+          title: event.title,
+          start: startDateTime,
+          end: endDateTime,
+        };
+      }
+    );
+      setEvents(formattedEvents);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setError('An error occurred while fetching events. Contact admin.');
+      setIsLoading(false);
+    }
   };
+
 
   const EventAgenda = ({ event }) => {
           return (
@@ -232,13 +305,7 @@ const UserDashboard = () => {
           );
         };
   
-  const subscribedTrainers = [
-          { id: 1, name: 'Alex Johnson', specialty: 'Strength Training' },
-          { id: 2, name: 'Morgan Williams', specialty: 'Cardio Fitness' },
-          { id: 3, name: 'Sam Smith', specialty: 'Yoga and Flexibility' },
-          { id: 4, name: 'Taylor Brown', specialty: 'Nutrition' }
-        ];
-        
+
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
           if (!trainers) return <div></div>; 
@@ -359,11 +426,32 @@ useEffect(() => {
       }
       
     };
+    // Get the array of subscribed trainers from backend 
+
+    const fetchTrainerIds = async (userData) => {
+      try {
+        const jwtToken = userData.token;
+        const response = await fetch(`http://localhost:8000/api/users/getsub/${userData.userId}`, { 
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+        });  
+        const data = await response.json();
+        //console.log(data);
+        setSubscribedTrainerIds(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch trainerIds', error);
+      }
+    };
 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
       setIsLoading(true); 
       setError(''); 
       console.log("Subscribed Trainer IDs:", subscribedTrainerIds);
+      console.log(subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
   
@@ -376,12 +464,13 @@ useEffect(() => {
                       'Authorization': `Bearer ${jwtToken}`
                   },
               });
-  
+              
               if (!response.ok) {
                   throw new Error(`Failed to fetch plans for trainer ${trainerId}`);
               }
   
               const data = await response.json();
+              //console.log(data);
               plans[trainerId] = data.map(plan => ({ ...plan, trainerId }));
               
           } catch (error) {
@@ -436,94 +525,147 @@ useEffect(() => {
   ],
   supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
 };
+      const toggleProfileDropdown = () => {
+        setIsProfileDropdownOpen(!isProfileDropdownOpen);
+      };
+
+      const handleLogout = () => {
+        // Clear local storage or any other clean-ups.
+        navigate('/login');
+    };
+
+
 
 
  return (
-      <div style={{ height: '800px', margin: '50px' }}>
+
+  <>
+     <header className="dashboard-header">
+            <div className="logo-container">
+              <img src={logo} alt="Company Logo" onClick={() => navigate('/')} />
+              <h1>Fit Inc.</h1>
+            </div>
+
+            <nav className="main-nav">
+              {/* Define these functions to handle navigation or simply use `navigate` */}
+              <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>
+              <button onClick={() => clientDashboardRef.current.scrollToTrainingVideos()}>Training Videos</button>            
+              <button onClick={() => clientDashboardRef.current.scrollToSessions()}>Sessions</button>
+              <button onClick={() => scrollToRef(workoutplansRef)}>Workout Plans</button>
+
+            </nav>
+
+            <div className="user-section">
+            <button onClick={toggleProfileDropdown}>Hello,{UserFullName}</button>
+            {isProfileDropdownOpen && (
+            <div className="profile-dropdown">
+              <button onClick={() => navigate('/login')}>Change Profile</button>
+              <button onClick={handleLogout}>Logout</button>
+            </div>
+          )}
+        </div>
+      </header>
         
       <div className="user-dashboard">
-      <h2>Workout Programs</h2>
-      <SearchBar onSearch={handleSearch} />
+      
+
+      {/* <h2> Workout Programs </h2>
+      <SearchBar onSearch={handleSearch} /> */}
 
       <h2> {UserFullName}'s Fitness and Wellness Schedule</h2>
 
-      <div className="search-bar-container">
-        {/* Optional: Add sort and filter options here if needed */}
-        <div className="search-results-header">
-          <span className="results-count">36 Results</span>
-          <div className="sort-options">
-            <label htmlFor="sort">Newest First</label>
-            <select id="sort">
-              {/* Options for sorting */}
-            </select>
-          </div>
-        </div> 
- 
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          selectable
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          components={{
-            event: EventAgenda, 
-          }}
-        />
-      
-          {modalOpen && (
-            <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details">
-              {/* <h2>{selectedEvent.id ? 'Edit Event' : 'Add Event'}</h2> */}
-              <form onSubmit={handleEventSubmit}>
-              <input
-            type="text"
-            placeholder="Event Title"
-            value={eventTitle}
-            onChange={(e) => SetTitle(e.target.value)}
-          />
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <input
-            type="time"
-            value={starttime}
-            onChange={(e) => SetStartTime(e.target.value)}
-          />
-          <input
-            type="time"
-            value={endtime}
-            onChange={(e) => SetEndTime(e.target.value)}
-          />
-          <select
-            value={Workout}
-            onChange={(e) => setWorkout(e.target.value)}
-          >
-            <option value="">Select Workout Type</option>
-            <option value="Yoga">Yoga</option>
-            <option value="Cardio">Cardio</option>
-            <option value="Strength">Strength Training</option>
-            <option value="Zumba">Zumba</option>
-            </select>
-            <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
-            {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
-            <button type="button" onClick={handleCloseModal}>Cancel</button>
-          </form>
-            </Modal>
-                )}
+            {/* <div className="search-bar-container">
+              <div className="search-results-header">
+                <span className="results-count">36 Results</span>
+                <div className="sort-options">
+                  <label htmlFor="sort">Newest First</label>
+                  <select id="sort">
+                  </select>
+                </div>
+              </div> 
+            </div> */}
 
+    <div className="dashboard-grid">
+      {/* Row 1 */}
+      <section className="calendar-section">
+              <h3>Calendar</h3>  
+              <Calendar
+                  localizer={localizer}
+                  events={events}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 500 }}
+                  selectable
+                  onSelectEvent={handleSelectEvent}
+                  onSelectSlot={handleSelectSlot}
+                  components={{
+                    event: EventAgenda, 
+                  }}
+                />
+                {modalOpen && (
+                <Modal isOpen={modalOpen} onRequestClose={handleCloseModal} contentLabel="Event Details"  className="YourCustomModalClass">
+                <h2>Create your own schedule</h2> 
+                <div className="modal-content">
+                <form onSubmit={handleEventSubmit}>
+                  <input
+                  type="text"
+                  placeholder="Enter Event Title"
+                  value={eventTitle}
+                  onChange={(e) => SetTitle(e.target.value)}
+                />
+                <input
+                  type="date"
+                  value={date}m
+                  onChange={(e) => setDate(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={starttime}
+                  onChange={(e) => SetStartTime(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={endtime}
+                  onChange={(e) => SetEndTime(e.target.value)}
+                />
+                <select
+                  value={Workout}
+                  onChange={(e) => setWorkout(e.target.value)}
+                >
+                  <option value="">Select Workout Type</option>
+                  <option value="Yoga">Yoga</option>
+                  <option value="Cardio">Cardio</option>
+                  <option value="Strength">Strength Training</option>
+                  <option value="Zumba">Zumba</option>
+                  </select>
+                  <button type="submit">{eventTitle ? 'Update' : 'Create'}</button> {/* Assume update if title is non-empty */}
+                  {eventTitle && <button type="button" onClick={handleEventDelete}>Delete</button>}
+                  <button type="button" onClick={handleCloseModal}>Cancel</button>
+                </form>
+                </div>
+                  </Modal>
+                      )}
+
+                    </section>
+    
      
-        <TrainerList trainers={trainers} />
-        
-        <ClientProgressDashboard 
-              workoutPlan={workoutPlan}
-               progressMetrics={workoutPlan.metrics}
-               yourPlans={trainerPlans}
-        />
+        <section className="trainer-list-section">
+          <h3>Trainer List</h3>
+          <TrainerList trainers={trainers} />
+        </section>
+    </div>
 
+    <section ref={MetricsRef} className="progress-overview-section">
+      <h2>Health & Fitness Dashboard</h2>        
+         <ClientProgressDashboard 
+               workoutPlan={workoutPlan}
+               progressMetrics={workoutPlan.metrics}
+               yourPlans={trainerPlans} 
+              
+        />
+       </section>
+      
+      
       <div className="section">
           <h3>Your Subscribed Workout Plans</h3>
           {yourWorkoutPlans.length === 0 ? (
@@ -547,8 +689,8 @@ useEffect(() => {
           </button>
         </div>
       </div>
-    </div>
-  </div>
+  
+</>
 );
   };
 
