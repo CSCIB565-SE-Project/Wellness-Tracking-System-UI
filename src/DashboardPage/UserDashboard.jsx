@@ -186,7 +186,7 @@ const UserDashboard = () => {
     const userId = userData.userId;
  
     try{
-      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userId}`, {
+      const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/createForUser?userId=${userId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -217,18 +217,14 @@ const UserDashboard = () => {
         setEvents(updatedEvents); // Setting the updated events array to state
       };
  
-      // const handleEventDelete = () => {
-      //   setEvents(events.filter(evt => evt.id !== currentEventId));
-      //   handleCloseModal();
-      // };
- 
+      
     const handleEventDelete = async () => {
         const userData = getUserData();
         const id = currentEventId;
      
         try {
           // Send delete request to the server
-          const response = await fetch(`http://localhost:8080/timetables/delete?timetableId=${id}`, {
+          const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/delete?timetableId=${id}`, {
             method: 'DELETE',
             // headers: {
             //   'Authorization': `Bearer ${jwtToken}`
@@ -265,7 +261,7 @@ const generateFitnessSchedule = async(userData) => {
     var userId =userData.userId;
  
     try{
-      const response = await fetch(`http://localhost:8080/timetables/getByUser?userId=${userId}`, {
+      const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/getByUser?userId=${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -331,12 +327,14 @@ const generateFitnessSchedule = async(userData) => {
           );
         };
  
-    const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [specialty, setSpecialty] = useState('');
     const [location, setLocation] = useState('');
     const [mode, setMode] = useState('');
     const [type, setType] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [username, setUsername] = useState('');
  
  
     const handleSearch = (e) => {
@@ -500,23 +498,50 @@ const generateFitnessSchedule = async(userData) => {
       navigate(`/workout-plan/${planId}/${trainerId}`);
       console.log("The plan id of this workout is: ", planId);
     };
-     
-  const workoutPlan = { // your workout plans
-  description: '4-week Intensive Strength and Conditioning Program', // description
-  details: [
-    {
-      week: 1,
-      focus: 'Full Body Conditioning', //title
-      sessions: [
-        { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
-        { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
-        { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
+      
+    const workoutPlan = {
+      description: '4-week Intensive Strength and Conditioning Program',
+      details: [
+        {
+          week: 1,
+          focus: 'Full Body Conditioning',
+          sessions: [
+            { day: 'Monday', exercises: ['Squats', 'Deadlifts', 'Bench Press'], notes: '3 sets of 12 reps' },
+            { day: 'Wednesday', exercises: ['Pull-Ups', 'Leg Press', 'Shoulder Press'], notes: '3 sets of 10 reps' },
+            { day: 'Friday', exercises: ['Lunges', 'Push-Ups', 'Planks'], notes: '4 sets till failure' },
+          ],
+        },
+        {
+          week: 2,
+          focus: 'Upper Body Strength',
+          sessions: [
+            { day: 'Monday', exercises: ['Bench Press', 'Bicep Curls', 'Tricep Dips'], notes: '4 sets of 10 reps' },
+            { day: 'Wednesday', exercises: ['Shoulder Press', 'Lat Pull-downs', 'Push-Ups'], notes: '4 sets of 12 reps' },
+            { day: 'Friday', exercises: ['Pull-Ups', 'Face Pulls', 'Chest Flies'], notes: '3 sets of 15 reps' },
+          ],
+        },
+        {
+          week: 3,
+          focus: 'Lower Body Power',
+          sessions: [
+            { day: 'Monday', exercises: ['Deadlifts', 'Leg Press', 'Calf Raises'], notes: '5 sets of 5 reps' },
+            { day: 'Wednesday', exercises: ['Squats', 'Lunges', 'Hamstring Curls'], notes: '5 sets of 8 reps' },
+            { day: 'Friday', exercises: ['Glute Bridges', 'Box Jumps', 'Quad Extensions'], notes: '4 sets of 10 reps' },
+          ],
+        },
+        {
+          week: 4,
+          focus: 'Core and Agility',
+          sessions: [
+            { day: 'Monday', exercises: ['Planks', 'Russian Twists', 'Leg Raises'], notes: '3 sets of 20 reps' },
+            { day: 'Wednesday', exercises: ['Mountain Climbers', 'Side Planks', 'Bicycle Crunches'], notes: '4 sets of 15 reps each side' },
+            { day: 'Friday', exercises: ['Jump Rope', 'Tuck Jumps', 'Burpees'], notes: '30 seconds on, 15 seconds rest, for 3 rounds' },
+          ],
+        },
       ],
-    },
-    // ... Additional weeks
-  ],
- 
- 
+    
+
+
   caloriesBurnt: 5000,
   goalProgress: 0.75, // 75%
   metrics: [
@@ -534,7 +559,6 @@ const generateFitnessSchedule = async(userData) => {
   ],
  
  
- 
   supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
 };
  
@@ -545,7 +569,7 @@ const generateMealSchedule = async(userData) => {
   var userId =userData.userId;
  
   try{
-    const response = await fetch(`http://localhost:8080/mealplan/getByUser?userId=${userId}`, {
+    const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/mealplan/getByUser?userId=${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -588,6 +612,7 @@ const generateMealSchedule = async(userData) => {
     };
  
  return (
+
   <>
      <header className="dashboard-header">
             <div className="logo-container">
@@ -597,8 +622,8 @@ const generateMealSchedule = async(userData) => {
  
             <nav className="main-nav">
               {/* Define these functions to handle navigation or simply use `navigate` */}
-              <button onClick={() => scrollToRef(MetricsRef)}>Calender</button>
-              <button onClick={() => scrollToRef(CalenderRef)}>Metrics</button>            
+              <button onClick={() => scrollToRef(CalenderRef)}>Calender</button>
+              <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>            
               <button onClick={() => clientDashboardRef.current.scrollToSessions()}>Sessions</button>
               <button onClick={() => scrollToRef(workoutplansRef)}>Workout Plans</button>
  
@@ -618,12 +643,12 @@ const generateMealSchedule = async(userData) => {
       <div className="user-dashboard">
      
  
-      {/* <h2> Workout Programs </h2>
-      <SearchBar onSearch={handleSearch} /> */}
- 
-      <h2> {UserFullName}'s Fitness and Wellness Schedule</h2>
- 
-            {/* <div className="search-bar-container">
+     <h2> Workout Programs </h2>
+      <SearchBar onSearch={handleSearch} >
+
+      <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
+
+      <div className="search-bar-container">
               <div className="search-results-header">
                 <span className="results-count">36 Results</span>
                 <div className="sort-options">
@@ -632,8 +657,11 @@ const generateMealSchedule = async(userData) => {
                   </select>
                 </div>
               </div>
-            </div> */}
- 
+            </div>
+ </SearchBar>
+
+
+
     <div className="dashboard-grid">
       {/* Row 1 */}
       <section ref={CalenderRef} className="calendar-section">
@@ -717,25 +745,27 @@ const generateMealSchedule = async(userData) => {
               </div>
           </Modal>)}
         </section>
+
+
+        
         <section className="trainer-list-section">
           <h3>Trainer List</h3>
           <TrainerList trainers={SubscribedTrainers} />
         </section>
        </div>
- 
-    <section ref={MetricsRef} className="progress-overview-section">
-      <h2>Health & Fitness Dashboard</h2>        
-         <ClientProgressDashboard
+
+    <section  ref={MetricsRef} className="progress-overview-section">
+      <h2 className="common-header">Health & Fitness Dashboard</h2>        
+         <ClientProgressDashboard 
                workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
-              // yourPlans={trainerPlans}
-             
+               yourPlans={trainerPlans}
         />
        </section>
      
      
       <div ref={workoutplansRef} className="section-workout">
-          <h3>Your Subscribed Workout Plans</h3>
+          <h2 className="common-header" >Your Subscribed Workout Plans</h2>
           {yourWorkoutPlans.length === 0 ? (
               <p>No Subscribed Plans</p>
           ) : (
@@ -752,8 +782,8 @@ const generateMealSchedule = async(userData) => {
           )
           }
       </div>
- 
- 
+
+  
         <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
             💬 Chat

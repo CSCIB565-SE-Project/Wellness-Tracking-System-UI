@@ -471,22 +471,41 @@ input::placeholder {
   margin-top: 2px;
 }
 
-.user-dashboard h2{
+/* .user-dashboard h2{
   justify-content: center;
   text-align: center; 
   display:flex;
   font-size: 1.8rem;
   margin-bottom: 2px;
+} */
+
+.common-header {
+  font-size: 24px; /* or any other size you prefer */
+  text-align: center;
+  color: #132742; /* or any other color you want for the headers */
+  margin: 0;
+  padding: 20px 0; /* Adjust as needed for vertical spacing */
+  background:none; /* Background color for the header (use your theme color) */
 }
 
 
+.dashboard-grid h3{
+  
+    font-size: 20px; /* or any other size you prefer */
+    color: #132742; /* or any other color you want for the headers */
+    margin: 0;
+    padding: 20px 0; /* Adjust as needed for vertical spacing */
+    background:none; /* Background color for the header (use your theme color) */
+  
+}
+
 .section-workout {
-  background: #fff; /* Change to a lighter background for better readability */
-  padding: 20px;
+  background:none; /* Change to a lighter background for better readability */
+  padding-bottom: 50px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  margin-top: 20px;
-  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(243, 6, 105, 0.923);
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 
 /* Enhance the workout plan items */
