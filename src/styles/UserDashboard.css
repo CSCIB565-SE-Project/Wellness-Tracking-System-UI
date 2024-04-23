@@ -1,5 +1,7 @@
 /* UserDashboard.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
+
 
 .rbc-calendar,
 .rbc-event-content {
@@ -290,19 +292,18 @@ height: 5px;
 }
 
 /* Results and sorting options */
-.search-results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
+  .search-results {
+    background-color: red; /* Temporarily set a background color */
+    min-height: 100px; /* Temporarily ensure the container has height */
+  }
+
 
 .search-results-header {
   display: flex;
   justify-content: space-between;
   width: 100%;
   padding: 10px;
-  background-color: #fff;
+  background-color: #db7171;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 5px;
   margin-bottom: 20px;
@@ -471,13 +472,10 @@ input::placeholder {
   margin-top: 2px;
 }
 
-/* .user-dashboard h2{
-  justify-content: center;
-  text-align: center; 
-  display:flex;
-  font-size: 1.8rem;
-  margin-bottom: 2px;
-} */
+.user-dashboard {
+  background-image: var(--bg-gradient);
+}
+
 
 .common-header {
   font-size: 24px; /* or any other size you prefer */

@@ -84,7 +84,7 @@ const UserDashboard = () => {
   const[eventTitle,SetTitle]  =useState();
   const[date,setDate]=useState();
   const[Workout,setWorkout]  =useState();
-  const [trainers, setTrainers] = useState(null);
+  const [trainers, setTrainers] = useState([]);
   const [trainerPlans, setTrainerPlans] = useState({});
   const [currentEventId, setCurrentEventId] = useState(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -99,6 +99,8 @@ const UserDashboard = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
   const [mealPlans, setMealPlans] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchedTrainer, setSearchTrainers] = useState([]);
  
  
    const scrollToTrainingVideos = () => {
@@ -217,7 +219,7 @@ const UserDashboard = () => {
         setEvents(updatedEvents); // Setting the updated events array to state
       };
  
-      
+     
     const handleEventDelete = async () => {
         const userData = getUserData();
         const id = currentEventId;
@@ -327,8 +329,46 @@ const generateFitnessSchedule = async(userData) => {
           );
         };
  
-const SearchBar = ({ onSearch }) => {
-    const [searchTerm, setSearchTerm] = useState('');
+        const handleSearch = async (searchFilters) => {
+          const userData = getUserData();
+          const jwtToken = userData.token;
+          const queryParams = new URLSearchParams();
+       
+          // Uncomment or adjust these lines based on actual use
+                                                   
+                                                   
+          // if (searchFilters.specialty) queryParams.append('specialty', searchFilters.specialty);
+          // Add other filters as needed
+       
+                                             
+          try {
+            const response = await fetch(`http://localhost:8080/professionals/search?specialty=${queryParams}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`
+              },
+            });
+       
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+       
+            const searchResults = await response.json();
+
+            // if (searchResults && Array.isArray(searchResults)) {
+              setSearchTrainers(searchResults);
+            // } else {
+              // setSearchTrainers([]);
+            
+            console.log(searchedTrainer);
+          } catch (error){
+            setError(error.message);
+          }
+        };
+ 
+const SearchBar = () => {
+    // const [searchTerm, setSearchTerm] = useState('');
     const [specialty, setSpecialty] = useState('');
     const [location, setLocation] = useState('');
     const [mode, setMode] = useState('');
@@ -336,89 +376,53 @@ const SearchBar = ({ onSearch }) => {
     const [firstName, setFirstName] = useState('');
     const [username, setUsername] = useState('');
  
-  
  
-    return (
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search professionals or content..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
-          <option value="">Specialty</option>
-          <option value="Yoga">Yoga</option>
-          <option value="Zumba">Zumba</option>
-          <option value="Weight training">Weight Training</option>
-          {/* ...other specialties */}
-        </select>
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-        <select value={mode} onChange={(e) => setMode(e.target.value)}>
-          <option value="">Mode of Instruction</option>
-          <option value="Video">Videos</option>
-          <option value="Plan">Plans</option>
-          {/* ...other modes */}
-        </select>
+  return (
+    <div className="search-bar">
+      <input
+        type="text"
+        placeholder="Search professionals or content..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <select value={specialty} onChange={(e) => setSpecialty(e.target.value)}>
+        <option value="">Specialty</option>
+        <option value="Yoga">Yoga</option>
+        <option value="Zumba">Zumba</option>
+        <option value="Weight training">Weight Training</option>
+        {/* ...other specialties */}
+      </select>
+      {/* <input
+        type="text"
+        placeholder="Location"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+      />
+      <select value={mode} onChange={(e) => setMode(e.target.value)}>
+        <option value="">Mode of Instruction</option>
+        <option value="Video">Videos</option>
+        <option value="Plan">Plans</option>
+      </select>
  
  
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="">Type of Workout</option>
-          <option value="Home">Home</option>
-          <option value="Gym">Gym</option>
-          <option value="Fitness center">Fitness Center</option>
-          {/* ...other types */}
-        </select>
-        <button onClick={() => onSearch({
-          firstName: searchTerm, // Assuming the backend is expecting a parameter `firstName`
-          specialty,
-          location,
-          mode,
-          type
-        })}>Search</button>
-              </div>
-    );
-  };
+      <select value={type} onChange={(e) => setType(e.target.value)}>
+        <option value="">Type of Workout</option>
+        <option value="Home">Home</option>
+        <option value="Gym">Gym</option>
+        <option value="Fitness center">Fitness Center</option>
+      </select> */}
+      <button onClick={() => handleSearch({
+        // firstName: searchTerm, // Assuming the backend is expecting a parameter `firstName`
+        specialty,
+        // location,
+        // mode,
+        // type
+      })}>Search</button>
+            </div>
+  );
+};
  
-  const handleSearch = async (searchFilters) => {
-    const userData = getUserData();
-    const jwtToken = userData.token;
-    const queryParams = new URLSearchParams();
-  
-    // Assuming these are the query params your backend is expecting
-    if (searchFilters.firstName) queryParams.append('firstName', searchFilters.firstName);
-    if (searchFilters.username) queryParams.append('username', searchFilters.username);
-    if (searchFilters.specialty) queryParams.append('specialty', searchFilters.specialty);
-    if (searchFilters.gender) queryParams.append('gender', searchFilters.gender);
-    if (searchFilters.location) queryParams.append('location', searchFilters.location);
-    if (searchFilters.userId) queryParams.append('userId', searchFilters.userId);
-    
-    try {
-      const response = await fetch(`http://localhost:8080/professionals/search?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}`
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-  
-      const searchResults = await response.json();
-      setTrainers(searchResults); // Update your state with the search results
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-
+ 
   const getTrainerList = async(userData, trainerIds) => {
     setIsLoading(true);
     setError('');
@@ -461,6 +465,7 @@ const SearchBar = ({ onSearch }) => {
                 },
         });  
         const data = await response.json();
+             
         if (Array.isArray(data)) {
           setSubscribedTrainerIds(data);
           console.log("setting data");
@@ -480,7 +485,7 @@ const SearchBar = ({ onSearch }) => {
       } catch (error) {
         console.error('Failed to fetch trainerIds', error);
         setSubscribedTrainerIds([]);
-      }   
+      }  
     };
     // Get the array of subscribed trainers from backend
  
@@ -521,13 +526,13 @@ const SearchBar = ({ onSearch }) => {
       setIsLoading(false);
   };
  
-
+ 
  
     const openWorkoutPlan = async(planId, trainerId) => {
       navigate(`/workout-plan/${planId}/${trainerId}`);
       console.log("The plan id of this workout is: ", planId);
     };
-      
+     
     const workoutPlan = {
       description: '4-week Intensive Strength and Conditioning Program',
       details: [
@@ -568,9 +573,9 @@ const SearchBar = ({ onSearch }) => {
           ],
         },
       ],
-    
-
-
+   
+ 
+ 
   caloriesBurnt: 5000,
   goalProgress: 0.75, // 75%
   metrics: [
@@ -641,7 +646,7 @@ const generateMealSchedule = async(userData) => {
     };
  
  return (
-
+ 
   <>
      <header className="dashboard-header">
             <div className="logo-container">
@@ -672,25 +677,33 @@ const generateMealSchedule = async(userData) => {
       <div className="user-dashboard">
      
  
-     <h2> Workout Programs </h2>
+     <h2> Search Trainers </h2>
       <SearchBar onSearch={handleSearch} >
-
-
-      <div className="search-bar-container">
-              <div className="search-results-header">
-                <span className="results-count">36 Results</span>
+ 
+ 
+      {/* <div className="search-bar-container"> */}
+              {/* <div className="search-results-header">
+                <span className="results-count">{searchTerm.length} Results</span>
                 <div className="sort-options">
-                  <label htmlFor="sort">Newest First</label>
+                  <label htmlFor="sort">Sort By:</label>
                   <select id="sort">
                   </select>
                 </div>
-              </div>
+              </div> */}
+            <div className="search-results">
+                {searchedTrainer.map((trainer) => (
+                <div key={trainer.id} className="search-result-item">
+                <h3>{trainer.firstName}</h3>
+                <p>Specialty: {trainer.specialty}</p>
             </div>
+                ))}
+  </div>
+{/* </div> */}
  </SearchBar>
-
+ 
  <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
-
-
+ 
+ 
     <div className="dashboard-grid">
       {/* Row 1 */}
       <section ref={CalenderRef} className="calendar-section">
@@ -774,18 +787,18 @@ const generateMealSchedule = async(userData) => {
               </div>
           </Modal>)}
         </section>
-
-
-        
+ 
+ 
+       
         <section className="trainer-list-section">
           <h3>Trainer List</h3>
           <TrainerList trainers={SubscribedTrainers} />
         </section>
        </div>
-
+ 
     <section  ref={MetricsRef} className="progress-overview-section">
       <h2 className="common-header">Health & Fitness Dashboard</h2>        
-         <ClientProgressDashboard 
+         <ClientProgressDashboard
                workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
                yourPlans={trainerPlans}
@@ -811,8 +824,12 @@ const generateMealSchedule = async(userData) => {
           )
           }
       </div>
-
-  
+ 
+ 
+                                         
+     
+ 
+ 
         <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
             💬 Chat
@@ -825,3 +842,4 @@ const generateMealSchedule = async(userData) => {
 };
  
 export default UserDashboard;
+ 
