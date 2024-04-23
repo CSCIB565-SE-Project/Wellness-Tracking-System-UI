@@ -1,116 +1,139 @@
-.root {
+
+
+
+:root {
   --bg-gradient-opposite: linear-gradient(
     90deg,
     rgb(251, 165, 103) 25%, /* Adjusted for a similar look in reverse */
-    rgb(246, 98, 49) 80% /* Adjusted for a similar look in reverse */
-);}
+    rgb(246, 98, 49) 80% );
+    
+  --footer-text-color: #fff; /* White */
+  --footer-link-color: #ccc; /* Light gray */
+  --footer-link-hover-color: #fff; /* White for hover */
+  --social-icon-size: 20px; /* Size of social icons */
+}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet');
+
+
+/* Footer styles */
 
 .footer {
-  background:var(--bg-gradient-opposite); /* Use your own color scheme */
-  padding: 12px 0;
-  color: white;
+  background: var(--bg-gradient-opposite);
+  color: var(--bg-gradient-opposite);
+  padding: 20px 0;
+  font-family: 'Playfair Display', sans-serif; /* Example font */
 }
 
 .container {
+
   max-width: 1200px;
-  margin: auto;
-  padding: 0 5px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .footer__wrapper {
+
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
   flex-wrap: wrap;
 }
 
 .footer__box {
-  flex: 1; /* Adjust as needed, maybe min-width for smaller screens */
   margin: 10px;
+  flex: 1;
+  min-width: 150px; /* Minimum width of footer sections */
 }
 
-.footer__box a {
-  display: inline-block;
-  margin-right: 15px; /* Space between icons */
+.logo {
+  display: flex;
+  align-items: center;
 }
 
-.footer__box img {
-  height: 24px; /* Small icon size */
-  width: 24px;
-  object-fit: contain; /* Keeps the aspect ratio of the image */
+.logo__img img {
+  height: auto;
+  max-width: 100px; /* Adjust the size of the logo image */
+  margin-right: 10px;
+}
+
+.social-media-icons a img {
+  width: var(--social-icon-size);
+  height: var(--social-icon-size);
+  object-fit: contain;
+  margin-right: 8px; /* Space between icons */
 }
 
 .emailSection {
   display: flex;
-  align-items: center;
-  margin-top: 20px; /* Space from the icons */
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.emailSection input,
-.emailSection button {
-  padding: 8px 12px;
-  margin-right: 10px; /* Space between input and button */
+.emailSection input[type="email"] {
+  padding: 8px;
+  margin-bottom: 5px; /* Space between input and button */
   border: none;
   border-radius: 4px;
 }
 
 .emailSection button {
-  background-color: #000; /* Use your brand color */
-  color: white;
+  padding: 8px 16px;
+  background-color: #000; /* Black button */
+  color: var(--footer-text-color);
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
 }
 
 .footer__title {
-  font-size: 1.2rem; /* Title size */
-  margin-bottom: 10px; /* Space under title */
+  font-size: 18px; /* Size of the titles */
+  margin-bottom: 8px;
 }
 
 .footer__links {
-  list-style-type: none;
-  padding: 0;
-}
-
-.footer__links li {
-  margin-bottom: 5px; /* Space between link items */
+  list-style: none;
+  padding-left: 0;
 }
 
 .footer__links li a {
-  color: white;
+  color: var(--footer-link-color);
   text-decoration: none;
-  transition: color 0.3s;
+  transition: color 0.3s ease;
 }
 
 .footer__links li a:hover {
-  color: #ddd; /* Color on hover */
+  color: var(--footer-link-hover-color);
 }
 
-/* Responsive adjustments for smaller screens */
+/* Copyright text */
+.copyright {
+  text-align: center;
+  width: 100%;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
-  .footer__wrapper {
-    flex-direction: column;
-    align-items: center;
+  .footer__wrapper,
+  .footer__box {
+    width: 100%;
+    text-align: center;
   }
 
   .footer__box {
-    flex-basis: 100%; /* Full width */
-    text-align: center;
-    margin: 10px 0; /* Space between boxes */
+    margin-bottom: 20px;
   }
 
   .emailSection {
-    flex-direction: column;
+    align-items: center;
   }
 
-  .emailSection input,
-  .emailSection button {
-    width: 100%; /* Full width for mobile */
-    margin: 5px 0; /* Stack input and button */
+  .social-media-icons {
+    justify-content: center;
   }
-}
-
-/* Copyright text styling */
-copyright {
-  text-align: center;
-  font-size: 0.85rem;
-  margin-top: 15px;
 }

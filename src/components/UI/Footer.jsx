@@ -5,6 +5,7 @@ import facebookIcon from '../../assests/img/facebook.jpeg'; // Updated the exten
 import youtubeIcon from '../../assests/img/youtube.png'; // This should match the file extension
 import instagramIcon from '../../assests/img/instagram.jpeg'; // Updated the extension to .jpg
 import linkedinIcon from '../../assests/img/linkedin.png'; // This should match the file extension
+import logo  from '../../assests/img/logo.png'
 
 
 const Footer = () => {
@@ -19,10 +20,19 @@ const Footer = () => {
   const year = new Date().getFullYear();
   
   return (
-    <footer className="footer">
+    <footer className="footer" data-aos = "fade-up"
+    data-aos-duration ="1500" >
       <div className="container">
         <div className="footer__wrapper">
           <div className="footer__box">
+          <div className="logo">
+                <div className="logo__img">
+                    <img src ={logo} alt ="" />
+                </div>
+                <h2> FitBody</h2>
+            </div>
+            <p>Stay Fit and healthy with our programs tailored for you.</p>
+            <div className="social-media-icons">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
               <img src={facebookIcon} alt="Facebook" />
             </a>
@@ -35,6 +45,7 @@ const Footer = () => {
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
               <img src={linkedinIcon} alt="LinkedIn" />
             </a>
+            </div>
             <div className="emailSection">
               <input 
                 type="email" 
