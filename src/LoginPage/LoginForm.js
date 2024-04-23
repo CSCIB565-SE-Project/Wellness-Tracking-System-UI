@@ -16,6 +16,7 @@ const LoginForm = ({ logo }) => {
   
   const checkAndRedirect = async() => {
     const urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams);
     if(urlParams.has('data')){
       const encodedData = urlParams.get('data');
       const decodedData = JSON.parse(decodeURIComponent(encodedData));
@@ -58,8 +59,8 @@ const LoginForm = ({ logo }) => {
               firstname: user.fname,
               lastname: user.lname,
               fullName: fullName,
-              role: user.role
-              ,token: data.token
+              role: user.role,
+              token: data.token
             }));
           
             const storedUserData = JSON.parse(localStorage.getItem('user'));
@@ -108,8 +109,8 @@ const LoginForm = ({ logo }) => {
           gender: user.gender,
           email: user.email,
           fullName: fullName,
-          role: user.role
-          ,token: data.token
+          role: user.role,
+          token: data.token
         }));
       
         const storedUserData = JSON.parse(localStorage.getItem('user'));

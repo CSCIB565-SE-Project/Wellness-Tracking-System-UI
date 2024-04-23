@@ -429,6 +429,7 @@ const generateFitnessSchedule = async(userData) => {
                 },
         });  
         const data = await response.json();
+        console.log(data);
         if (Array.isArray(data)) {
           setSubscribedTrainerIds(data);
           console.log("setting data");
