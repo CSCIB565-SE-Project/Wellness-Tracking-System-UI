@@ -37,7 +37,7 @@ const LoginForm = ({ logo }) => {
       }
       else if(data == "Login"){
         try {
-          const response = await fetch('https://login-service.azurewebsites.net/login', { 
+          const response = await fetch('http://localhost:8080/login', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const LoginForm = ({ logo }) => {
     setError(''); // Reset error message on new submission
     const isOAuth = false;
     try {
-      const response = await fetch('https://login-service.azurewebsites.net/login', { 
+      const response = await fetch('http://localhost:8080/login', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

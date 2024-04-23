@@ -182,7 +182,7 @@ height: 5px;
 .trainer-list {
   margin-top: 20px;
   padding: 20px;
-  background: #fff;
+  background: none;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -205,7 +205,7 @@ height: 5px;
   margin-bottom: 5px;
   border-radius: 4px;
   font-size: 0.9rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 } 
 
 

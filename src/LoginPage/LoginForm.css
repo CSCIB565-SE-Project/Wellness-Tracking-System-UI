@@ -2,7 +2,7 @@
 
 
 body {
-  background-image: var(--bg-gradient);
+  /* background-image: var(--bg-gradient); */
   font-family: var(--font-name);
 }
 

@@ -32,10 +32,8 @@ const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = []
 
   useEffect(() => {
         const userData = getUserData();
-        upcomingvideos(userData);
-
-        console.log("Fetching progress metrics..."); 
-        
+        // upcomingvideos(userData);
+        console.log("Fetching progress metrics...");    
         // Log at the beginning of useEffect
         const fetchProgressMetrics = async (userData) => {
         if (!userData) return;
@@ -45,7 +43,7 @@ const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = []
         const userId = userData.userId;
     
 try {
- const response = await fetch(`http://localhost:8080/progress-metrics/get?userId=${userId}` ,
+ const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/progress-metrics/get?userId=${userId}` ,
  {
       method: 'GET',
       headers: {
@@ -202,42 +200,68 @@ try {
   // Add more videos as needed
 
 
-  const upcomingvideos= async(userData) => {
-    setIsLoading(true);
-    setError('');
-    const jwtToken = userData.token;
-    
-  try{
-    const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/trend`, { 
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`
-    },
-  });
+  // const fetchTrainerIds = async (userData) => {
+  //   const jwtToken = userData.token;
+  //   try {
+  //     const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/getsub/${userData.userId}`, {
+  //       method: 'GET',
+  //             headers: {
+  //                 'Content-Type': 'application/json',
+  //                 'Authorization': `Bearer ${jwtToken}`
+  //             },
+  //     });  
+  //     const data = await response.json();
+  //     if (Array.isArray(data)) {
+  //       setSubscribedTrainerIds(data);
+  //       console.log("setting data");
+  //       console.log("now to fetch plans");
+  //       var videos = await getTrainerList(userData, subscribedTrainerIds);
+  //     } else {
+  //       console.error('Expected an array but got:', data);
+  //       setSubscribedTrainerIds([]);  // Ensure it's always an array
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to fetch trainerIds', error);
+  //     setSubscribedTrainerIds([]);
+  //   }   
+  // };
 
-  if(!response.ok){
-    throw new Error("Failed to fetch VIDEOS");
-  }
+  // const upcomingvideos= async(userData) => {
+  //   setIsLoading(true);
+  //   const trainerIds= fetchTrainerIds(userData);
+  //   setError('');
+  //   const jwtToken = userData.token;                                                                                                                                                                                                                                                                                                                                        
+  //   for(const subId of trainerIds){
+  //     try{
+  //       const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/trend`, { 
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${jwtToken}`,
+  //           'id': subId
+  //         },
+  //       });
+      
+  //       if(!response.ok){
+  //         throw new Error("Failed to fetch trainers");
+  //       }
+  //       else{
+  //         const data = await response.json();
+  //         trainerList.push(data);
+  //       }
+  //       setupcomingVideos(data);
+  //       setIsLoading(false);
+  //     }catch (error) {
+  //       console.error("Error fetching user info for trainer ID:", subId, error); // Log any errors from getUserInfo
+  //       setIsLoading(false);
+  //   }
+  //     }};
 
-  console.log(response);
-  const data = await response.json();
-  console.log(data);
-
-      setupcomingVideos(data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setError('An error occurred while fetching events. Contact admin.');
-      setIsLoading(false);
-    }
-  };
-
-const recentlyWatchedVideos = [
-  { id: 1, title: "Strength Training 101", url: "https://example.com/strength-training-101-video", watchedOn: "2023-03-25" },
-  { id: 2, title: "Morning Stretch Routine", url: "https://example.com/morning-stretch-video", watchedOn: "2023-03-24" },
-  // Add more videos as needed
-];
+// const recentlyWatchedVideos = [
+//   { id: 1, title: "Strength Training 101", url: "https://example.com/strength-training-101-video", watchedOn: "2023-03-25" },
+//   { id: 2, title: "Morning Stretch Routine", url: "https://example.com/morning-stretch-video", watchedOn: "2023-03-24" },
+//   // Add more videos as needed
+// ];
 
 const trainingVideosRef = useRef();
 
@@ -304,8 +328,7 @@ useImperativeHandle(ref, () => ({
       </div>
     </div>
       
-       {/* Upcoming Training Videos */}
-    {/* <div className="dashboard-column">  
+     {/* <div className="dashboard-column">  
        <div   className="video-section">
         <h3>Upcoming Training Videos</h3>
         <div className="videos-list">
@@ -316,7 +339,7 @@ useImperativeHandle(ref, () => ({
           ))}
         </div>
       </div>
-     </div>*/}
+     </div> */}
 </div> 
 
       {/* Mindfulness Sessions */}

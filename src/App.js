@@ -21,8 +21,6 @@ import OAuthSignupForm from './LoginPage/OAuthSignUpForm.js';
 import PasswordResetForm from './LoginPage/PasswordResetForm.js';
 import NewPasswordResetForm from './LoginPage/NewPasswordResetForm';
 
-
-
 const LandingPage = () => (
   <>
     <Header />
@@ -31,7 +29,6 @@ const LandingPage = () => (
     <Pricing />
     <Start />
     <Testimonial />
-<Footer/>
   </>
 );
 
@@ -55,6 +52,7 @@ function App() {
         <Route path="/reset-password" element={<NewPasswordResetForm />} />
 
       </Routes>
+      <Footer></Footer>
     </Router>
 
 
