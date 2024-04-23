@@ -339,12 +339,7 @@ const SearchBar = ({ onSearch }) => {
     const [firstName, setFirstName] = useState('');
     const [username, setUsername] = useState('');
  
- 
-    const handleSearch = (e) => {
-      e.preventDefault();
-      onSearch({ searchTerm, specialty, location, mode, type });
-    };
- 
+  
  
     return (
       <div className="search-bar">
@@ -382,12 +377,51 @@ const SearchBar = ({ onSearch }) => {
           <option value="Fitness center">Fitness Center</option>
           {/* ...other types */}
         </select>
-        <button onClick={handleSearch}>Search</button>
-      </div>
+        <button onClick={() => onSearch({
+          firstName: searchTerm, // Assuming the backend is expecting a parameter `firstName`
+          specialty,
+          location,
+          mode,
+          type
+        })}>Search</button>
+              </div>
     );
   };
  
- 
+  const handleSearch = async (searchFilters) => {
+    const userData = getUserData();
+    const jwtToken = userData.token;
+    const queryParams = new URLSearchParams();
+  
+    // Assuming these are the query params your backend is expecting
+    if (searchFilters.firstName) queryParams.append('firstName', searchFilters.firstName);
+    if (searchFilters.username) queryParams.append('username', searchFilters.username);
+    if (searchFilters.specialty) queryParams.append('specialty', searchFilters.specialty);
+    if (searchFilters.gender) queryParams.append('gender', searchFilters.gender);
+    if (searchFilters.location) queryParams.append('location', searchFilters.location);
+    if (searchFilters.userId) queryParams.append('userId', searchFilters.userId);
+    
+    try {
+      const response = await fetch(`http://localhost:8080/professionals/search?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwtToken}`
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const searchResults = await response.json();
+      setTrainers(searchResults); // Update your state with the search results
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+
   const getTrainerList = async(userData, trainerIds) => {
     setIsLoading(true);
     setError('');
@@ -491,11 +525,7 @@ const SearchBar = ({ onSearch }) => {
       setIsLoading(false);
   };
  
- 
-    const handleSearch = (filters) => {
-      console.log('Searching with filters:', filters);
-      // Here you would integrate the search logic or API call to fetch search results based on filters
-    };
+
  
     const openWorkoutPlan = async(planId, trainerId) => {
       navigate(`/workout-plan/${planId}/${trainerId}`);
@@ -649,7 +679,6 @@ const generateMealSchedule = async(userData) => {
      <h2> Workout Programs </h2>
       <SearchBar onSearch={handleSearch} >
 
-      <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
 
       <div className="search-bar-container">
               <div className="search-results-header">
@@ -663,6 +692,7 @@ const generateMealSchedule = async(userData) => {
             </div>
  </SearchBar>
 
+ <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
 
 
     <div className="dashboard-grid">

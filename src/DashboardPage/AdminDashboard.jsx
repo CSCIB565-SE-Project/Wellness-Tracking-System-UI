@@ -52,7 +52,11 @@ const connectToStreamChat = async (navigate) => {
     const userData = JSON.parse(localStorage.getItem('user'));
     return userData;
   }
+
+
   
+  
+ 
 
 
 const AdminDashboard = () => {
@@ -65,6 +69,21 @@ const AdminDashboard = () => {
       ''
     ]);
     const [UserFullName, setUserFullName] = useState('');
+
+
+    useEffect(() => {
+      const userData = getUserData();
+      getUserFullName();
+      getunapprovedcontent(userData);
+      setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+    }, []);
+
+    const getUserFullName = async() => {
+      const userData = getUserData();
+      var fullName = userData.fname ;
+      setUserFullName(fullName) ;
+    };
+
 
     const handleLogout = () => {
         // Clear local storage or any other clean-ups.
@@ -91,15 +110,9 @@ const AdminDashboard = () => {
         // More announcements...
     ]);
 
-    useEffect(() => {
-        const userData = getUserData();
-        getUserFullName();
-        getunapprovedcontent(userData);
-        setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
+  
 
-      }, []);
-
-      const toggleProfileDropdown = () => {
+    const toggleProfileDropdown = () => {
         setIsProfileDropdownOpen(!isProfileDropdownOpen);
     };
 
@@ -180,11 +193,6 @@ const getunapprovedcontent= async(userData) => {
 }
 }
 
-const getUserFullName = async() => {
-  const userData = getUserData();
-  var fullName = userData.firstname ;
-  setUserFullName(fullName)   ;
-};
 
 
 
@@ -218,7 +226,7 @@ return (
       <header className="dashboard-header">
         <div className="logo-container">
           <img src={logo} alt="Company Logo" onClick={() => navigate('/')} />
-          <h1>Fit Inc.</h1>a
+          <h1>Fit Inc.</h1>
         </div>
 
         <nav className="main-nav">
@@ -244,7 +252,10 @@ return (
 
       </div>
 
-      <main className="dashboard-content">
+
+
+
+      {/* <main className="dashboard-content">
         <aside className="sidebar-left">
        
         <div className={`card-container ${isFlippedContent ? 'flipped' : ''}`} onClick={handleFlipContent}>
@@ -322,7 +333,7 @@ return (
 
           </div>
           <div className="card-back">
-                    {/* Feedback analysis or additional details */}
+                    
 
           </div>
         </div>
@@ -352,6 +363,73 @@ return (
       </div>
     </div>
   );
-};
+};*/}
 
+ <main className="dashboard-main">
+        <section className="dashboard-section">
+        <h3>Content Approval</h3>
+                          {contents.map(content => (
+                            <div key={content.id} className="content-item">
+                              <div className="video-column">
+                                <strong>Video:</strong> {content.title}
+                              </div>
+                              <div className="status-column">
+                                <strong>Status:</strong> {content.status || 'Pending'}
+                              </div>
+                              <div className="action-buttons">
+                                <button onClick={() => approveContent(content.id)}>Approve</button>
+                                <button onClick={() => rejectContent(content.id)}>Reject</button>
+                              </div>
+                            </div>
+                             ))}
+                  </section>
+
+      <section className="dashboard-section">
+          <h2>Application Metrics</h2>
+          <h3>Application Metrics</h3>
+                     {metrics.map((metric, index) => (
+                    <p key={index}>{metric.label}: {metric.value}</p>
+                ))}
+    </section>
+
+
+    <section className="dashboard-section">
+          <h2>User Feedback</h2>
+                <h3>User Feedback</h3>
+                {userFeedback.map(feedback => (
+                    <div key={feedback.id} className="feedback-item">
+                        <p><strong>{feedback.user}:</strong> {feedback.feedback}</p>
+                    </div>
+
+                ))}
+                  </section>
+
+
+        <section className="dashboard-section">
+          <h2>Admin Announcements</h2>
+                {adminAnnouncements.map(announcement => (
+                    <div key={announcement.id} className="announcement-item">
+                        <p>{announcement.announcement}</p>
+                  </div>
+                 ))}
+          </section>      
+
+
+        <section className="dashboard-section">
+          <h2>Quick Actions</h2>
+          <div className="quick-actions">
+            <button>Create Announcement</button>
+            <button>View Reports</button>
+            <button>Manage Users</button>
+          </div>
+        </section>
+      </main>
+
+      <div className="chat-fab-container">
+        <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>Chat</button>
+      </div>
+    </div>
+  );
+};
 export default AdminDashboard;
+
