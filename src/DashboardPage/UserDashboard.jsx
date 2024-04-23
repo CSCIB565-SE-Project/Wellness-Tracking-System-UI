@@ -7,14 +7,14 @@ import getDay from 'date-fns/getDay';
 import addDays from 'date-fns/addDays';
 import enUS from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '../styles/UserDashboard.css'; 
+import '../styles/UserDashboard.css';
 import ClientProgressDashboard from '../DashboardPage/ClientProgressDashboard.jsx'; // Adjust the import path as necessary
 import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 import Modal from 'react-modal';
 import logo from '../assests/img/logo.png';
-
-
+ 
+ 
 const locales = {
   'en-US': enUS,
 };
@@ -25,7 +25,7 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-
+ 
 const getUserData = () => {
   const userData = JSON.parse(localStorage.getItem('user'));
   return userData;
@@ -36,7 +36,7 @@ const connectToStreamChat = async (navigate) => {
   const client = StreamChat.getInstance(apiKey);
   const userData = JSON.parse(localStorage.getItem('user'));
   const authToken = userData ? userData.token : null;
-
+ 
   try {
       const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
           method: 'POST',
@@ -47,9 +47,9 @@ const connectToStreamChat = async (navigate) => {
               token: authToken, // JWT token from Spring Boot
           }),
       });
-
+ 
       const data = await response.json();
-
+ 
       if (data.streamToken) {
           await client.connectUser({
               id: data.id,
@@ -58,7 +58,7 @@ const connectToStreamChat = async (navigate) => {
               role: userData.role,
               //role: 'professional' testing
           }, data.streamToken);
-
+ 
           // Navigate to chat page after successful connection
           navigate('/chat');
       } else {
@@ -69,14 +69,14 @@ const connectToStreamChat = async (navigate) => {
       console.error('Error fetching StreamChat token:', error);
   }
 };
-
+ 
 const UserDashboard = () => {
-
+ 
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [UserFullName, setUserFullName] = useState('');
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
   const [events, setEvents] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const[starttime,SetStartTime]  =useState();
@@ -99,14 +99,14 @@ const UserDashboard = () => {
   const [isViewing, setIsViewing] = useState(false);
   const [SubscribedTrainers, setSubscribedTrainers] = useState([]);
   const [mealPlans, setMealPlans] = useState([]);
-  
-
+ 
+ 
    const scrollToTrainingVideos = () => {
     if (clientDashboardRef.current) {
       clientDashboardRef.current.scrollToTrainingVideos();
     }
   };
-
+ 
   useEffect(() => {  
     const userData = getUserData();
     getUserFullName();
@@ -121,9 +121,9 @@ const UserDashboard = () => {
       console.log("now to fetch plans");
       fetchSubscribedPlans(userData, subscribedTrainerIds);
   }
-}, [subscribedTrainerIds]); 
+}, []);
  
-  
+ 
   const handleSelectSlot = ({ start, end }) => {
     SetStartTime(format(start, 'HH:mm:ss'));  // format time properly
     SetEndTime(format(end, 'HH:mm:ss'));
@@ -131,7 +131,7 @@ const UserDashboard = () => {
     setModalOpen(true);
     setIsViewing(false);
   };
-  
+ 
   const handleSelectEvent = (event) => {
     SetTitle(event.eventTitle);
     setDate(format(new Date(event.start), 'yyyy-MM-dd'));
@@ -142,7 +142,7 @@ const UserDashboard = () => {
     setModalOpen(true);
     setIsViewing(true);
   };
-
+ 
   const handleCloseModal = () => {
     setModalOpen(false);
     SetTitle('');  // Reset title
@@ -151,7 +151,7 @@ const UserDashboard = () => {
     SetEndTime('');  // Reset end time
     setWorkout('');  // Reset workout type
   };
-
+ 
   const handleEventSubmit = (e) => {
     e.preventDefault();
     const newEvent = {
@@ -162,17 +162,17 @@ const UserDashboard = () => {
       endTime: endtime,
       workout: Workout
     };
-    
+   
     if (currentEventId) { // Assume currentEventId tracks the event being edited
       updateEvent(newEvent);
     } else {
       createNewEvent(newEvent);
     }
     handleCloseModal(); // Close modal after action
-
+ 
   };
-
-
+ 
+ 
   const createNewEvent = async (event) => {
     const updatedEvents = [...events, { ...event, id: events.length + 1 }];  
     setEvents(updatedEvents);  
@@ -184,9 +184,9 @@ const UserDashboard = () => {
     const endTime= endtime;
     const workout = Workout;
     const userId = userData.userId;
-
+ 
     try{
-      const response = await fetch(`http://localhost:8080/timetables/createForUser?userId=${userId}`, { 
+      const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/createForUser?userId=${userId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -196,97 +196,93 @@ const UserDashboard = () => {
         });
         console.log(response);
         const data = await response.json();
-
+ 
         if (data) {
           console.log('Workout Plan Created Successfully!', data);
-        
+       
         }}
-
+ 
       catch{
-        
+       
         console.error('Create error:', error);
         setError('An error occurred. Please try again later.');
-      
+     
       }
       };
-
+ 
       const updateEvent = (updatedEvent) => {
-        const updatedEvents = events.map(evt => 
+        const updatedEvents = events.map(evt =>
           evt.id === updatedEvent.id ? updatedEvent : evt // Mapping and checking for the id
         );
         setEvents(updatedEvents); // Setting the updated events array to state
       };
-
-      // const handleEventDelete = () => {
-      //   setEvents(events.filter(evt => evt.id !== currentEventId));
-      //   handleCloseModal();
-      // };
-
+ 
+      
     const handleEventDelete = async () => {
         const userData = getUserData();
         const id = currentEventId;
-      
+     
         try {
           // Send delete request to the server
-          const response = await fetch(`http://localhost:8080/timetables/delete?timetableId=${id}`, {
+          const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/delete?timetableId=${id}`, {
             method: 'DELETE',
             // headers: {
             //   'Authorization': `Bearer ${jwtToken}`
             // },
           });
           console.log(response);
-      
+     
           if (!response.ok) {
             throw new Error("Failed to delete the event.");
           }
-      
+     
           // Update the local events state to reflect the deletion
           const updatedEvents = events.filter(event => event.id !== id);
           setEvents(updatedEvents);
           setCurrentEventId(null); // Reset the current event ID
           setModalOpen(false); // Close the modal
-      
+     
         } catch (error) {
           console.error('Delete error:', error);
           setError('An error occurred while deleting the event. Please try again later.');
         }
       };
-      
+     
       const getUserFullName = async() => {
         const userData = getUserData();
         var fullName = userData.fname ;
         setUserFullName(fullName)   ;
       };
-
+ 
 const generateFitnessSchedule = async(userData) => {
     setIsLoading(true);
     setError('');
     const jwtToken = userData.token;
     var userId =userData.userId;
-
+ 
     try{
-      const response = await fetch(`http://localhost:8080/timetables/getByUser?userId=${userId}`, { 
+      const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/timetables/getByUser?userId=${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${jwtToken}`
       },
     });
-
+ 
     if(!response.ok){
       throw new Error("Failed to fetch VIDEOS");
     }
-  
+ 
     console.log(response);
     const data = await response.json();
     console.log(data);
-  
+ 
       // Map fetched data to the required format
       const formattedEvents = data.map(event => {
         // Combine date and time fields to create start and end Date objects
         const startDateTime = new Date(`${event.day}T${event.startTime}`);
         const endDateTime = new Date(`${event.day}T${event.endTime}`);
-  
+ 
         return {
           id: event.id,
           title: event.title,
@@ -303,8 +299,8 @@ const generateFitnessSchedule = async(userData) => {
       setIsLoading(false);
     }
   };
-
-
+ 
+ 
   const EventAgenda = ({ event }) => {
           return (
             <div className="event-agenda-container">
@@ -312,39 +308,41 @@ const generateFitnessSchedule = async(userData) => {
             </div>
           );
         };
-  
+ 
         // TrainerList subcomponent
         const TrainerList = ({ trainers }) => {
-          if (!trainers) return <div></div>; 
-          
+          if (!trainers) return <div></div>;
+         
           return (
             <div className="trainer-list">
               <h3>Subscribed Trainers</h3>
               <ul>
                 {trainers.map(trainer => (
                   <li key={trainer.id}>
-                    <strong>{trainer.name}</strong> - {trainer.specialty}
+                    <strong>{trainer.fname} {trainer.lname}</strong> - {trainer.specialty}
                   </li>
                 ))}
               </ul>
             </div>
           );
         };
-
-    const SearchBar = ({ onSearch }) => {
+ 
+const SearchBar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [specialty, setSpecialty] = useState('');
     const [location, setLocation] = useState('');
     const [mode, setMode] = useState('');
     const [type, setType] = useState('');
-
-  
+    const [firstName, setFirstName] = useState('');
+    const [username, setUsername] = useState('');
+ 
+ 
     const handleSearch = (e) => {
       e.preventDefault();
       onSearch({ searchTerm, specialty, location, mode, type });
     };
-
-
+ 
+ 
     return (
       <div className="search-bar">
         <input
@@ -372,8 +370,8 @@ const generateFitnessSchedule = async(userData) => {
           <option value="Plan">Plans</option>
           {/* ...other modes */}
         </select>
-
-
+ 
+ 
         <select value={type} onChange={(e) => setType(e.target.value)}>
           <option value="">Type of Workout</option>
           <option value="Home">Home</option>
@@ -384,9 +382,9 @@ const generateFitnessSchedule = async(userData) => {
         <button onClick={handleSearch}>Search</button>
       </div>
     );
-  }; 
-
-
+  };
+ 
+ 
   const getTrainerList = async(userData, trainerIds) => {
     setIsLoading(true);
     setError('');
@@ -394,7 +392,7 @@ const generateFitnessSchedule = async(userData) => {
     const jwtToken = userData.token;
     for(const subId of trainerIds){
         try{
-            const response = await fetch(`https://login-service.azurewebsites.net/users/getdetails?userId=${subId}`, { 
+            const response = await fetch(`https://login-service.azurewebsites.net/users/getdetails?userId=${subId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -407,7 +405,7 @@ const generateFitnessSchedule = async(userData) => {
           else{
             const data = await response.json();
             trainerList.push(data);
-          } 
+          }
         }catch (error) {
           console.error("Error fetching user info for trainer ID:", subId, error); // Log any errors from getUserInfo
           // Handle the error as needed, e.g., continue processing other user IDs
@@ -416,8 +414,8 @@ const generateFitnessSchedule = async(userData) => {
       setIsLoading(false);
       return trainerList;
     };
-
-    // Get the array of subscribed trainers from backend 
+ 
+    // Get the array of subscribed trainers from backend
     const fetchTrainerIds = async (userData) => {
       const jwtToken = userData.token;
       try {
@@ -448,20 +446,18 @@ const generateFitnessSchedule = async(userData) => {
       } catch (error) {
         console.error('Failed to fetch trainerIds', error);
         setSubscribedTrainerIds([]);
-      }
-
-      
+      }   
     };
-    // Get the array of subscribed trainers from backend 
-
+    // Get the array of subscribed trainers from backend
+ 
     const fetchSubscribedPlans = async (userData, subscribedTrainerIds) => {
-      setIsLoading(true); 
-      setError(''); 
+      setIsLoading(true);
+      setError('');
       console.log("Subscribed Trainer IDs:", subscribedTrainerIds);
       console.log(subscribedTrainerIds);
       const jwtToken = userData.token;
       const plans = {};
-  
+ 
       for (const trainerId of subscribedTrainerIds) {
           try {
               const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, {
@@ -471,32 +467,32 @@ const generateFitnessSchedule = async(userData) => {
                       'Authorization': `Bearer ${jwtToken}`
                   },
               });
-              
+             
               if (!response.ok) {
                   throw new Error(`Failed to fetch plans for trainer ${trainerId}`);
               }
-  
+ 
               const data = await response.json();
               //console.log(data);
               plans[trainerId] = data.map(plan => ({ ...plan, trainerId }));
-              
+             
           } catch (error) {
               console.error('Failed to fetch plans for trainer', trainerId, error);
               setError(`Error fetching plans for trainer ${trainerId}. ${error.message}`);
-              
+             
           }
       }
       const allPlans = Object.values(plans).flat();
-      setYourWorkoutPlans(allPlans); 
+      setYourWorkoutPlans(allPlans);
       setIsLoading(false);
   };
-  
-
+ 
+ 
     const handleSearch = (filters) => {
       console.log('Searching with filters:', filters);
       // Here you would integrate the search logic or API call to fetch search results based on filters
     };
-
+ 
     const openWorkoutPlan = async(planId, trainerId) => {
       navigate(`/workout-plan/${planId}/${trainerId}`);
       console.log("The plan id of this workout is: ", planId);
@@ -553,41 +549,40 @@ const generateFitnessSchedule = async(userData) => {
     { id: 'endurance', name: 'Endurance', value: '50%' },
     // ... Additional metrics
   ],
-  
+ 
   nutrition: [
     { mealTime: 'Breakfast', items: ['Oatmeal', 'Protein Shake', 'Banana'] },
     { mealTime: 'Lunch', items: ['Grilled Chicken', 'Quinoa', 'Salad'] },
     { mealTime: 'Dinner', items: ['Salmon', 'Sweet Potatoes', 'Steamed Veggies'] },
     // ... Additional meals/snacks
   ],
-
-
-
+ 
+ 
   supplements: ['Whey Protein', 'BCAAs', 'Multivitamin'],
 };
-
+ 
 const generateMealSchedule = async(userData) => {
   setIsLoading(true);
   setError('');
   const jwtToken = userData.token;
   var userId =userData.userId;
-
+ 
   try{
-    const response = await fetch(`http://localhost:8080/mealplan/getByUser?userId=${userId}`, { 
+    const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/mealplan/getByUser?userId=${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${jwtToken}`
     },
   });
-
+ 
   if(!response.ok){
     throw new Error("Failed to fetch meal plan");
   }
-
-  
+ 
+ 
   const data = await response.json();
-
+ 
     // Map fetched data to the required format
     const formattedMealPlans = data.map(plan => ({
       id: plan.id,
@@ -597,7 +592,7 @@ const generateMealSchedule = async(userData) => {
       allDay: false,
       type: 'meal'
     }));
-
+ 
     setEvents(currentEvents => [...currentEvents, ...formattedMealPlans]);
   } catch (error) {
     console.error('Fetch error:', error);
@@ -606,7 +601,7 @@ const generateMealSchedule = async(userData) => {
     setIsLoading(false);
   }
 };
-
+ 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
@@ -614,24 +609,25 @@ const generateMealSchedule = async(userData) => {
         // Clear local storage or any other clean-ups.
         navigate('/login');
     };
-
+ 
  return (
+
   <>
      <header className="dashboard-header">
             <div className="logo-container">
               <img src={logo} alt="Company Logo" onClick={() => navigate('/')} />
               <h1>Fit Inc.</h1>
             </div>
-
+ 
             <nav className="main-nav">
               {/* Define these functions to handle navigation or simply use `navigate` */}
               <button onClick={() => scrollToRef(CalenderRef)}>Calender</button>
               <button onClick={() => scrollToRef(MetricsRef)}>Metrics</button>            
               <button onClick={() => clientDashboardRef.current.scrollToSessions()}>Sessions</button>
               <button onClick={() => scrollToRef(workoutplansRef)}>Workout Plans</button>
-
+ 
             </nav>
-
+ 
             <div className="user-section">
             <button onClick={toggleProfileDropdown}>Hello,{UserFullName}</button>
             {isProfileDropdownOpen && (
@@ -642,16 +638,16 @@ const generateMealSchedule = async(userData) => {
           )}
         </div>
       </header>
-        
+       
       <div className="user-dashboard">
-      
-
-      {/* <h2> Workout Programs </h2>
-      <SearchBar onSearch={handleSearch} /> */}
+     
+ 
+     <h2> Workout Programs </h2>
+      <SearchBar onSearch={handleSearch} >
 
       <h2 className="common-header"> {UserFullName}'s Fitness and Wellness Schedule</h2>
 
-            {/* <div className="search-bar-container">
+      <div className="search-bar-container">
               <div className="search-results-header">
                 <span className="results-count">36 Results</span>
                 <div className="sort-options">
@@ -659,8 +655,11 @@ const generateMealSchedule = async(userData) => {
                   <select id="sort">
                   </select>
                 </div>
-              </div> 
-            </div> */}
+              </div>
+            </div>
+ </SearchBar>
+
+
 
     <div className="dashboard-grid">
       {/* Row 1 */}
@@ -702,7 +701,7 @@ const generateMealSchedule = async(userData) => {
         <button type="button" onClick={handleCloseModal}>Close</button>
       </>
     ) : (
-<>            <h2> Create your own schedule </h2> 
+<>            <h2> Create your own schedule </h2>
               <div className="modal-content">
                 <form onSubmit={handleEventSubmit}>
                   <input
@@ -736,7 +735,7 @@ const generateMealSchedule = async(userData) => {
                   <option value="Strength">Strength Training</option>
                   <option value="Zumba">Zumba</option>
                   </select>
-                  <button type="submit"> Create</button> 
+                  <button type="submit"> Create</button>
                  <button type="button" onClick={handleCloseModal}>Cancel</button>
                 </form>
                 </div>
@@ -745,9 +744,12 @@ const generateMealSchedule = async(userData) => {
               </div>
           </Modal>)}
         </section>
+
+
+        
         <section className="trainer-list-section">
           <h3>Trainer List</h3>
-          <TrainerList trainers={trainers} />
+          <TrainerList trainers={SubscribedTrainers} />
         </section>
        </div>
 
@@ -756,12 +758,11 @@ const generateMealSchedule = async(userData) => {
          <ClientProgressDashboard 
                workoutPlan={workoutPlan}
                progressMetrics={workoutPlan.metrics}
-              // yourPlans={trainerPlans} 
-              
+               yourPlans={trainerPlans}
         />
        </section>
-      
-      
+     
+     
       <div ref={workoutplansRef} className="section-workout">
           <h2 className="common-header" >Your Subscribed Workout Plans</h2>
           {yourWorkoutPlans.length === 0 ? (
@@ -788,9 +789,9 @@ const generateMealSchedule = async(userData) => {
           </button>
         </div>
       </div>
-  
-</>
-);
-  };
-
-  export default UserDashboard;
+ 
+  </>
+  );
+};
+ 
+export default UserDashboard;

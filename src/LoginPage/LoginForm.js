@@ -31,7 +31,7 @@ const LoginForm = ({ logo }) => {
           setError('User is not registered as an OAuth user. Try logging in with FitInc account');
         }
       }
-      const data = await response.json();
+      const data = await response.text();
       if(data == "Registration"){
         navigate('/signup/OAuth', { state: { email: decodedData.email, fname: decodedData.given_name, lname: decodedData.family_name, isOAuth: true  } });        
       }
@@ -45,7 +45,7 @@ const LoginForm = ({ logo }) => {
             body: JSON.stringify({ email: decodedData.email, password: '', isOAuth: true }),
           });
       
-          const data = await response.json(); 
+          const data = await response.text(); 
       
           if (response.ok && data.status) {
             console.log('Login successful:', data);
