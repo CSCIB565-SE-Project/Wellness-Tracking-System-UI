@@ -1,6 +1,7 @@
 // import './SignupForm.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './SignupForm.css';
 
 const SignupForm = ({ logo }) => {
     const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ const SignupForm = ({ logo }) => {
         try {
             const payload = {email, password, fname, lname, dob, username, role, isOAuth: false};
             console.log("Sending payload:", payload);
-            const response = await fetch('https://login-service.azurewebsites.net/register', {
+            const response = await fetch('http://localhost:8003/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

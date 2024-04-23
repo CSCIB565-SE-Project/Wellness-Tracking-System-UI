@@ -1,12 +1,12 @@
 
 
-import React, { useEffect, useState,useRef ,useImperativeHandle} from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 
 
-import { Doughnut, Bar, Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import '../styles/ClientProgressDashboard.css'; 
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import '../styles/ClientProgressDashboard.css';
 
 const getUserData = () => {
   const userData = JSON.parse(localStorage.getItem('user'));
@@ -43,7 +43,7 @@ const ClientProgressDashboard = React.forwardRef(({ workoutPlan, dailyMeals = []
         const userId = userData.userId;
     
 try {
- const response = await fetch(`https://wtsdashboardservice.azurewebsites.net/progress-metrics/get?userId=${userId}` ,
+ const response = await fetch(`http://localhost:8080/progress-metrics/get?userId=${userId}` ,
  {
       method: 'GET',
       headers: {

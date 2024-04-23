@@ -116,14 +116,17 @@ const UserDashboard = () => {
     generateMealSchedule(userData);
     fetchTrainerIds(userData);
     setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-    //fetchSubscribedPlans(userData, subscribedTrainerIds);  
-    // if (!subscribedTrainerIds) return;
-    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
-    if (subscribedTrainerIds.length > 0) {
+
+}, []);
+
+//Use effect that updates when subscribed trainer id changes from the fetching ids
+useEffect(() => {
+  const userData = getUserData();
+  if (subscribedTrainerIds.length > 0) {
       console.log("now to fetch plans");
       fetchSubscribedPlans(userData, subscribedTrainerIds);
   }
-}, []);
+}, [subscribedTrainerIds]);
  
  
   const handleSelectSlot = ({ start, end }) => {
@@ -465,7 +468,7 @@ const SearchBar = () => {
                 },
         });  
         const data = await response.json();
-             
+        console.log(data);
         if (Array.isArray(data)) {
           setSubscribedTrainerIds(data);
           console.log("setting data");
@@ -824,12 +827,12 @@ const generateMealSchedule = async(userData) => {
           )
           }
       </div>
- 
- 
-                                         
-     
- 
- 
+
+      <div>
+          <a href="https://iuyangyuc.github.io/Live-Stream/">Watch Live Stream</a>
+      </div>
+
+  
         <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
             💬 Chat
@@ -842,4 +845,3 @@ const generateMealSchedule = async(userData) => {
 };
  
 export default UserDashboard;
- 

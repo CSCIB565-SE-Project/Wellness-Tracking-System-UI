@@ -20,7 +20,7 @@ const NewPasswordResetForm = () => {
     // Implement the API call to your backend
     try {
       console.log("Sending password:", password);
-      const response = await fetch('http://login-service.azurewebsites.net/password-reset/confirm', {
+      const response = await fetch('http://localhost:8003/password-reset/confirm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

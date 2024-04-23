@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
 // import { useSpring, animated } from 'react-spring';
@@ -15,7 +15,7 @@ const connectToStreamChat = async (navigate) => {
     const authToken = userData ? userData.token : null;
   
     try {
-        const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
+        const response = await fetch('http://localhost:8005/auth/verifyToken', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const AdminDashboard = () => {
         const userData = getUserData();
         const jwtToken = userData.token;
         try{
-          const response = await fetch(`http://localhost:8080/admin/approve`, { 
+          const response = await fetch(`http://localhost:8007/admin/approve`, { 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ const getunapprovedcontent= async(userData) => {
     const jwtToken = userData.token;
     console.log(jwtToken);
     try{
-      const response = await fetch(`http://localhost:8080/admin/getVideos`, { 
+      const response = await fetch(`http://localhost:8007/admin/getVideos`, { 
 
       method: 'GET',
       headers: {
