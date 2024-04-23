@@ -114,14 +114,17 @@ const UserDashboard = () => {
     generateMealSchedule(userData);
     fetchTrainerIds(userData);
     setTimeout(() => setIsLoaded(true), 500); // Simulating a loading delay
-    //fetchSubscribedPlans(userData, subscribedTrainerIds);  
-    // if (!subscribedTrainerIds) return;
-    // fetchSubscribedPlans(subscribedTrainerIds).catch(console.error);
-    if (subscribedTrainerIds.length > 0) {
+
+}, []);
+
+//Use effect that updates when subscribed trainer id changes from the fetching ids
+useEffect(() => {
+  const userData = getUserData();
+  if (subscribedTrainerIds.length > 0) {
       console.log("now to fetch plans");
       fetchSubscribedPlans(userData, subscribedTrainerIds);
   }
-}, []);
+}, [subscribedTrainerIds]);
  
  
   const handleSelectSlot = ({ start, end }) => {
