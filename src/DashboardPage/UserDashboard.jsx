@@ -816,6 +816,10 @@ const generateMealSchedule = async(userData) => {
           }
       </div>
 
+      <div>
+          <a href="https://iuyangyuc.github.io/Live-Stream/">Watch Live Stream</a>
+      </div>
+
   
         <div className="chat-fab-container">
           <button className="chat-fab" onClick={() => connectToStreamChat(navigate)}>
