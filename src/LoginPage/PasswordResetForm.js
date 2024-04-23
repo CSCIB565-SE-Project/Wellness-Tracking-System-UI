@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './LoginForm.css'; 
+import './LoginForm.css';
 
 const PasswordResetForm = () => {
   const [email, setEmail] = useState('');
@@ -11,8 +11,8 @@ const PasswordResetForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   //http://localhost:8080/password-reset
-  //https://login-service.azurewebsites.net/password-reset
-    fetch('https://login-service.azurewebsites.net/password-reset', {
+  //http://localhost:8003/password-reset
+    fetch('http://localhost:8003/password-reset', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

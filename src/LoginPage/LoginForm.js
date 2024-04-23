@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.css';
 import facebookLogo from './facebook.png';
@@ -21,7 +21,7 @@ const LoginForm = ({ logo }) => {
       const encodedData = urlParams.get('data');
       const decodedData = JSON.parse(decodeURIComponent(encodedData));
       console.log(decodedData);
-      const response = await fetch(`https://login-service.azurewebsites.net/login/checkOAuth2?email=${decodedData.email}`, {
+      const response = await fetch(`http://localhost:8003/login/checkOAuth2?email=${decodedData.email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const LoginForm = ({ logo }) => {
       }
       else if(data == "Login"){
         try {
-          const response = await fetch('http://localhost:8080/login', { 
+          const response = await fetch('http://localhost:8003/login', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const LoginForm = ({ logo }) => {
     setError(''); // Reset error message on new submission
     const isOAuth = false;
     try {
-      const response = await fetch('http://localhost:8080/login', { 
+      const response = await fetch('http://localhost:8003/login', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ const handleOAuth2Login = async (url) => {
 };
   
 async function oauth(){
-  const response = await fetch('https://oauthlogin-service.azurewebsites.net/request',
+  const response = await fetch('http://localhost:8004/request',
   {method: 'post'});
   const data = await response.json();
   handleOAuth2Login(data.url);

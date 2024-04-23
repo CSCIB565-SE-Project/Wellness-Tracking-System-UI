@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './SignupForm.css';
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const OAuthSignupForm = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +32,7 @@ const OAuthSignupForm = () => {
     try {
       const payload = { email, fname, lname, username, role, isOAuth };
       console.log("Sending payload:", payload);
-      const response = await fetch('https://login-service.azurewebsites.net/register', {
+      const response = await fetch('http://localhost:8003/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

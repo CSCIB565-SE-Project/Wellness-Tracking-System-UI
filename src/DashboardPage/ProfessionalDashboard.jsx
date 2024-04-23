@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import '../styles/ProfessionalDashboard.css';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
+import getDay from 'date-fns/getDay';
+import enUS from 'date-fns/locale/en-US';
 import parseISO from 'date-fns/parseISO';
 import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import addHours from 'date-fns/addHours';
+import React, { useEffect, useRef, useState } from 'react';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import enUS from 'date-fns/locale/en-US';
+import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 import { StreamChat } from 'stream-chat';
-import Modal from 'react-modal';
 import logo from '../assests/img/logo.png';
-import axios from "axios";
+import '../styles/ProfessionalDashboard.css';
 
 
 
@@ -25,7 +23,7 @@ const connectToStreamChat = async (navigate) => {
   const authToken = userData ? userData.token : null;
 
   try {
-      const response = await fetch('https://wtschatservice.azurewebsites.net/auth/verifyToken', {
+      const response = await fetch('https://localhost:8005/auth/verifyToken', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -355,7 +353,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`https://cdnservice.azurewebsites.net/api/videos/unapproved/${trainerId}`, { 
+        const response = await fetch(`https://localhost:8000/api/videos/unapproved/${trainerId}`, { 
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -398,7 +396,7 @@ const ProfessionalDashboard = () => {
       const description = planDescription;
 
       try{
-        const response = await fetch('https://cdnservice.azurewebsites.net/api/workoutplan/add', { 
+        const response = await fetch('http://localhost:8000/api/workoutplan/add', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -437,7 +435,7 @@ const ProfessionalDashboard = () => {
       const jwtToken = userData.token;
       const userId = userData.userId;
       try{
-        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/delete/${planId}`, { 
+        const response = await fetch(`http://localhost:8000/api/workoutplan/delete/${planId}`, { 
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -467,7 +465,7 @@ const ProfessionalDashboard = () => {
     const jwtToken = userData.token;
     for(var subId of subIds){
         try{
-            const response = await fetch(`https://cdnservice.azurewebsites.net/api/users/find/${subId}`, {
+            const response = await fetch(`http://localhost:8000/api/users/find/${subId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -496,7 +494,7 @@ const fetchSubscribedClients = async(userData) => {
     const jwtToken = userData.token;
     const trainerId = userData.userId;
     try{
-      const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/sub/${trainerId}`, {
+      const response = await fetch(`http://localhost:8000/api/trainers/sub/${trainerId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -532,7 +530,7 @@ const fetchSubscribedClients = async(userData) => {
     const jwtToken = userData.token;
     const trainerId = userData.userId;
     try{
-      const response = await fetch(`https://cdnservice.azurewebsites.net/api/trainers/subc/${trainerId}`, { 
+      const response = await fetch(`http://localhost:8000/api/trainers/subc/${trainerId}`, { 
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -565,7 +563,7 @@ const fetchSubscribedClients = async(userData) => {
       const jwtToken = userData.token;
       const trainerId = userData.userId;
       try{
-        const response = await fetch(`https://cdnservice.azurewebsites.net/api/workoutplan/fetch/${trainerId}`, { 
+        const response = await fetch(`http://localhost:8000/api/workoutplan/fetch/${trainerId}`, { 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
